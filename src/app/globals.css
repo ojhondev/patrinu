@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------- */
+/*  Patrinu — tokens                                                 */
+/*  Paleta arquivística: papel quente, tinta, verde pátina, ferrugem */
+/* ---------------------------------------------------------------- */
+
+:root {
+  --bg: #f6f5f0;
+  --surface: #fffefb;
+  --surface-sunk: #eceae2;
+  --border: #ddd9cd;
+  --border-strong: #c6c1af;
+
+  --ink: #23262a;
+  --ink-soft: #494e50;
+  --muted: #767a72;
+
+  --accent: #2f6b5e;
+  --accent-hover: #245448;
+  --accent-fg: #ffffff;
+  --accent-weak: #e4efe9;
+
+  --rust: #9a5a31;
+  --rust-weak: #f1e6db;
+
+  --ok: #3d7a4e;
+  --warn: #9a6a1f;
+  --crit: #a23b32;
+
+  --ring: color-mix(in oklab, var(--accent) 55%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16191a;
+    --surface: #1e2223;
+    --surface-sunk: #121516;
+    --border: #333937;
+    --border-strong: #464d4a;
+
+    --ink: #e9e7dd;
+    --ink-soft: #cdccc1;
+    --muted: #969b93;
+
+    --accent: #63b7a4;
+    --accent-hover: #7cc7b6;
+    --accent-fg: #10201c;
+    --accent-weak: #1f2e2a;
+
+    --rust: #cd9067;
+    --rust-weak: #2c2620;
+
+    --ok: #6fb182;
+    --warn: #c99a4d;
+    --crit: #d9776c;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunk: var(--surface-sunk);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-weak: var(--accent-weak);
+  --color-rust: var(--rust);
+  --color-rust-weak: var(--rust-weak);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-crit: var(--crit);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-weak);
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

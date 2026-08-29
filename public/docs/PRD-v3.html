@@ -1,0 +1,978 @@
+<!doctype html><html><head>
+<title>Patrinu PRD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --bg: #ecebe4;
+    --surface: #f6f5f0;
+    --surface-sunk: #e4e2d8;
+    --ink: #23272a;
+    --ink-soft: #40453f;
+    --muted: #6c706a;
+    --line: #d3cfc3;
+    --line-strong: #bdb8a8;
+    --accent: #2f6b5e;
+    --accent-ink: #215046;
+    --rust: #97552f;
+    --rust-soft: #b98a5f;
+    --good: #3d7a4e;
+    --warn: #9a6a1f;
+    --crit: #a23b32;
+
+    --measure: 42rem;
+    --rail: 13.5rem;
+    --gap-rail: 3.75rem;
+
+    --f-display: "Fraunces", "Spectral", Georgia, serif;
+    --f-body: "Spectral", Georgia, "Times New Roman", serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1a1d1d;
+      --surface: #232727;
+      --surface-sunk: #161919;
+      --ink: #e9e7dd;
+      --ink-soft: #cdccc1;
+      --muted: #969b93;
+      --line: #363b3a;
+      --line-strong: #4a504e;
+      --accent: #63b7a4;
+      --accent-ink: #8fccbe;
+      --rust: #c98a5f;
+      --rust-soft: #a9744d;
+      --good: #6fb182;
+      --warn: #c99a4d;
+      --crit: #d9776c;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #1a1d1d;
+    --surface: #232727;
+    --surface-sunk: #161919;
+    --ink: #e9e7dd;
+    --ink-soft: #cdccc1;
+    --muted: #969b93;
+    --line: #363b3a;
+    --line-strong: #4a504e;
+    --accent: #63b7a4;
+    --accent-ink: #8fccbe;
+    --rust: #c98a5f;
+    --rust-soft: #a9744d;
+    --good: #6fb182;
+    --warn: #c99a4d;
+    --crit: #d9776c;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 1.0625rem;
+    line-height: 1.66;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap {
+    max-width: calc(var(--rail) + var(--gap-rail) + var(--measure));
+    margin: 0 auto;
+    padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.15rem, 5vw, 2.5rem) 6rem;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1.5rem;
+    margin-bottom: 3.25rem;
+  }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+  .masthead h1 {
+    font-family: var(--f-display);
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-size: clamp(2.9rem, 8vw, 4.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0.5rem 0 0.15rem;
+  }
+  .masthead .tag {
+    font-family: var(--f-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.05rem, 2.6vw, 1.35rem);
+    color: var(--accent-ink);
+    margin: 0.35rem 0 1.4rem;
+  }
+  .masthead .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    font-family: var(--f-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .masthead .meta span { white-space: nowrap; }
+  .masthead .meta b { color: var(--ink-soft); font-weight: 500; }
+
+  /* ---------- layout grid ---------- */
+  .doc { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .doc > * { grid-column: 1; min-width: 0; }
+
+  nav.toc { display: none; }
+
+  @media (min-width: 60rem) {
+    .doc {
+      grid-template-columns: var(--rail) minmax(0, var(--measure));
+      column-gap: var(--gap-rail);
+    }
+    .doc > * { grid-column: 2; }
+    .doc > .rail { grid-column: 1; }
+    nav.toc {
+      display: block;
+      grid-column: 1;
+      grid-row: 1 / 999;
+      align-self: start;
+      position: sticky;
+      top: 2.25rem;
+    }
+  }
+
+  nav.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+  nav.toc li { margin-bottom: 0.55rem; }
+  nav.toc a {
+    color: var(--muted);
+    text-decoration: none;
+    display: block;
+    border-left: 2px solid transparent;
+    padding-left: 0.6rem;
+    margin-left: -0.62rem;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav.toc a .n { color: var(--line-strong); margin-right: 0.5rem; }
+  nav.toc a:hover { color: var(--ink); }
+  nav.toc a.active { color: var(--accent-ink); border-left-color: var(--accent); }
+  nav.toc a.active .n { color: var(--accent); }
+
+  /* ---------- sections ---------- */
+  section { padding: 2.6rem 0; border-top: 1px solid var(--line); }
+  section:first-of-type { border-top: 0; padding-top: 0.5rem; }
+
+  .sec-no {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.55rem;
+  }
+
+  h2 {
+    font-family: var(--f-display);
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.7rem, 4.2vw, 2.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 0 0 1rem;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 500;
+    font-size: 1.24rem;
+    line-height: 1.2;
+    margin: 2rem 0 0.6rem;
+    color: var(--ink);
+  }
+  h4 {
+    font-family: var(--f-mono);
+    font-weight: 500;
+    font-size: 0.78rem;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 1.6rem 0 0.7rem;
+  }
+
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  strong { font-weight: 600; color: var(--ink); }
+  em { font-style: italic; }
+
+  .lead {
+    font-size: 1.24rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  .lead strong { color: var(--ink); }
+
+  ul, ol.body-list { margin: 0 0 1rem; padding-left: 1.15rem; }
+  li { margin-bottom: 0.4rem; }
+  li::marker { color: var(--accent); }
+
+  /* ---------- rail notes ---------- */
+  .rail {
+    font-family: var(--f-mono);
+    font-size: 0.73rem;
+    line-height: 1.5;
+    color: var(--muted);
+    border-top: 2px solid var(--accent);
+    padding-top: 0.5rem;
+    margin: 1.4rem 0;
+  }
+  .rail b { color: var(--ink-soft); font-weight: 500; display: block; margin-bottom: 0.25rem; letter-spacing: 0.04em; }
+  @media (min-width: 60rem) {
+    .rail { text-align: right; border-top: 0; border-right: 2px solid var(--accent); padding-top: 0; padding-right: 0.9rem; margin: 0.3rem 0; }
+  }
+
+  /* ---------- callouts ---------- */
+  .box {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    padding: 1.1rem 1.25rem;
+    margin: 1.4rem 0;
+    font-size: 0.98rem;
+  }
+  .box.change { border-left-color: var(--rust); }
+  .box.risk { border-left-color: var(--crit); }
+  .box p:last-child, .box ul:last-child { margin-bottom: 0; }
+  .box .box-label {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ---------- tables ---------- */
+  .table-scroll { overflow-x: auto; margin: 1.4rem 0; border: 1px solid var(--line); border-radius: 2px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 0.62rem 0.85rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: var(--f-mono);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface-sunk);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td .num, .mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+  td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---------- pills ---------- */
+  .pill {
+    display: inline-block;
+    font-family: var(--f-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.12rem 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .pill.now { color: var(--accent-ink); border-color: var(--accent); }
+  .pill.next { color: var(--rust); border-color: var(--rust-soft); }
+  .pill.later { color: var(--muted); }
+
+  /* ---------- two engines ---------- */
+  .engines { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 2px; margin: 1.6rem 0; }
+  @media (min-width: 44rem) { .engines { grid-template-columns: 1fr 1fr; } }
+  .engine { background: var(--surface); padding: 1.15rem 1.3rem; }
+  .engine .e-kicker { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 0.35rem; }
+  .engine h4 { margin: 0 0 0.55rem; color: var(--ink-soft); font-size: 0.95rem; letter-spacing: 0; text-transform: none; font-family: var(--f-display); font-weight: 600; }
+  .engine p { margin: 0 0 0.6rem; font-size: 0.93rem; }
+  .engine p:last-child { margin-bottom: 0; }
+  .engine .e-role { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+
+  /* ---------- roadmap ---------- */
+  .phases { display: grid; gap: 1rem; margin: 1.5rem 0; }
+  @media (min-width: 48rem) { .phases { grid-template-columns: repeat(2, 1fr); } }
+  .phase {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 1.1rem 1.2rem;
+  }
+  .phase .ph-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 0.5rem;
+    border-bottom: 1px solid var(--line); padding-bottom: 0.55rem; margin-bottom: 0.7rem;
+  }
+  .phase h4 { margin: 0; color: var(--ink-soft); }
+  .phase .ph-when { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+  .phase ul { padding-left: 1rem; margin: 0; font-size: 0.92rem; }
+  .phase li { margin-bottom: 0.28rem; }
+
+  /* ---------- KPI strip ---------- */
+  .kpis { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 2px; margin: 1.4rem 0; }
+  @media (min-width: 40rem) { .kpis { grid-template-columns: repeat(4, 1fr); } }
+  .kpi { background: var(--surface); padding: 0.95rem 1rem; }
+  .kpi .k-label { font-family: var(--f-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.3rem; }
+  .kpi .k-val { font-family: var(--f-display); font-size: 1.5rem; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1; }
+  .kpi .k-val small { font-size: 0.8rem; color: var(--muted); }
+
+  /* ---------- before / after ---------- */
+  .ba { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 2px; margin: 1.4rem 0; }
+  @media (min-width: 44rem) { .ba { grid-template-columns: 1fr 1fr; } }
+  .ba > div { background: var(--surface); padding: 1rem 1.15rem; }
+  .ba .ba-tag { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; display: block; margin-bottom: 0.5rem; }
+  .ba .before .ba-tag { color: var(--rust); }
+  .ba .after .ba-tag { color: var(--accent-ink); }
+  .ba p { margin: 0; font-size: 0.95rem; }
+
+  hr.rule { border: 0; border-top: 1px solid var(--line); margin: 2.4rem 0; }
+
+  .foot {
+    margin-top: 4rem;
+    padding-top: 1.4rem;
+    border-top: 2px solid var(--ink);
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 1px; }
+
+  .reveal { opacity: 0; transform: translateY(12px); transition: opacity 0.5s ease, transform 0.5s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Product Requirements Document</p>
+    <h1>A Patrinu</h1>
+    <p class="tag">O ecossistema digital do patrimônio.</p>
+    <div class="meta">
+      <span><b>Versão</b> 3.0 — Radar + Marketplace</span>
+      <span><b>Data</b> Agosto de 2026</span>
+      <span><b>Base</b> PRD v1.1 (GPT) → revisão v2</span>
+      <span><b>Escopo</b> Nacional · restauro e conservação de patrimônio</span>
+      <span><b>Status</b> Proposta para discussão</span>
+    </div>
+  </header>
+
+  <div class="doc">
+
+    <nav class="toc" aria-label="Índice">
+      <ol>
+        <li><a href="#resumo"><span class="n">00</span>Resumo &amp; evolução do documento</a></li>
+        <li><a href="#tese"><span class="n">01</span>Tese — dois motores</a></li>
+        <li><a href="#problema"><span class="n">02</span>Problema</a></li>
+        <li><a href="#mercado"><span class="n">03</span>Mercado e por que é investível</a></li>
+        <li><a href="#entrada"><span class="n">04</span>Estratégia de entrada</a></li>
+        <li><a href="#receita"><span class="n">05</span>Quem paga</a></li>
+        <li><a href="#produto"><span class="n">06</span>Produto</a></li>
+        <li><a href="#ia"><span class="n">07</span>Camada de IA</a></li>
+        <li><a href="#navegacao"><span class="n">08</span>Arquitetura de navegação</a></li>
+        <li><a href="#mvp"><span class="n">09</span>MVP</a></li>
+        <li><a href="#roadmap"><span class="n">10</span>Roadmap</a></li>
+        <li><a href="#metricas"><span class="n">11</span>Métricas</a></li>
+        <li><a href="#riscos"><span class="n">12</span>Riscos e mitigações</a></li>
+        <li><a href="#principios"><span class="n">13</span>Princípios de produto</a></li>
+        <li><a href="#abertas"><span class="n">14</span>Decisões em aberto</a></li>
+      </ol>
+    </nav>
+
+    <section id="resumo" class="reveal">
+      <span class="sec-no">00 — Resumo executivo</span>
+      <h2>Um produto com dois motores: Radar e Marketplace</h2>
+      <p class="lead">A Patrinu é a infraestrutura digital do mercado de <strong>restauro e conservação de patrimônio</strong> no Brasil. Ela conecta profissionais, empresas, instituições, oportunidades e recursos ao longo de um ciclo: <span class="mono">descoberta → conexão → proposta → contratação → execução → documentação → reputação</span>. A v3 fixa a forma do produto em <strong>dois motores que se alimentam</strong>: o <strong>Radar de Oportunidades</strong> (recorrência, hábito, dado) e o <strong>Marketplace</strong> (transação, reputação, efeito de rede). Os dois entram já no MVP.</p>
+
+      <h4>Evolução do documento</h4>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Versão</th><th>Ideia central</th></tr></thead>
+          <tbody>
+            <tr><td>v1.1 (GPT)</td><td>Marketplace vertical de 4 pilares lançado de uma vez; Radar na Fase 2, financiamento na Fase 3, Passaporte na Fase 4.</td></tr>
+            <tr><td>v2</td><td>Inverter a ordem: Radar sozinho como cunha na Fase 1, marketplace só depois de haver tração de um lado.</td></tr>
+            <tr><td><strong>v3 (esta)</strong></td><td><strong>Radar + Marketplace juntos no MVP</strong>, com o Radar atuando como motor de tráfego que mantém o lado da oferta sempre presente e resolve o <em>cold-start</em> do marketplace. Beachhead <strong>nacional</strong>, patrimônio em geral. TAM tratado com <strong>foco estrito</strong> em restauro/conservação.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box change">
+        <span class="box-label">Decisões fixadas nesta versão</span>
+        <ul>
+          <li><strong>Escopo do produto:</strong> Radar + Marketplace, ambos no v1. O Marketplace começa como <em>camada de trabalho sobre o feed do Radar</em> (responder a licitações e editais), e ganha projetos privados nativos com o tempo.</li>
+          <li><strong>Beachhead:</strong> <strong>nacional, todo tipo de patrimônio</strong> (religioso, civil, urbano, industrial, ferroviário, arqueológico, acervos). Sem recorte de segmento nem de região no cadastro.</li>
+          <li><strong>TAM:</strong> enquadramento estrito no mercado de <strong>restauro e conservação de bens patrimoniais</strong>. Adjacências (retrofit/AEC, seguros, acervos) e LATAM ficam como tese de expansão, não como mercado-base.</li>
+          <li><strong>Receita âncora:</strong> três produtos — <strong>Empresa/Ateliê Business</strong> (assinatura por assento), <strong>Institucional</strong> (plano customizado) e <strong>Patrocinador/Vitrine</strong> (deal flow de projetos incentiváveis para bancos e institutos). A assinatura Pro individual é alavanca de aquisição e engajamento, não a âncora.</li>
+          <li><strong>Take rate sobre contratos</strong> continua fora do centro do modelo — existe só como taxa opcional sobre projetos privados originados e geridos de ponta a ponta na plataforma.</li>
+          <li><strong>Passaporte do Patrimônio</strong> permanece puxado para a Fase 1–2 como o ativo de dado defensável.</li>
+        </ul>
+      </div>
+    </section>
+
+    <aside class="rail reveal">
+      <b>Nota</b>
+      Marketplace vertical em mercado pequeno morre de falta de liquidez. A v3 não elimina esse risco pela sequência — elimina pela arquitetura: o Radar traz o profissional todo dia, e o Marketplace só precisa converter atenção que já está na plataforma.
+    </aside>
+
+    <section id="tese" class="reveal">
+      <span class="sec-no">01 — Tese</span>
+      <h2>Dois motores que se alimentam</h2>
+      <p>O ecossistema de patrimônio é pequeno, técnico e movido a indicação. Um marketplace horizontal não tem vantagem aqui, e um marketplace vertical isolado não atinge liquidez. A Patrinu resolve isso rodando duas máquinas ao mesmo tempo, cada uma cobrindo a fraqueza da outra.</p>
+
+      <div class="engines">
+        <div class="engine">
+          <span class="e-kicker">Motor 1</span>
+          <h4>Radar de Oportunidades</h4>
+          <p>Ingestão e estruturação, com IA, de toda licitação, edital, chamamento, credenciamento, bolsa e programa relevante a patrimônio no Brasil. Feed personalizado, <em>match</em> com o perfil, alertas.</p>
+          <p class="e-role"><strong>Papel:</strong> recorrência · hábito diário · dado de comportamento · barreira de execução · tráfego.</p>
+        </div>
+        <div class="engine">
+          <span class="e-kicker">Motor 2</span>
+          <h4>Marketplace</h4>
+          <p>Onde a atenção do Radar vira trabalho: montar candidatura e habilitação para as oportunidades públicas, formar consórcio/equipe, e — crescendo com o tempo — publicar e disputar projetos privados nativos.</p>
+          <p class="e-role"><strong>Papel:</strong> transação · reputação verificável · efeito de rede · monetização âncora.</p>
+        </div>
+      </div>
+
+      <h4>Como um alimenta o outro</h4>
+      <ul>
+        <li>O Radar dá razão para o profissional entrar <strong>todo dia</strong> — isso mantém o lado da oferta sempre "aceso" no Marketplace, sem campanha de aquisição contínua.</li>
+        <li>Cada oportunidade do Radar é <strong>demanda pronta</strong>: o profissional não precisa de projeto nativo no dia 1, precisa de ajuda para ganhar a licitação que já existe.</li>
+        <li>Cada projeto respondido ou executado deixa <strong>evidência no portfólio</strong> e uma entrada no <strong>Passaporte do bem</strong> — o que melhora o <em>match</em> do Radar e a reputação exibida no Marketplace.</li>
+        <li>O comportamento no Radar (o que salva, no que se candidata, o que ganha) treina o ranqueamento dos dois lados.</li>
+      </ul>
+
+      <h4>Posicionamento</h4>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Público</th><th>Promessa</th></tr></thead>
+          <tbody>
+            <tr><td>Profissionais</td><td>Mostre seu trabalho, construa reputação verificável e receba as oportunidades certas antes dos concorrentes.</td></tr>
+            <tr><td>Empresas / ateliês</td><td>Monitore todo edital e licitação compatível, encontre especialistas e monte a proposta mais rápido que o concorrente.</td></tr>
+            <tr><td>Instituições</td><td>Estruture a demanda, encontre quem executa e descubra como financiar antes de abrir o processo.</td></tr>
+            <tr><td>Patrocinadores</td><td>Acesse projetos financiáveis já curados, com dossiê e enquadramento fiscal prontos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="problema" class="reveal">
+      <span class="sec-no">02 — Problema</span>
+      <h2>Especializado e fragmentado</h2>
+      <p>Profissionais dependem de indicação. Empresas e instituições têm dificuldade de encontrar especialistas. Licitações, editais e oportunidades estão dispersos em centenas de portais. Muitos projetos não avançam por falta de recurso — ou por desconhecimento sobre como captar.</p>
+
+      <h4>Dores por ator</h4>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Ator</th><th>Dor</th><th>Consequência hoje</th></tr></thead>
+          <tbody>
+            <tr><td>Profissional</td><td>Portfólio não padronizado; difícil comprovar experiência; oportunidades invisíveis; habilitação em licitação é um labirinto.</td><td>Renda instável, dependência de rede pessoal, editais perdidos por prazo ou documento.</td></tr>
+            <tr><td>Empresa / ateliê</td><td>Não sabe quem existe nem quem está disponível; monitorar editais é trabalho manual; montar proposta técnica consome dias.</td><td>Perde prazos; contrata por indicação, sem histórico; margem corroída pelo custo de licitar.</td></tr>
+            <tr><td>Instituição</td><td>Não sabe descrever tecnicamente a intervenção nem estimar orçamento; não conhece as fontes de recurso.</td><td>Projeto trava no diagnóstico ou no edital; obra não sai do papel.</td></tr>
+            <tr><td>Patrocinador</td><td>Não encontra projetos com aderência e narrativa; enquadramento fiscal é opaco.</td><td>Recurso incentivado subutilizado; projetos bons sem apoio.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box">
+        <span class="box-label">Fricção subestimada na v1.1</span>
+        <p>A obra de restauro no Brasil trava em três pontos que o PRD original não menciona: <strong>diagnóstico</strong> (o que fazer e com que técnica), <strong>orçamento</strong> (difícil de estimar) e <strong>conformidade</strong> (IPHAN / órgão estadual, termo de referência, ART/RRT, atestado de capacidade técnica, acervo técnico). O Marketplace da Patrinu ataca especificamente a terceira — a mais mecânica e a mais dolorosa.</p>
+      </div>
+    </section>
+
+    <aside class="rail reveal">
+      <b>Fontes de oportunidade</b>
+      PNCP e portais de compras (União, 26 estados + DF, milhares de municípios), IPHAN, órgãos estaduais (IEPHA-MG, CONDEPHAAT-SP, INEPAC-RJ, IPAC-BA, Fundarpe-PE…), leis de incentivo federal e estaduais (SALIC/Rouanet, ProAC, LIC-MG…), editais de bancos e estatais, fundos internacionais.
+    </aside>
+
+    <section id="mercado" class="reveal">
+      <span class="sec-no">03 — Mercado e por que é investível</span>
+      <h2>Nicho estreito na base — e por que ainda escala</h2>
+      <p>O risco honesto: a base de profissionais formais de conservação-restauro no Brasil é da ordem de poucos milhares. Uma assinatura individual, sozinha, é um negócio pequeno. A tese de escala depende de <strong>cobrar de quem tem orçamento</strong> (empresas, instituições, patrocinadores) e de <strong>capturar o dado do setor</strong>, não de vender Pro para restaurador.</p>
+
+      <h4>Dimensionamento (ordens de grandeza — a validar)</h4>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Camada</th><th>Estimativa</th><th>Como monetiza</th></tr></thead>
+          <tbody>
+            <tr><td>Profissionais de conservação-restauro (formais)</td><td class="num">~3–5 mil</td><td>Free → Pro (aquisição / engajamento)</td></tr>
+            <tr><td>Arquitetos / engenheiros com atuação em restauro</td><td class="num">~8–15 mil</td><td>Pro + assento em plano Business</td></tr>
+            <tr><td>Ateliês e empresas especializadas</td><td class="num">~800–1.500</td><td><strong>Business (âncora)</strong> · assinatura por assento</td></tr>
+            <tr><td>Instituições detentoras de patrimônio protegido</td><td class="num">dezenas de milhar<br><span class="mono">(federal + estadual + municipal)</span></td><td>Plano institucional / enterprise</td></tr>
+            <tr><td>Volume anual de editais / licitações de restauro</td><td class="num">centenas–milhares</td><td>Radar premium, alertas, dados de desfecho</td></tr>
+            <tr><td>Recurso incentivado dirigido a patrimônio / ano</td><td class="num">ordem de<br>R$ 0,5–1 bi</td><td>Patrocinador / Vitrine · curadoria + match</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>Tese de escala</h4>
+      <ol class="body-list">
+        <li><strong>Vertical, mas com muitos bolsos:</strong> mesmo restrito a restauro, a receita soma profissionais + ateliês + instituições + patrocinadores + licenciamento de dado. É estreito em usuários, não em fontes de receita.</li>
+        <li><strong>Adjacências:</strong> retrofit e requalificação de edifícios históricos (AEC), gestão de acervos e ativos culturais, seguro de arte e patrimônio, <em>due diligence</em> de imóveis tombados.</li>
+        <li><strong>Geográfica:</strong> LATAM e países lusófonos com forte patrimônio colonial e mecanismos de incentivo — México, Portugal, Colômbia, Peru.</li>
+        <li><strong>Dado como produto:</strong> a base estruturada de estado de conservação, intervenções e fontes de recurso é licenciável para órgãos públicos, seguradoras, pesquisa e fomento.</li>
+      </ol>
+
+      <div class="box">
+        <span class="box-label">O que torna o negócio defensável</span>
+        <p>Não é a intermediação de contratos. É o <strong>banco de dados proprietário</strong> que a operação gera: perfis verificados com histórico de obra, o Passaporte de cada bem, e o corpus de editais estruturados <em>com desfecho</em> (quem venceu, por quanto, com que habilitação). Esse dado cresce a cada projeto documentado e ninguém mais o tem.</p>
+      </div>
+    </section>
+
+    <section id="entrada" class="reveal">
+      <span class="sec-no">04 — Estratégia de entrada</span>
+      <h2>Nacional e para todo patrimônio — com curadoria concentrada nos polos</h2>
+      <p>Decisão do fundador: lançar <strong>nacional</strong> e sem recorte de tipo de bem. O cadastro é aberto a qualquer profissional, empresa, instituição ou bem. Isso maximiza alcance e a história de mercado, mas transfere o peso para a <strong>operação de curadoria</strong> — cobertura de fontes e densidade de oferta.</p>
+
+      <h4>Como isso é executável mesmo sendo amplo</h4>
+      <ul>
+        <li><strong>Radar:</strong> não é preciso cobrir todos os portais no dia 1. Priorizar as <strong>~30 fontes que concentram o grosso do volume</strong> (PNCP, IPHAN, os órgãos estaduais dos estados com mais bens tombados, SALIC, principais editais de banco). Ampliar por demanda observada.</li>
+        <li><strong>Oferta:</strong> a curadoria de profissionais começa pelos <strong>polos de patrimônio</strong> — MG, BA, PE, RJ, SP, RS — mesmo sem restringir o cadastro. É onde há massa crítica de bens e de especialistas.</li>
+        <li><strong>Demanda do Marketplace no dia 1:</strong> vem do próprio Radar. As oportunidades públicas <em>são</em> o inventário inicial — o profissional entra para responder a elas, não para procurar projeto privado.</li>
+        <li><strong>Concierge:</strong> o time da Patrinu posta manualmente os primeiros projetos privados e institucionais, sourced de dioceses, museus e prefeituras, até o fluxo orgânico se sustentar.</li>
+      </ul>
+
+      <h4>Sequência de construção</h4>
+      <div class="phases">
+        <div class="phase">
+          <div class="ph-head"><h4>Passo 1 — Radar manual + lista</h4><span class="ph-when">pré-produto</span></div>
+          <ul>
+            <li>Curadoria manual de editais, distribuída por e-mail / WhatsApp.</li>
+            <li>Vira lista de espera qualificada e valida os critérios de <em>match</em>.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Passo 2 — Radar + Perfil no produto</h4><span class="ph-when">v1.0</span></div>
+          <ul>
+            <li>Ingestão automatizada + estruturação com IA; feed, filtros, alertas.</li>
+            <li>Perfil e portfólio como pré-requisito do <em>match</em>.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Passo 3 — Marketplace sobre o feed</h4><span class="ph-when">v1.0</span></div>
+          <ul>
+            <li>Responder a oportunidade: checklist de habilitação, montar equipe/consórcio, anexar atestados.</li>
+            <li>Diretório público de profissionais, páginas compartilháveis, selo verificado.</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Passo 4 — Projetos privados nativos</h4><span class="ph-when">v1.1</span></div>
+          <ul>
+            <li>Instituições e empresas publicam projeto; manifestação de interesse e comparação de propostas.</li>
+            <li>Concierge no início; orgânico conforme a densidade cresce.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="box">
+        <span class="box-label">Canais de aquisição de oferta</span>
+        <p>Primeiros ~150 profissionais recrutados na mão: ABRACOR, cursos de conservação e restauro (CECOR-UFMG, UFPel, UFRJ), ateliês de referência, ex-alunos, redes de arquitetos de restauro. Importar bases públicas de profissionais e empresas cadastradas em órgãos de preservação e em processos de licitação recentes.</p>
+      </div>
+    </section>
+
+    <aside class="rail reveal">
+      <b>Por que Marketplace no v1</b>
+      Se o Radar mostra o edital mas o profissional some para montar a proposta no Word, a Patrinu vira mais um agregador. Prender o fluxo de trabalho — habilitação, consórcio, atestados — é o que transforma alerta em transação e em dado.
+    </aside>
+
+    <section id="receita" class="reveal">
+      <span class="sec-no">05 — Quem paga</span>
+      <h2>Cobrar de quem tem orçamento</h2>
+      <p>Instituições têm problema de caixa; profissionais são <em>cash-poor</em>. A receita âncora vem das empresas que disputam obra, das grandes instituições e do lado do dinheiro incentivado.</p>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Produto</th><th>Público</th><th>Modelo</th><th>Papel</th></tr></thead>
+          <tbody>
+            <tr><td>Profissional Free</td><td>Restauradores, conservadores, arquitetos</td><td>Grátis — perfil, portfólio limitado, Radar básico, responder a até N oportunidades/mês</td><td>Aquisição / oferta</td></tr>
+            <tr><td>Profissional Pro</td><td>Idem, ativos</td><td>Assinatura mensal (ticket baixo) — portfólio ilimitado, Radar completo, alertas avançados, checklist de habilitação, analytics, destaque</td><td>Engajamento / receita secundária</td></tr>
+            <tr><td><strong>Empresa / Ateliê Business</strong></td><td>Ateliês, escritórios, construtoras especializadas, consultorias de projeto cultural</td><td><strong>Assinatura por assento — faixa R$ 300–900 / assento / mês</strong> conforme porte e módulos. Radar de licitações, busca de profissionais, banco de talentos, publicação de projetos e vagas, ferramentas de proposta e habilitação, gestão de consórcio</td><td><strong>Âncora de receita</strong></td></tr>
+            <tr><td><strong>Institucional / Enterprise</strong></td><td>Museus, órgãos públicos, fundações, dioceses e redes, universidades</td><td><strong>Plano customizado</strong> — gestão de fornecedores, Passaporte dos acervos, compliance e histórico, apoio a termo de referência, relatórios</td><td>Alto ticket, ciclo longo</td></tr>
+            <tr><td><strong>Patrocinador / Vitrine</strong></td><td>Bancos, institutos, estatais, fundações empresariais (Itaú Cultural, BNDES, Petrobras, institutos…)</td><td><strong>Assinatura + curadoria</strong> — <em>deal flow</em> de projetos incentiváveis já estruturados, com dossiê, narrativa de impacto e enquadramento fiscal; filtros por tema, região e linha de incentivo</td><td>Receita do lado do dinheiro</td></tr>
+            <tr><td>Dados Patrinu</td><td>Seguradoras, fomento, pesquisa, poder público</td><td>Licenciamento de dados agregados de estado de conservação, intervenções e mercado</td><td>Receita futura, alta margem</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="box change">
+        <span class="box-label">Fora do centro do modelo</span>
+        <p><strong>Take rate sobre contratos.</strong> Obra pública sai por licitação e não é taxável pela plataforma; a privada é relacional e vaza. Existe apenas como <strong>taxa opcional</strong> sobre projetos privados originados <em>e</em> geridos de ponta a ponta na Patrinu (escopo, proposta, contrato, marcos, pagamento) — nunca como premissa de receita.</p>
+      </div>
+
+      <div class="box">
+        <span class="box-label">Sequenciamento da receita</span>
+        <p><strong>v1:</strong> Free, Pro, Business. <strong>v1–v2:</strong> Institucional (começa com contas-farol) e Patrocinador/Vitrine (piloto <em>concierge</em> — vender 2–3 contratos de patrocínio na mão para provar disposição a pagar antes de construir o produto). <strong>v3+:</strong> Dados Patrinu.</p>
+      </div>
+    </section>
+
+    <section id="produto" class="reveal">
+      <span class="sec-no">06 — Produto</span>
+      <h2>Módulos</h2>
+
+      <h3>6.1 Radar de Oportunidades <span class="pill now">v1</span></h3>
+      <p>O radar central do mercado de patrimônio e restauração.</p>
+      <h4>Categorias</h4>
+      <p>Licitações e concorrências · chamamentos e credenciamentos · editais · projetos privados e públicos · vagas · bolsas, residências e programas · parcerias e patrocínios.</p>
+      <h4>Radar personalizado</h4>
+      <p>O usuário define especialidades, regiões, faixas de valor e tipos de oportunidade. A Patrinu gera feed personalizado e alertas — <em>"Nova licitação de restauração de talha compatível com seu perfil, em Minas Gerais, até R$ 180 mil, habilitação exige acervo técnico em bens móveis."</em></p>
+      <h4>Funcionalidades MVP</h4>
+      <ul>
+        <li>Ingestão automatizada das ~30 fontes prioritárias + estruturação com IA (objeto, valor, prazo, exigências de habilitação, técnica).</li>
+        <li>Filtros por localização, categoria, valor, prazo; salvar oportunidades; histórico.</li>
+        <li>Alertas por e-mail, WhatsApp e in-app; <em>match</em> entre perfil e oportunidade.</li>
+        <li>Página detalhada com documentos e requisitos; link para a fonte oficial; botão "responder" que abre o fluxo do Marketplace.</li>
+      </ul>
+      <h4>Evolução</h4>
+      <ul>
+        <li>Score de aderência e probabilidade de enquadramento na habilitação.</li>
+        <li>Resumo automático do edital e checklist de documentos exigidos.</li>
+        <li>Base histórica de editais com desfecho (quem venceu, por quanto).</li>
+      </ul>
+
+      <h3>6.2 Marketplace <span class="pill now">v1</span></h3>
+      <p>Onde a atenção do Radar vira trabalho e reputação. Duas camadas, entregues em ordem.</p>
+      <h4>Camada A — Responder a oportunidades públicas <span class="pill now">v1.0</span></h4>
+      <ul>
+        <li><strong>Checklist de habilitação</strong> gerado do edital: documentos exigidos, prazos, o que o profissional já tem no perfil e o que falta.</li>
+        <li><strong>Formação de equipe / consórcio:</strong> encontrar parceiros complementares (técnica, região, atestado, porte) para disputar em conjunto.</li>
+        <li><strong>Cofre de documentos:</strong> ART/RRT, atestados de capacidade técnica, acervo técnico, certidões — reutilizáveis entre candidaturas.</li>
+        <li><strong>Manifestação de interesse</strong> registrada na plataforma; acompanhamento do resultado (alimenta a base de desfecho).</li>
+      </ul>
+      <h4>Camada B — Projetos privados nativos <span class="pill next">v1.1</span></h4>
+      <ul>
+        <li>Publicação de projeto: título, descrição, categoria, localização, escopo, fotos, documentos, prazo, orçamento estimado ou faixa, requisitos técnicos.</li>
+        <li>Visibilidade pública ou convite privado; recebimento e comparação de propostas.</li>
+        <li>Busca e contratação: por especialidade, técnica, localização, experiência, disponibilidade; favoritos e listas; histórico de contratações e avaliações.</li>
+        <li>Vagas especializadas; candidaturas com perfil e portfólio; banco de talentos.</li>
+      </ul>
+      <h4>Apoio à contratação (camada de fricção) <span class="pill next">v2</span></h4>
+      <ul>
+        <li>Assistente para redigir termo de referência / escopo a partir de fotos e descrição.</li>
+        <li>Pré-diagnóstico por foto (triagem de patologias) que ajuda a instituição a formular o pedido.</li>
+        <li>Referências de custo por tipo de intervenção, a partir do histórico da plataforma.</li>
+      </ul>
+
+      <h3>6.3 Perfil &amp; Portfólio profissional <span class="pill now">v1</span></h3>
+      <p>O ambiente de reputação especializado do setor — e a matéria-prima do <em>match</em>.</p>
+      <h4>MVP</h4>
+      <ul>
+        <li>Perfil com foto, bio, localização, áreas de atuação, especialidades e técnicas.</li>
+        <li>Formação, certificações e experiência; registros profissionais (CAU/CREA), ART/RRT, filiações.</li>
+        <li>Portfólio com imagens de <strong>antes, durante e depois</strong>; ficha por projeto (bem, técnica, materiais, ano, papel).</li>
+        <li>Página individual compartilhável; busca e filtros de profissionais.</li>
+        <li>Candidatura a projetos e vagas; selo de perfil verificado e indicadores de reputação.</li>
+      </ul>
+      <h4>Evolução</h4>
+      <ul>
+        <li><strong>Patrinu Score</strong> — experiência, projetos documentados, avaliações, dados verificados, desfecho de licitações.</li>
+        <li>Analytics de visualizações, contatos e desempenho do portfólio.</li>
+        <li>Destaque regional e por especialidade; certificações verificadas; página premium; comunidade.</li>
+      </ul>
+
+      <h3>6.4 Passaporte do Patrimônio <span class="pill next">v1–v2</span></h3>
+      <p><em>Puxado da Fase 4 para o centro.</em> Registro canônico e longitudinal de cada bem: intervenções, técnicas e materiais usados, profissionais responsáveis, laudos, evolução de estado ao longo do tempo. O "histórico completo do ativo".</p>
+      <h4>MVP mínimo</h4>
+      <ul>
+        <li>Uma página por bem, criada a partir dos projetos documentados na plataforma.</li>
+        <li>Linha do tempo de intervenções; galeria antes/durante/depois agregada.</li>
+        <li>Vínculo com os profissionais e as empresas que atuaram.</li>
+      </ul>
+      <h4>Por que agora</h4>
+      <p>É o dado mais defensável do negócio e cresce sem custo marginal a cada projeto registrado. Interessa a órgãos de preservação, seguradoras, instituições e pesquisa — e é licenciável.</p>
+
+      <h3>6.5 Financiamento &amp; match de recursos <span class="pill later">v3</span></h3>
+      <h4>Cadastro de projeto para captação</h4>
+      <ul>
+        <li>Descrição do patrimônio; objetivo da intervenção; orçamento e meta.</li>
+        <li>Localização; fotos e documentação; impacto cultural e social.</li>
+        <li>Status da captação; contrapartidas e benefícios ao patrocinador.</li>
+      </ul>
+      <h4>Match de recursos</h4>
+      <p>A plataforma analisa o projeto e apresenta fontes com maior aderência — leis de incentivo (federal e estaduais), editais de bancos e estatais, fundos internacionais — com estimativa de enquadramento. No MVP funciona por regras; evolui para IA. É o insumo que abastece o produto Patrocinador/Vitrine.</p>
+      <h4>Vitrine de projetos</h4>
+      <ul>
+        <li>Projetos abertos para apoio; meta e progresso; categorias e localização.</li>
+        <li>Botão de interesse / contato; página pública compartilhável; dossiê gerado.</li>
+      </ul>
+    </section>
+
+    <section id="ia" class="reveal">
+      <span class="sec-no">07 — Camada de IA</span>
+      <h2>Inteligência, não substituição do especialista</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Uso</th><th>O que faz</th><th>Fase</th></tr></thead>
+          <tbody>
+            <tr><td>Extração de editais</td><td>Ingere PDF de licitação / termo de referência e estrutura objeto, valor, prazo, exigências de habilitação e técnica.</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Classificação de relevância</td><td>Decide se uma oportunidade dispersa é de patrimônio e a que especialidade pertence.</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Match perfil ↔ oportunidade</td><td>Casa especialidade, técnica, região, porte e histórico; aprende com o comportamento.</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Checklist de habilitação</td><td>Do edital, gera a lista de documentos exigidos e cruza com o cofre de documentos do profissional — o que falta.</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Resumo do edital</td><td>Resumo em linguagem clara + pontos de atenção.</td><td><span class="pill next">v1–v2</span></td></tr>
+            <tr><td>Sugestão de consórcio</td><td>Aponta profissionais/empresas complementares para disputar em conjunto uma oportunidade.</td><td><span class="pill next">v2</span></td></tr>
+            <tr><td>Pré-diagnóstico por foto</td><td>Triagem de patologias (fissuras, colonização biológica, eflorescência salina, perda de policromia, destacamento). Não substitui laudo.</td><td><span class="pill next">v2</span></td></tr>
+            <tr><td>Rascunho de escopo</td><td>Minuta de termo de referência a partir de foto + descrição da instituição.</td><td><span class="pill next">v2</span></td></tr>
+            <tr><td>Match de financiamento</td><td>Dado um projeto, quais leis, editais e patrocinadores têm aderência, com estimativa de enquadramento fiscal.</td><td><span class="pill later">v3</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="navegacao" class="reveal">
+      <span class="sec-no">08 — Arquitetura de navegação</span>
+      <h2>Áreas</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Área</th><th>Principais páginas</th><th>Fase</th></tr></thead>
+          <tbody>
+            <tr><td>Início</td><td>Feed personalizado, busca, destaques, oportunidades e projetos</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Oportunidades</td><td>Radar, licitações, editais, chamamentos, vagas; salvos e alertas</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Responder</td><td>Fluxo de candidatura: checklist de habilitação, consórcio, cofre de documentos, acompanhamento</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Profissionais</td><td>Diretório, filtros, perfil e portfólio</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Projetos</td><td>Projetos privados e públicos; publicação e propostas</td><td><span class="pill next">v1.1</span></td></tr>
+            <tr><td>Patrimônio</td><td>Passaporte dos bens — linha do tempo, intervenções, responsáveis</td><td><span class="pill next">v1–v2</span></td></tr>
+            <tr><td>Minha conta</td><td>Perfil, candidaturas, favoritos, alertas, assinatura, documentos</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Empresas</td><td>Dashboard, assentos, projetos, vagas, profissionais, propostas, consórcios</td><td><span class="pill now">v1</span></td></tr>
+            <tr><td>Instituições</td><td>Fornecedores, acervos, Passaporte, termo de referência, relatórios</td><td><span class="pill next">v2</span></td></tr>
+            <tr><td>Financiamento</td><td>Fontes, projetos, patrocinadores e captação; Vitrine</td><td><span class="pill later">v3</span></td></tr>
+            <tr><td>Comunidade</td><td>Conteúdo, discussões e networking</td><td><span class="pill later">v3</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="mvp" class="reveal">
+      <span class="sec-no">09 — MVP</span>
+      <h2>Radar + Marketplace-camada-A, no mesmo lançamento</h2>
+      <p>O primeiro lançamento valida duas perguntas: <strong>o Radar retém sozinho?</strong> e <strong>o profissional usa a Patrinu para <em>responder</em> à oportunidade, e não só para descobri-la?</strong></p>
+
+      <div class="ba">
+        <div class="after">
+          <span class="ba-tag">Dentro do MVP</span>
+          <p>
+            Cadastro e perfil profissional · portfólio (antes/durante/depois) · diretório e busca · página pública · Radar com ingestão automatizada das ~30 fontes prioritárias · <em>match</em> perfil ↔ oportunidade · filtros, salvar, histórico · alertas e-mail/WhatsApp/in-app · <strong>fluxo de resposta: checklist de habilitação, cofre de documentos, formação de consórcio, manifestação de interesse</strong> · selo verificado · Passaporte mínimo (página por bem) · dashboard e assentos de Empresa Business · assinatura Pro · <strong>publicação de projetos privados (concierge + orgânico leve)</strong>.
+          </p>
+        </div>
+        <div class="before">
+          <span class="ba-tag">Fora do MVP</span>
+          <p>
+            Apoio à contratação com IA (termo de referência, pré-diagnóstico) · banco de talentos avançado · módulo Institucional completo · Patrocinador/Vitrine (só piloto concierge) · módulo de financiamento e captação · comunidade · pagamentos · take rate · Dados Patrinu · expansão para adjacências.
+          </p>
+        </div>
+      </div>
+
+      <div class="box">
+        <span class="box-label">Consequência da decisão "nacional e geral"</span>
+        <p>Sem recorte de segmento ou região, a operação de curadoria carrega o produto. O MVP precisa vir com: as ~30 fontes prioritárias já ingeridas, ~150 profissionais semeados nos polos, e o time postando os primeiros projetos privados na mão. Sem isso, o lançamento nacional fica raso em todo lugar.</p>
+      </div>
+    </section>
+
+    <section id="roadmap" class="reveal">
+      <span class="sec-no">10 — Roadmap</span>
+      <h2>Quatro fases</h2>
+      <div class="phases">
+        <div class="phase">
+          <div class="ph-head"><h4>Fase 1 — Radar + Marketplace</h4><span class="ph-when">MVP</span></div>
+          <ul>
+            <li>Perfis + portfólios (antes/durante/depois); diretório e busca</li>
+            <li>Radar + ingestão automatizada + <em>match</em> + alertas</li>
+            <li>Marketplace camada A: checklist de habilitação, cofre de documentos, consórcio</li>
+            <li>Projetos privados nativos (concierge → orgânico)</li>
+            <li>Passaporte mínimo dos bens</li>
+            <li>Empresa Business (assentos) · assinatura Pro · avaliações e reputação</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Fase 2 — Instituições &amp; fricção</h4><span class="ph-when">pós-tração</span></div>
+          <ul>
+            <li>Módulo Institucional: fornecedores, acervos, compliance, relatórios</li>
+            <li>Apoio à contratação: rascunho de termo de referência, pré-diagnóstico por foto, referências de custo</li>
+            <li>Patrinu Recursos / Vitrine — deal flow para patrocinadores (sai do piloto concierge)</li>
+            <li>Passaporte do Patrimônio completo</li>
+            <li>Sugestão de consórcio com IA; base histórica de desfecho de editais</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Fase 3 — Financiamento</h4><span class="ph-when">—</span></div>
+          <ul>
+            <li>Cadastro de projetos para captação</li>
+            <li>Base de fontes de recurso; match projeto ↔ financiamento</li>
+            <li>Vitrine de projetos; dossiê e enquadramento fiscal automáticos</li>
+            <li>Contrapartidas, acompanhamento de captação</li>
+          </ul>
+        </div>
+        <div class="phase">
+          <div class="ph-head"><h4>Fase 4 — Inteligência &amp; expansão</h4><span class="ph-when">—</span></div>
+          <ul>
+            <li>IA de matching avançada; recomendações personalizadas</li>
+            <li>Patrinu Score avançado; dados de mercado</li>
+            <li>Licenciamento de dados (Dados Patrinu)</li>
+            <li>Adjacências (AEC, seguros) e expansão LATAM</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="metricas" class="reveal">
+      <span class="sec-no">11 — Métricas de sucesso</span>
+      <h2>KPIs por fase</h2>
+
+      <h4>Fase 1 — as métricas que decidem tudo</h4>
+      <div class="kpis">
+        <div class="kpi"><span class="k-label">Retenção Radar</span><span class="k-val">W4 <small>≥ meta</small></span></div>
+        <div class="kpi"><span class="k-label">Alerta → resposta</span><span class="k-val">%</span></div>
+        <div class="kpi"><span class="k-label">Perfis completos</span><span class="k-val">% <small>da base</small></span></div>
+        <div class="kpi"><span class="k-label">Business — assentos</span><span class="k-val">MRR</span></div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Dimensão</th><th>KPIs</th></tr></thead>
+          <tbody>
+            <tr><td>Oferta</td><td>Profissionais cadastrados, perfis completos, projetos no portfólio, cobertura por polo</td></tr>
+            <tr><td>Radar</td><td>Oportunidades ingeridas/dia, cobertura de fontes, precisão do <em>match</em>, alertas enviados, CTR, retenção semanal</td></tr>
+            <tr><td>Marketplace</td><td><strong>Alerta → resposta iniciada → manifestação enviada</strong>, consórcios formados, candidaturas concluídas na plataforma, win-rate autorreportado</td></tr>
+            <tr><td>Demanda privada</td><td>Projetos publicados (concierge vs. orgânico), propostas por projeto, taxa de conexão, contratos originados</td></tr>
+            <tr><td>Patrimônio</td><td>Bens com Passaporte, intervenções registradas, cobertura por região</td></tr>
+            <tr><td>Instituições / Patrocínio</td><td>Contas institucionais, projetos na Vitrine, valor potencial, conexões com financiadores <span class="mono">(F2–F3)</span></td></tr>
+            <tr><td>Receita</td><td>MRR, ARPU, mix Business / Institucional / Pro, retenção líquida, conversão Free→Pro</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="riscos" class="reveal">
+      <span class="sec-no">12 — Riscos e mitigações</span>
+      <h2>O que pode matar o produto</h2>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Risco</th><th>Por quê</th><th>Mitigação</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Cold-start do Marketplace no v1</strong></td><td>Lançar as duas camadas cedo aumenta o risco de os projetos privados ficarem vazios.</td><td>Camada A não precisa de projeto nativo — usa as oportunidades públicas do Radar como inventário. Camada B entra depois, com concierge. O Radar garante presença do lado da oferta.</td></tr>
+            <tr><td>Lançamento nacional fica raso</td><td>Sem recorte, a curadoria se dilui por todo o país e nenhum lugar tem densidade.</td><td>Cadastro nacional, curadoria concentrada: ~30 fontes que cobrem o grosso do volume, oferta semeada nos polos (MG, BA, PE, RJ, SP, RS).</td></tr>
+            <tr><td>Desintermediação</td><td>Mercado pequeno e relacional; partes se conhecem e fecham fora.</td><td>Não depender de take rate. Valor recorrente no Radar, no cofre de documentos e na reputação — que só existem <em>dentro</em> da plataforma.</td></tr>
+            <tr><td>TAM estreito na base</td><td>Poucos milhares de profissionais formais.</td><td>Receita âncora em Business/Institucional/Patrocinador; muitos bolsos no mesmo vertical; adjacências e LATAM depois; dado licenciável.</td></tr>
+            <tr><td>Ciclo de venda institucional longo</td><td>Órgãos públicos e grandes instituições compram devagar.</td><td>Entrar por baixo (profissionais e ateliês), subir para institucional na Fase 2, começando por contas-farol.</td></tr>
+            <tr><td>Cobertura e qualidade do <em>match</em></td><td>Editais em centenas de portais heterogêneos; match ruim destrói a confiança no alerta.</td><td>Priorizar as fontes de maior volume; humano no circuito na fase de curadoria manual para calibrar critérios antes de automatizar.</td></tr>
+            <tr><td>Sobrecarga de escopo no MVP</td><td>Radar + Marketplace + Passaporte + Business ao mesmo tempo é muito para um time pequeno.</td><td>Marketplace no MVP é só a camada A. Passaporte é uma página gerada, não um módulo. Business v1 é dashboard + assentos, sem apoio à contratação com IA.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="principios" class="reveal">
+      <span class="sec-no">13 — Princípios de produto</span>
+      <h2>Como decidir</h2>
+      <ul>
+        <li>Especialização acima de escala genérica.</li>
+        <li>Portfólio e evidência acima de autodeclaração.</li>
+        <li>Reputação como ativo central.</li>
+        <li>O Radar tem que "só funcionar" — descoberta sem esforço.</li>
+        <li>Prender o fluxo de trabalho, não só a descoberta: o alerta tem que levar à resposta dentro da plataforma.</li>
+        <li>Cada tela deixa dado estruturado — perfil, edital, intervenção, desfecho.</li>
+        <li>IA como camada de inteligência, não como substituta do especialista.</li>
+        <li>Cobrar de quem tem orçamento; o lado <em>cash-poor</em> usa de graça.</li>
+        <li>Cadastro amplo, curadoria concentrada — alcance nacional não significa esforço uniforme.</li>
+      </ul>
+    </section>
+
+    <section id="abertas" class="reveal">
+      <span class="sec-no">14 — Decisões em aberto</span>
+      <h2>O que precisa ser definido antes de construir</h2>
+      <ol class="body-list">
+        <li><strong>Fontes de verdade do Radar:</strong> quais são as ~30 fontes prioritárias? PNCP resolve quanto do volume público? Quais órgãos estaduais têm API e quais exigem scraping?</li>
+        <li><strong>Verificação de profissionais:</strong> o que conta como "verificado" — diploma, registro CAU/CREA, ART/RRT, filiação a associação, projeto documentado com foto? Há verificação em níveis?</li>
+        <li><strong>Identificador do bem no Passaporte:</strong> usar cadastro do IPHAN (SICG) / órgãos estaduais como chave, ou criar identificador próprio com <em>mapeamento</em> para os cadastros oficiais?</li>
+        <li><strong>Preço:</strong> valor do Pro; posição exata do Business dentro da faixa R$ 300–900/assento e o que separa os níveis; base de cobrança do Institucional (por acervo? por usuário? por bem?).</li>
+        <li><strong>Marketplace camada B:</strong> quanto de concierge o time aguenta operar, e qual o gatilho para ligar a publicação orgânica aberta?</li>
+        <li><strong>Patrocinador/Vitrine:</strong> começar o piloto concierge com qual perfil de patrocinador — banco, instituto empresarial ou estatal? Um nome-âncora muda o roadmap.</li>
+        <li><strong>Modelo de captação (Fase 3):</strong> a Patrinu apenas conecta, ou também opera a gestão do incentivo (proponente, prestação de contas)? Muda muito o esforço regulatório.</li>
+        <li><strong>Prioridade de expansão:</strong> adjacência (AEC / retrofit) antes ou depois de LATAM?</li>
+      </ol>
+    </section>
+
+    <div class="foot">
+      A Patrinu — o ecossistema digital do patrimônio.<br>
+      PRD v3.0 · Radar + Marketplace · Agosto de 2026 · documento de trabalho, sujeito às decisões da §14.
+    </div>
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+    var map = {};
+    links.forEach(function (a) {
+      var id = a.getAttribute('href').slice(1);
+      var sec = document.getElementById(id);
+      if (sec) map[id] = a;
+    });
+
+    var sections = Object.keys(map).map(function (id) { return document.getElementById(id); });
+
+    if ('IntersectionObserver' in window) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            links.forEach(function (l) { l.classList.remove('active'); });
+            var a = map[e.target.id];
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-10% 0px -80% 0px', threshold: 0 });
+      sections.forEach(function (s) { spy.observe(s); });
+
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reduce) {
+        var rev = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); rev.unobserve(e.target); }
+          });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+        document.querySelectorAll('.reveal').forEach(function (el) { rev.observe(el); });
+      } else {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+      }
+    } else {
+      document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+    }
+  })();
+</script>
+
+</body></html>
