@@ -100,7 +100,11 @@ export function OnboardingFlow({
         {last ? (
           <button
             type="button"
-            onClick={() => router.push(finishHref)}
+            onClick={() => {
+              // demo: cadastro leve — o visitante vira "cadastrado"
+              document.cookie = "patrinu_plan=cadastrado; path=/; max-age=31536000";
+              router.push(finishHref);
+            }}
             className="inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 text-sm font-bold text-white hover:bg-green-hover"
           >
             <Check size={16} />
@@ -120,7 +124,7 @@ export function OnboardingFlow({
 
       <p className="mt-6 text-xs leading-relaxed text-muted">
         Protótipo — os campos não são salvos ainda. A gravação real entra com a
-        autenticação própria (ver PRD v5 §09).
+        autenticação própria da conta.
       </p>
     </div>
   );

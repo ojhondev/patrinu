@@ -28,7 +28,7 @@ export default async function FinanciamentoPage() {
         title={<>Conecte o projeto ao <span className="accent">recurso</span></>}
       >
         Match entre o seu projeto e as leis de incentivo, editais de banco e fundos com
-        maior aderência. No v1 o match é por regras; evolui para IA — ver PRD §07.6.
+        maior aderência.
       </PageHero>
 
       <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11">

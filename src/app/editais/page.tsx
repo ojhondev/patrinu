@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { RadarFilters } from "@/components/radar-filters";
 import { OpportunityCard } from "@/components/opportunity-card";
 import { CategoryRail } from "@/components/category-rail";
 import { HeaderSearch } from "@/components/header-search";
+import { LockedPanel } from "@/components/locked";
 import { listOpportunities } from "@/lib/opportunities";
+import { has } from "@/lib/membership";
 import type { OpportunityFilters, OpportunitySort } from "@/lib/types";
 import type { KindKey, OrganScopeKey, SpecialtyKey } from "@/lib/taxonomy";
 
@@ -39,8 +42,27 @@ export default async function RadarPage({
 }) {
   const sp = await searchParams;
   const filters = toFilters(sp);
-  const opportunities = await listOpportunities(filters);
+  const [opportunities, isPro] = await Promise.all([
+    listOpportunities(filters),
+    has("pro"),
+  ]);
   const q = filters.q;
+
+  const grid =
+    opportunities.length === 0 ? (
+      <div className="rounded-[var(--radius-card)] border border-dashed border-border-strong px-6 py-16 text-center">
+        <p className="font-semibold text-ink">Nenhuma oportunidade com esses filtros</p>
+        <p className="mt-1 text-sm text-ink-soft">
+          Tente ampliar a região ou a faixa de valor.
+        </p>
+      </div>
+    ) : (
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {opportunities.slice(0, isPro ? undefined : 8).map((op) => (
+          <OpportunityCard key={op.id} op={op} />
+        ))}
+      </div>
+    );
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
@@ -57,12 +79,12 @@ export default async function RadarPage({
         <p className="mt-1 text-ink-soft">
           Licitações, editais e chamamentos de patrimônio, estruturados por IA. Dados de
           demonstração —{" "}
-          <a
-            href="/docs/radar-fontes.html"
+          <Link
+            href="/fontes"
             className="font-semibold text-green-ink underline underline-offset-2"
           >
             ver as 30 fontes
-          </a>
+          </Link>
           .
         </p>
       </header>
@@ -83,19 +105,16 @@ export default async function RadarPage({
         </Suspense>
       </div>
 
-      {opportunities.length === 0 ? (
-        <div className="rounded-[var(--radius-card)] border border-dashed border-border-strong px-6 py-16 text-center">
-          <p className="font-semibold text-ink">Nenhuma oportunidade com esses filtros</p>
-          <p className="mt-1 text-sm text-ink-soft">
-            Tente ampliar a região ou a faixa de valor.
-          </p>
-        </div>
+      {isPro ? (
+        grid
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {opportunities.map((op) => (
-            <OpportunityCard key={op.id} op={op} />
-          ))}
-        </div>
+        <LockedPanel
+          title="O Radar de Editais é do Patrinu Pro"
+          body="Feed completo, alertas por perfil, checklist de habilitação e histórico de desfecho. Assinantes Pro veem tudo."
+          cta="Assinar o Patrinu Pro"
+        >
+          {grid}
+        </LockedPanel>
       )}
     </div>
   );

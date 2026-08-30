@@ -45,7 +45,7 @@ export const UFS = [
 
 export type UF = (typeof UFS)[number];
 
-/** Polos de patrimônio priorizados para a curadoria de oferta — ver PRD §04. */
+/** Polos de patrimônio priorizados para a curadoria de oferta. */
 export const HERITAGE_HUBS: UF[] = ["MG", "BA", "PE", "RJ", "SP", "RS"];
 
 export function specialtyLabel(key: string): string {

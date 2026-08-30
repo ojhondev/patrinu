@@ -109,7 +109,7 @@ const STEPS: Record<ProTrack, OnboardingStep[]> = {
       fields: [
         { label: "Um projeto de destaque", type: "text", placeholder: "Título da obra" },
         { label: "Regiões onde atende", type: "chips", options: ["MG", "SP", "RJ", "BA", "PE", "RS", "Todo o Brasil"] },
-        { label: "Disponibilidade", type: "select", options: ["Aberto a novos projetos", "Com agenda apertada", "Só consórcio"] },
+        { label: "Disponibilidade", type: "select", options: ["Aberto a novos projetos", "Com agenda apertada", "Só como parte de equipe"] },
       ],
     },
   ],

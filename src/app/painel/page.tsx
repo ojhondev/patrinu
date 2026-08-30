@@ -18,6 +18,7 @@ import {
 import { formatDate, daysUntil } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { SpecialtyIcon } from "@/components/specialty-visual";
+import { PublishProjectButton } from "@/components/publish-project-button";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -93,9 +94,13 @@ export default async function PainelPage({
         <div className="mb-6 flex items-start gap-3 rounded-[var(--radius-card)] border border-green-ink/30 bg-green-weak p-4">
           <Sparkles size={18} className="mt-0.5 shrink-0 text-green-ink" />
           <p className="text-sm text-ink-soft">
-            <strong className="text-ink">Cadastro concluído.</strong> Estes são os primeiros
-            resultados para o seu perfil — os dados abaixo são de demonstração até a
-            autenticação entrar.
+            <strong className="text-ink">Cadastro concluído.</strong>{" "}
+            {perfil === "contratante"
+              ? "Se você optou por publicar o projeto, ele já está em análise pelo time da Patrinu."
+              : perfil === "financiamento"
+                ? "Geramos um primeiro rascunho de dossiê e as fontes com aderência ao seu projeto."
+                : "Estas são as primeiras oportunidades que casam com o seu perfil."}{" "}
+            Dados de demonstração até a autenticação entrar.
           </p>
         </div>
       )}
@@ -105,7 +110,7 @@ export default async function PainelPage({
       {perfil === "financiamento" && <Financiamento />}
 
       <p className="mt-10 text-xs text-muted">
-        Protótipo — painel com dados de demonstração. Ver PRD v5 §10. Troque a trilha nos
+        Protótipo — painel com dados de demonstração. Troque a trilha nos
         botões acima.
       </p>
     </div>
@@ -114,70 +119,106 @@ export default async function PainelPage({
 
 /* ---------------- contratante ---------------- */
 
+function ProspectRow({
+  p,
+}: {
+  p: Awaited<ReturnType<typeof prospectsForContratante>>[number];
+}) {
+  return (
+    <div className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center">
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink">
+        <SpecialtyIcon
+          specialty={p.professional?.specialties[0] ?? "arquitetura"}
+          size={20}
+        />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/profissionais/${p.professionalSlug}`}
+            className="font-semibold text-ink hover:underline"
+          >
+            {p.professional?.displayName ?? p.professionalSlug}
+          </Link>
+          {p.professional?.verified && <BadgeCheck size={15} className="text-green" />}
+          <ProspectStatus status={p.status} />
+        </div>
+        <p className="mt-0.5 text-sm text-ink-soft">
+          <Link href={`/projetos/${p.projectSlug}`} className="hover:underline">
+            {p.projectTitle}
+          </Link>{" "}
+          — {p.reason}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-3">
+        <span className="text-sm font-bold text-green-ink tabular-nums">
+          {Math.round(p.fit * 100)}%
+        </span>
+        <button
+          type="button"
+          className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+        >
+          {p.status === "candidatou" || p.status === "em_conversa"
+            ? "Ver proposta"
+            : "Convidar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 async function Contratante() {
   const prospects = await prospectsForContratante();
-  const candidatos = prospects.filter((p) => p.status === "candidatou").length;
+  const candidatos = prospects.filter(
+    (p) => p.status === "candidatou" || p.status === "em_conversa",
+  );
+  const matches = prospects.filter(
+    (p) => p.status === "match" || p.status === "convidado",
+  );
+
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Tile label="Prospectos" value={String(prospects.length)} icon={Users} />
-        <Tile label="Candidaturas" value={String(candidatos)} icon={BadgeCheck} />
+        <Tile label="Candidaturas" value={String(candidatos.length)} icon={BadgeCheck} />
+        <Tile label="Matches (não candidatados)" value={String(matches.length)} icon={Sparkles} />
         <Tile label="Projetos publicados" value="2" icon={TrendingUp} />
       </div>
 
+      <div className="mt-6">
+        <PublishProjectButton />
+      </div>
+
       <section className="mt-8">
-        <h2 className="text-lg font-bold">Prospectos para os seus projetos</h2>
+        <h2 className="text-lg font-bold">Quem se candidatou</h2>
         <p className="mt-1 text-sm text-ink-soft">
-          Profissionais que deram match ou se candidataram, ordenados por aderência.
+          Profissionais e ateliês que enviaram proposta ou manifestaram interesse nos seus
+          projetos.
         </p>
         <div className="mt-4 space-y-3">
-          {prospects.map((p) => (
-            <div
-              key={`${p.professionalSlug}-${p.projectSlug}`}
-              className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center"
-            >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink">
-                <SpecialtyIcon
-                  specialty={p.professional?.specialties[0] ?? "arquitetura"}
-                  size={20}
-                />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`/profissionais/${p.professionalSlug}`}
-                    className="font-semibold text-ink hover:underline"
-                  >
-                    {p.professional?.displayName ?? p.professionalSlug}
-                  </Link>
-                  {p.professional?.verified && (
-                    <BadgeCheck size={15} className="text-green" />
-                  )}
-                  <ProspectStatus status={p.status} />
-                </div>
-                <p className="mt-0.5 text-sm text-ink-soft">
-                  <Link
-                    href={`/projetos/${p.projectSlug}`}
-                    className="hover:underline"
-                  >
-                    {p.projectTitle}
-                  </Link>{" "}
-                  — {p.reason}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-3">
-                <span className="text-sm font-bold text-green-ink tabular-nums">
-                  {Math.round(p.fit * 100)}%
-                </span>
-                <button
-                  type="button"
-                  className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
-                >
-                  {p.status === "candidatou" ? "Ver proposta" : "Convidar"}
-                </button>
-              </div>
-            </div>
-          ))}
+          {candidatos.length > 0 ? (
+            candidatos.map((p) => (
+              <ProspectRow key={`${p.professionalSlug}-${p.projectSlug}`} p={p} />
+            ))
+          ) : (
+            <p className="text-sm text-muted">Nenhuma candidatura ainda.</p>
+          )}
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="text-lg font-bold">Matches sugeridos</h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Deram match com o seu projeto pelo perfil, mas ainda não se candidataram — você
+          pode convidar.
+        </p>
+        <div className="mt-4 space-y-3">
+          {matches.length > 0 ? (
+            matches.map((p) => (
+              <ProspectRow key={`${p.professionalSlug}-${p.projectSlug}`} p={p} />
+            ))
+          ) : (
+            <p className="text-sm text-muted">Nenhum match no momento.</p>
+          )}
         </div>
       </section>
     </>

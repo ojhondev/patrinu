@@ -1,14 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  ArrowLeft,
-  ChevronRight,
-  MapPin,
-  CalendarClock,
-  ExternalLink,
-  Users,
-} from "lucide-react";
+import { ArrowLeft, ChevronRight, MapPin, CalendarClock, Users } from "lucide-react";
 
 import { getProject, listProjects } from "@/lib/projects";
 import {
@@ -20,6 +13,9 @@ import {
 import { Badge } from "@/components/badge";
 import { SpecialtyThumb } from "@/components/specialty-visual";
 import { ProjectCard } from "@/components/project-card";
+import { Locked } from "@/components/locked";
+import { UpgradeButton } from "@/components/upgrade-button";
+import { getPlan } from "@/lib/membership";
 
 export async function generateMetadata({
   params,
@@ -42,6 +38,9 @@ export default async function ProjectPage({
 
   const open = p.status === "aberto" || p.status === "em_captacao";
   const d = daysUntil(p.deadlineAt);
+  const plan = await getPlan();
+  const canSeeValue = plan !== "visitante"; // valores só para membros cadastrados
+  const canPropose = plan === "pro"; // enviar proposta exige Pro
   const all = await listProjects({});
   const related = all
     .filter((x) => x.slug !== p.slug && x.specialties.some((s) => p.specialties.includes(s)))
@@ -84,13 +83,7 @@ export default async function ProjectPage({
               {p.city}/{p.uf}
             </span>
             {p.year ? <span>Concluído em {p.year}</span> : null}
-            <Link
-              href={`/passaporte`}
-              className="inline-flex items-center gap-1 font-semibold text-green-ink hover:underline"
-            >
-              {p.assetName}
-              <ExternalLink size={13} />
-            </Link>
+            <span className="font-semibold text-ink">{p.assetName}</span>
           </div>
 
           <SpecialtyThumb
@@ -159,7 +152,13 @@ export default async function ProjectPage({
                       {c.name}
                     </Link>
                   ) : (
-                    <p className="font-semibold text-ink">{c.name}</p>
+                    <Locked
+                      locked={c.role.toLowerCase().includes("institui") && plan === "visitante"}
+                      cta="Assine para ver"
+                      href="/pro"
+                    >
+                      <span className="font-semibold text-ink">{c.name}</span>
+                    </Locked>
                   )}
                 </li>
               ))}
@@ -170,7 +169,9 @@ export default async function ProjectPage({
                 {p.budgetRange && (
                   <p className="mt-5 border-t border-border pt-4 text-sm">
                     <span className="text-ink-soft">Orçamento: </span>
-                    <strong className="text-ink">{p.budgetRange}</strong>
+                    <Locked locked={!canSeeValue} cta="Cadastre-se para ver" href="/pro">
+                      <strong className="text-ink">{p.budgetRange}</strong>
+                    </Locked>
                   </p>
                 )}
                 {d != null && d >= 0 && (
@@ -179,22 +180,31 @@ export default async function ProjectPage({
                     {d} dias para propor
                   </p>
                 )}
-                <button
-                  type="button"
-                  className="mt-4 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-white hover:bg-green-hover"
-                >
-                  {p.status === "em_captacao" ? "Manifestar interesse" : "Enviar proposta"}
-                </button>
+                {canPropose ? (
+                  <button
+                    type="button"
+                    className="mt-4 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-white hover:bg-green-hover"
+                  >
+                    {p.status === "em_captacao" ? "Manifestar interesse" : "Enviar proposta"}
+                  </button>
+                ) : (
+                  <div className="mt-4">
+                    <UpgradeButton
+                      label="Assine o Pro para enviar proposta"
+                      className="w-full justify-center"
+                    />
+                  </div>
+                )}
                 <button
                   type="button"
                   className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-green-ink"
                 >
                   <Users size={15} />
-                  Formar consórcio
+                  Quero participar
                 </button>
                 <p className="mt-3 text-xs text-muted">
-                  Protótipo — a plataforma conecta as partes, sem custódia de pagamento
-                  (PRD §07.1).
+                  &ldquo;Quero participar&rdquo; te coloca na lista de interessados — quem
+                  ganhar o projeto pode te chamar para a equipe. Protótipo, sem gravação.
                 </p>
               </>
             ) : (

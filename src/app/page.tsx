@@ -14,6 +14,8 @@ import { ArticleCard } from "@/components/article-card";
 import { CourseCard } from "@/components/course-card";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { FacadeMotif } from "@/components/facade-motif";
+import { LockedPanel } from "@/components/locked";
+import { has } from "@/lib/membership";
 
 function SectionHead({
   title,
@@ -46,13 +48,14 @@ function SectionHead({
 }
 
 export default async function HomePage() {
-  const [stats, projects, pros, editais, articles, courses] = await Promise.all([
+  const [stats, projects, pros, editais, articles, courses, isPro] = await Promise.all([
     radarStats(),
     featuredProjects(4),
     featuredProfessionals(4),
     featuredOpportunities(4),
     latestArticles(3),
     featuredCourses(3),
+    has("pro"),
   ]);
 
   return (
@@ -139,11 +142,28 @@ export default async function HomePage() {
         <SectionHead title="Editais abertos" href="/editais" cta="Abrir o Radar de editais">
           Licitações e chamamentos de patrimônio, com checklist de habilitação.
         </SectionHead>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {editais.map((op) => (
-            <OpportunityCard key={op.id} op={op} />
-          ))}
-        </div>
+        {isPro ? (
+          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {editais.map((op) => (
+              <OpportunityCard key={op.id} op={op} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-6">
+            <LockedPanel
+              title="O Radar de Editais é do Patrinu Pro"
+              body="Feed completo, alertas por perfil e checklist de habilitação. Assinantes Pro veem tudo."
+              cta="Conhecer o Patrinu Pro"
+              href="/pro"
+            >
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {editais.map((op) => (
+                  <OpportunityCard key={op.id} op={op} />
+                ))}
+              </div>
+            </LockedPanel>
+          </div>
+        )}
       </section>
 
       {/* ---------------- notícias + cursos ---------------- */}
@@ -180,9 +200,9 @@ export default async function HomePage() {
             </h2>
             <ul className="mt-6 space-y-3">
               {[
-                "Publique projetos e vagas, encontre especialistas e monte consórcio",
+                "Publique projetos e vagas e encontre especialistas do setor",
                 "Radar de editais de todo o país, filtrado pelo que você executa",
-                "Gestão de fornecedores, Passaporte dos acervos e relatórios (Institucional)",
+                "Gestão de fornecedores, acervos e relatórios (Institucional)",
                 "Deal flow de projetos financiáveis (Patrocinador / Vitrine)",
               ].map((item) => (
                 <li key={item} className="flex gap-2.5 text-white/85">

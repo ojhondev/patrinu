@@ -57,7 +57,7 @@ export default async function ProjetosPage({
         </h1>
         <p className="mt-1 text-ink-soft">
           Obras concluídas como referência e projetos abertos para disputar. Um mesmo
-          objeto, estados diferentes — ver PRD §03.
+          objeto, estados diferentes.
         </p>
       </header>
 

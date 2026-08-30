@@ -52,7 +52,7 @@ export default async function CursosPage({
         <h1 className="font-display text-3xl font-bold tracking-tight">Cursos</h1>
         <p className="mt-1 text-ink-soft">
           Diretório curado de cursos, oficinas e pós-graduações de conservação-restauro. No
-          v1 é só listagem com link de inscrição — ver PRD §07.4.
+          v1 é só listagem com link de inscrição
         </p>
       </header>
 

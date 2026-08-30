@@ -331,7 +331,7 @@ export const opportunityResponses = pgTable(
   (t) => [uniqueIndex("response_opp_prof_idx").on(t.opportunityId, t.professionalId)],
 );
 
-/** Formação de consórcio para disputar uma oportunidade em conjunto. */
+/** Lista de interessados por oportunidade — quem manifesta "quero participar". */
 export const consortia = pgTable("consortia", {
   id: uuid("id").primaryKey().defaultRandom(),
   opportunityId: uuid("opportunity_id")
@@ -358,38 +358,6 @@ export const consortiumMembers = pgTable(
   },
   (t) => [uniqueIndex("consortium_member_pk").on(t.consortiumId, t.professionalId)],
 );
-
-/* ------------------------------------------------------------------ */
-/* Passaporte do Patrimônio — MVP mínimo (uma página por bem)          */
-/* ------------------------------------------------------------------ */
-
-export const heritageAssets = pgTable("heritage_assets", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  slug: text("slug").notNull().unique(),
-  name: text("name").notNull(),
-  /** chave no cadastro oficial quando existir — ver PRD §14.3 */
-  iphanId: text("iphan_id"),
-  kind: text("kind"),
-  uf: text("uf"),
-  city: text("city"),
-  description: text("description"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
-
-export const interventions = pgTable("interventions", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  assetId: uuid("asset_id")
-    .notNull()
-    .references(() => heritageAssets.id, { onDelete: "cascade" }),
-  opportunityId: uuid("opportunity_id").references(() => opportunities.id),
-  title: text("title").notNull(),
-  summary: text("summary"),
-  technique: text("technique"),
-  materials: text("materials"),
-  startedAt: timestamp("started_at", { withTimezone: true }),
-  finishedAt: timestamp("finished_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
-});
 
 /* ------------------------------------------------------------------ */
 /* Tipos auxiliares (jsonb)                                            */

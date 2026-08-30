@@ -72,7 +72,7 @@ export const MOCK_ARTICLES: Article[] = [
       "Volume de licitações cresce com o PAC, mas o gargalo continua sendo a formação. O que os ateliês estão fazendo para escalar equipe.",
     body: [
       "Um levantamento informal com ateliês e escritórios aponta um cenário paradoxal: nunca houve tanto edital de restauro aberto, e nunca foi tão difícil montar equipe qualificada para responder a eles.",
-      "A formação de consórcios e a contratação de técnicos em treinamento aparecem como as saídas mais citadas. A Patrinu acompanha esse movimento no pilar Profissionais e na formação de consórcio dentro de Editais.",
+      "A formação de equipes e a contratação de técnicos em treinamento aparecem como as saídas mais citadas. A Patrinu acompanha esse movimento no pilar Profissionais.",
     ],
     category: "mercado",
     author: "Redação Patrinu",

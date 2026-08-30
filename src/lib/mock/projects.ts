@@ -1,6 +1,6 @@
 import type { Project } from "@/lib/types";
 
-/** Projetos de demonstração — vitrine (concluídos) + briefs abertos. Ver PRD v4 §07.1. */
+/** Projetos de demonstração — vitrine (concluídos) + briefs abertos. */
 export const MOCK_PROJECTS: Project[] = [
   {
     id: "pj-matriz-pilar",
@@ -10,7 +10,6 @@ export const MOCK_PROJECTS: Project[] = [
       "Conservação e restauração integral da talha dourada da nave e capela-mor, com fixação de policromia, reintegração cromática e douramento a ouro em folha. Uma das mais densas ornamentações do barroco mineiro.",
     status: "vitrine",
     assetName: "Igreja Matriz de Nossa Senhora do Pilar",
-    assetSlug: "matriz-pilar-ouro-preto",
     uf: "MG",
     city: "Ouro Preto",
     year: 2024,

@@ -5,11 +5,14 @@ import type { Project } from "@/lib/types";
 import { projectStatusLabel, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { SpecialtyThumb } from "@/components/specialty-visual";
+import { Locked } from "@/components/locked";
+import { getPlan } from "@/lib/membership";
 
 const OPEN = new Set(["aberto", "em_captacao"]);
 
-export function ProjectCard({ project: p }: { project: Project }) {
+export async function ProjectCard({ project: p }: { project: Project }) {
   const open = OPEN.has(p.status);
+  const canSeeValue = (await getPlan()) !== "visitante";
   return (
     <Link
       href={`/projetos/${p.slug}`}
@@ -46,10 +49,12 @@ export function ProjectCard({ project: p }: { project: Project }) {
             <Users size={13} />
             {p.credits[0]?.name}
           </span>
-          {open ? (
-            <span className="font-bold text-green-ink">
-              {p.budgetRange ?? "Aberto para proposta"}
-            </span>
+          {open && p.budgetRange ? (
+            <Locked locked={!canSeeValue} cta="Cadastre-se" asLabel>
+              <span className="font-bold text-green-ink">{p.budgetRange}</span>
+            </Locked>
+          ) : open ? (
+            <span className="font-bold text-green-ink">Aberto para proposta</span>
           ) : null}
         </div>
       </div>

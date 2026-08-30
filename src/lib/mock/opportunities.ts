@@ -5,7 +5,7 @@ import { SOURCES } from "./sources";
 /**
  * Dados de exemplo no formato da saída de ingestão + estruturação por IA.
  * Trocar por consulta ao banco (src/db) sem mudar a assinatura de
- * src/lib/opportunities.ts. Ver PRD §04 ("mockado primeiro").
+ * src/lib/opportunities.ts. Trocar por consulta ao banco depois.
  */
 export const MOCK_OPPORTUNITIES: Opportunity[] = [
   {

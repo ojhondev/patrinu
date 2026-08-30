@@ -6,7 +6,7 @@ import { MOCK_OPPORTUNITIES } from "./mock/opportunities";
  *
  * Hoje lê o dataset mockado (formato idêntico à saída de ingestão + IA).
  * Quando o banco estiver provisionado, trocar o corpo destas funções por
- * consultas Drizzle (src/db) — a assinatura não muda. Ver PRD §04.
+ * consultas Drizzle (src/db) — a assinatura não muda.
  */
 
 function matches(op: Opportunity, f: OpportunityFilters): boolean {

@@ -81,8 +81,10 @@
   --radius-card: 8px;
 }
 
-* {
-  border-color: var(--border);
+@layer base {
+  * {
+    border-color: var(--border);
+  }
 }
 
 html {
@@ -112,8 +114,13 @@ body {
   }
 }
 
-a {
-  color: inherit;
+/* `a { color: inherit }` precisa ficar em @layer base senão vence as
+   utilitárias do Tailwind (não-camada > camada) e quebra `text-white`
+   em <Link>. */
+@layer base {
+  a {
+    color: inherit;
+  }
 }
 
 ::selection {

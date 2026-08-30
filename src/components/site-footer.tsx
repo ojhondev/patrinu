@@ -25,30 +25,24 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
-    title: "Para quem preserva",
+    title: "Patrinu Pro",
     links: [
-      { label: "Perfil e portfólio", href: "/profissionais" },
-      { label: "Passaporte do Patrimônio", href: "/passaporte" },
-      { label: "Formar consórcio", href: "/editais" },
-      { label: "Alertas de edital", href: "/entrar" },
+      { label: "Quero contratar", href: "/pro/contratar" },
+      { label: "Quero oferecer serviços", href: "/pro/oferecer" },
+      { label: "Quero financiamento de obra", href: "/pro/financiamento" },
+      { label: "Planos e preços", href: "/empresas" },
     ],
   },
   {
-    title: "Para quem contrata",
+    title: "Recursos",
     links: [
-      { label: "Patrinu para empresas", href: "/empresas" },
-      { label: "Planos institucionais", href: "/empresas" },
-      { label: "Publicar um projeto", href: "/entrar" },
-      { label: "Vitrine de projetos", href: "/financiamento" },
-    ],
-  },
-  {
-    title: "Patrinu",
-    links: [
-      { label: "PRD do produto", href: "/docs/PRD-v5.html" },
-      { label: "Fontes do Radar", href: "/docs/radar-fontes.html" },
-      { label: "Cadastrar", href: "/cadastro" },
+      { label: "Fontes do Radar de Editais", href: "/fontes" },
+      {
+        label: "Divulgar um curso",
+        href: "mailto:contato@patrinu.com.br?subject=Divulgar%20curso%20na%20Patrinu",
+      },
       { label: "Entrar", href: "/entrar" },
+      { label: "Patrinu Pro", href: "/pro" },
     ],
   },
 ];
@@ -57,7 +51,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-surface">
       <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="text-sm font-bold text-ink">{col.title}</h3>
@@ -82,9 +76,12 @@ export function SiteFooter() {
             <Logo className="h-6" />
             <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
           </div>
-          <p className="text-sm text-muted">
-            O Radar do Patrimônio e Restauro do Brasil
-          </p>
+          <div className="flex items-center gap-4 text-sm text-muted">
+            <span>O Radar do Patrimônio e Restauro do Brasil</span>
+            <Link href="/master/entrar" className="hover:text-green-ink">
+              Acesso Master
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

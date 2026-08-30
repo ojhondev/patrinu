@@ -28,6 +28,8 @@ import { MatchScore } from "@/components/match-score";
 import { SpecialtyThumb } from "@/components/specialty-visual";
 import { OpportunityCard } from "@/components/opportunity-card";
 import { DEMO_PROFESSIONAL, documentSatisfies } from "@/lib/mock/professional";
+import { has } from "@/lib/membership";
+import { UpgradeButton } from "@/components/upgrade-button";
 
 export async function generateMetadata({
   params,
@@ -47,6 +49,30 @@ export default async function OpportunityPage({
   const { id } = await params;
   const op = await getOpportunity(id);
   if (!op) notFound();
+
+  if (!(await has("pro"))) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center sm:px-6">
+        <Link
+          href="/editais"
+          className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink"
+        >
+          <ArrowLeft size={14} />
+          Editais
+        </Link>
+        <h1 className="mt-6 font-display text-2xl font-bold leading-snug tracking-tight text-balance">
+          {op.title}
+        </h1>
+        <p className="mt-3 text-ink-soft">
+          O detalhe do edital, o checklist de habilitação e o fluxo de resposta são do{" "}
+          <strong className="text-ink">Patrinu Pro</strong>.
+        </p>
+        <div className="mt-6 flex justify-center">
+          <UpgradeButton label="Assinar o Patrinu Pro" />
+        </div>
+      </div>
+    );
+  }
 
   const related = await relatedOpportunities(op);
   const pro = DEMO_PROFESSIONAL;
@@ -271,16 +297,17 @@ export default async function OpportunityPage({
                     className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-green-ink"
                   >
                     <Users size={15} />
-                    Formar consórcio
+                    Quero participar
                   </button>
                   <p className="mt-3 text-xs leading-relaxed text-muted">
-                    Protótipo — manifestação, cofre e consórcio serão persistidos no banco
-                    (PRD §6.2, camada A).
+                    &ldquo;Quero participar&rdquo; te coloca na lista de interessados deste
+                    edital — quem vencer pode te chamar para a equipe. Protótipo, sem
+                    gravação ainda.
                   </p>
                 </>
               ) : (
                 <p className="text-sm text-ink-soft">
-                  Oportunidade {op.status}. Mantida no Radar para a base histórica de
+                  Oportunidade {op.status}. Mantida no acervo para a base histórica de
                   desfecho.
                 </p>
               )}

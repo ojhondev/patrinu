@@ -58,7 +58,7 @@ export type Opportunity = {
 export type OpportunitySort = "prazo" | "valor" | "aderencia" | "recentes";
 
 /* ------------------------------------------------------------------ */
-/* Projetos — o objeto central (ver PRD v4 §03)                        */
+/* Projetos — o objeto central */
 /* ------------------------------------------------------------------ */
 
 export type ProjectStatus =
@@ -82,7 +82,6 @@ export type Project = {
   status: ProjectStatus;
 
   assetName: string; // bem
-  assetSlug?: string; // Passaporte
   uf: string;
   city: string;
   year?: number;
@@ -192,7 +191,7 @@ export type OpportunityFilters = {
 };
 
 /* ------------------------------------------------------------------ */
-/* Patrinu Pro — trilhas e painel (ver PRD v5 §08–§10)                 */
+/* Patrinu Pro — trilhas e painel */
 /* ------------------------------------------------------------------ */
 
 export type ProTrack = "contratar" | "oferecer" | "financiamento";

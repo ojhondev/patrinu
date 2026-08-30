@@ -16,7 +16,7 @@ const PLANS = [
       "Radar de licitações de todo o país",
       "Busca de especialistas e banco de talentos",
       "Cofre de documentos compartilhado",
-      "Gestão de consórcio",
+      "Lista de interessados por projeto",
       "Publicação de projetos e vagas",
     ],
     cta: "Falar com vendas",
@@ -29,7 +29,7 @@ const PLANS = [
     unit: "",
     features: [
       "Gestão de fornecedores e histórico",
-      "Passaporte dos acervos",
+      "Gestão de fornecedores e acervos",
       "Compliance e relatórios",
       "Apoio a termo de referência",
     ],
@@ -101,7 +101,7 @@ export default function EmpresasPage() {
           ))}
         </div>
         <p className="mt-6 text-xs text-muted">
-          Faixas de preço indicativas — ver decisões em aberto no PRD §14.
+          Faixas de preço indicativas, a confirmar.
         </p>
       </div>
     </>

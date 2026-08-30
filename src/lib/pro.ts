@@ -2,7 +2,7 @@ import type { ProTrack } from "./types";
 import { MOCK_PROSPECTS, MOCK_COMPATIBLE, MOCK_ELIGIBILITY } from "./mock/pro";
 import { getProfessional } from "./directory";
 
-/** Trilhas do Patrinu Pro — ver PRD v5 §08. */
+/** Trilhas do Patrinu Pro. */
 export const TRACKS: Record<
   ProTrack,
   {

@@ -73,8 +73,8 @@ const CONTENT: Record<ProTrack, Content> = {
         body: "Editais e projetos abertos que casam com o seu perfil chegam no painel, ordenados por aderência e prazo.",
       },
       {
-        title: "Dispute — sozinho ou em consórcio",
-        body: "Checklist de habilitação do edital cruzado com o seu cofre de documentos. Forme consórcio para projetos maiores.",
+        title: "Dispute — sozinho ou em equipe",
+        body: "Checklist de habilitação do edital cruzado com o seu cofre de documentos. Junte-se a uma equipe para projetos maiores.",
       },
     ],
     painel: {
@@ -82,7 +82,7 @@ const CONTENT: Record<ProTrack, Content> = {
       items: [
         "Oportunidades compatíveis: editais e briefs por aderência ao seu perfil",
         "Minhas candidaturas: rascunho, manifestada, enviada, resultado",
-        "Convites de contratantes e consórcios em formação",
+        "Convites de contratantes e equipes em formação",
         "Desempenho do perfil: visitas, contatos, posição no diretório",
       ],
     },
