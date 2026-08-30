@@ -83,10 +83,10 @@ export function SiteHeader() {
             Entrar
           </Link>
           <Link
-            href="/cadastro"
-            className="rounded-lg border border-green px-3 py-2 text-sm font-bold text-green-ink transition-colors hover:bg-green hover:text-white"
+            href="/pro"
+            className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
           >
-            Cadastrar
+            Patrinu Pro
           </Link>
         </nav>
 
@@ -129,10 +129,10 @@ export function SiteHeader() {
               Entrar
             </Link>
             <Link
-              href="/cadastro"
+              href="/pro"
               className="flex-1 rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
             >
-              Cadastrar
+              Patrinu Pro
             </Link>
           </div>
         </nav>

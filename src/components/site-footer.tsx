@@ -45,7 +45,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Patrinu",
     links: [
-      { label: "PRD do produto", href: "/docs/PRD-v4.html" },
+      { label: "PRD do produto", href: "/docs/PRD-v5.html" },
       { label: "Fontes do Radar", href: "/docs/radar-fontes.html" },
       { label: "Cadastrar", href: "/cadastro" },
       { label: "Entrar", href: "/entrar" },

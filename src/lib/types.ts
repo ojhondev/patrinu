@@ -190,3 +190,43 @@ export type OpportunityFilters = {
   status?: Opportunity["status"];
   sort?: OpportunitySort;
 };
+
+/* ------------------------------------------------------------------ */
+/* Patrinu Pro — trilhas e painel (ver PRD v5 §08–§10)                 */
+/* ------------------------------------------------------------------ */
+
+export type ProTrack = "contratar" | "oferecer" | "financiamento";
+
+/** Painel do contratante: profissional que deu match / se candidatou. */
+export type Prospect = {
+  professionalSlug: string;
+  projectSlug: string;
+  projectTitle: string;
+  status: "match" | "candidatou" | "convidado" | "em_conversa";
+  fit: number; // 0..1 aderência ao projeto
+  reason: string;
+};
+
+/** Painel do profissional: oportunidade que casa com o perfil. */
+export type CompatibleOpportunity = {
+  kind: "edital" | "brief";
+  id: string;
+  title: string;
+  organ: string;
+  uf: string;
+  value: string;
+  deadlineAt: string | null;
+  fit: number;
+  reason: string;
+};
+
+/** Painel do financiamento: investidor que sinaliza elegibilidade por projeto. */
+export type EligibilitySignal = {
+  investor: string;
+  investorKind: "banco" | "instituto" | "estatal" | "lei_incentivo" | "fundo";
+  projectSlug: string;
+  projectTitle: string;
+  status: "elegivel" | "em_analise" | "aderencia_parcial";
+  reason: string;
+  nextStep: string;
+};

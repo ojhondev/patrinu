@@ -1,8 +1,47 @@
-# A Patrinu — PRD v4.0
+# A Patrinu — PRD v5.0
 
 **O Radar do Patrimônio e Restauro do Brasil.**
 
-- **Versão:** 4.0 — hub vertical de 6 pilares
+- **Versão:** 5.0 — Patrinu Pro & Área do Usuário (sobre a v4)
+- **Data:** Agosto de 2026
+- **Documento completo:** `docs/PRD-v5.html` (este .md tem o corpo da v4 + o delta v5 abaixo)
+
+---
+
+## v5 — Patrinu Pro (3 trilhas) + Onboarding + Painel
+
+O hub de 6 pilares (v4, abaixo) é aberto e gratuito — camada de audiência. **Patrinu Pro**
+é a camada paga por cima, espelhando o *Fiverr Pro* ("quero contratar" / "quero oferecer"),
+mas com **três trilhas** porque o setor tem um terceiro lado, o dinheiro.
+
+| Trilha | Quem | Landing | Onboarding coleta | Painel entrega |
+|---|---|---|---|---|
+| **A — Quero contratar** | Instituições, empresas, órgãos, dioceses | `/pro/contratar` | tipo de org · o que restaurar · bem · orçamento/recurso · urgência | **prospectos** (profissionais que deram match ou se candidataram), propostas recebidas, status dos projetos |
+| **B — Quero oferecer serviços** | Restauradores, ateliês, escritórios | `/pro/oferecer` | PF/PJ · especialidades e técnicas · registros · portfólio · região · disponibilidade | **oportunidades compatíveis** (editais + briefs por aderência), candidaturas, convites, visitas ao perfil |
+| **C — Quero financiamento de obra** | Detentores do bem com projeto | `/pro/financiamento` | bem · projeto (status) · meta de captação · lei pretendida · documentação | **leque de investidores que sinalizam elegibilidade** por projeto, status de captação, dossiê gerado |
+
+**Investidor / Patrocinador** é o 4º lado — entra pelo produto Patrocinador, opera do outro
+lado da Trilha C (recebe deal flow e *sinaliza elegibilidade*). Painel do investidor = Fase 2.
+
+**Onboarding:** um fluxo por trilha, 3–5 passos, salva a cada passo, termina dentro do painel
+com algo útil na tela. Hoje é *scaffold* de UI sem persistência (auth própria vem depois).
+
+**Painel (`/painel`):** três visões, mesmo layout, muda o que fica no topo. No MVP roda com
+dados de demonstração escolhidos por `?perfil=contratante|profissional|financiamento`.
+
+**Por que o painel importa:** é o que justifica a assinatura recorrente sem comissão — o
+contratante paga para ver prospectos, o profissional para receber oportunidades antes, o
+proponente para ver quem financia. Sem contrato fechado, a assinatura segue entregando valor.
+
+**Decisões em aberto (v5):** um usuário pode estar em 2 trilhas? · onboarding completo antes
+de entrar vs. cadastro leve · sinal de elegibilidade manual vs. por critério · prospectos =
+só candidatos ou também matches · onde entra o paywall de cada trilha.
+
+---
+
+## (v4) A Patrinu — hub vertical de 6 pilares
+
+- **Versão base:** 4.0 — hub vertical de 6 pilares
 - **Data:** Agosto de 2026
 - **Base:** PRD v3 (Radar + Marketplace)
 - **Modelo:** Assinatura · sem comissão
