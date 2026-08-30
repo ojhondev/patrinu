@@ -16,18 +16,19 @@ import type { SpecialtyKey } from "@/lib/taxonomy";
 
 type Visual = { icon: LucideIcon; from: string; to: string };
 
-/** Cada especialidade ganha um par de cores + ícone. Substitui as fotos de
- *  gig do Fiverr por um tratamento gráfico consistente e leve. */
+/** Cada especialidade ganha um gradiente da família do verde + um ícone.
+ *  Substitui as fotos de gig por um tratamento gráfico leve e sempre verde —
+ *  nada de tiles escuros/pretos. */
 const VISUALS: Record<SpecialtyKey, Visual> = {
-  bens_moveis: { icon: Frame, from: "#3f6212", to: "#1a2e05" },
-  bens_integrados: { icon: Landmark, from: "#a16207", to: "#422006" },
-  arquitetura: { icon: Hammer, from: "#0e7490", to: "#083344" },
-  arqueologia: { icon: Shovel, from: "#7c2d12", to: "#2a1006" },
-  acervo: { icon: Archive, from: "#4338ca", to: "#1e1b4b" },
-  paisagismo: { icon: Trees, from: "#15803d", to: "#052e16" },
-  urbanismo: { icon: Building, from: "#334155", to: "#0f172a" },
-  imaterial: { icon: Music, from: "#9d174d", to: "#4c0519" },
-  documental: { icon: BookMarked, from: "#525252", to: "#171717" },
+  bens_moveis: { icon: Frame, from: "#4a8f6a", to: "#356b4e" },
+  bens_integrados: { icon: Landmark, from: "#5e9a6b", to: "#437a4e" },
+  arquitetura: { icon: Hammer, from: "#3f8f83", to: "#2c6b61" },
+  arqueologia: { icon: Shovel, from: "#7e8f56", to: "#5e6b3d" },
+  acervo: { icon: Archive, from: "#3d8f76", to: "#2a6b58" },
+  paisagismo: { icon: Trees, from: "#54a05f", to: "#3a7a43" },
+  urbanismo: { icon: Building, from: "#5a8f80", to: "#436b5f" },
+  imaterial: { icon: Music, from: "#4a9a8c", to: "#347368" },
+  documental: { icon: BookMarked, from: "#6f8f78", to: "#516b58" },
 };
 
 export function specialtyVisual(key: SpecialtyKey): Visual {
@@ -52,7 +53,7 @@ export function SpecialtyThumb({
       <Icon
         size={140}
         strokeWidth={1}
-        className="absolute -bottom-6 -right-4 text-white/15"
+        className="absolute -bottom-6 -right-4 text-white/25"
       />
       {label ? (
         <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-xs font-semibold text-ink">
