@@ -17,10 +17,10 @@ export default function EntrarPage() {
         Por enquanto, o Radar e o fluxo de resposta rodam com um perfil de demonstração.
       </p>
       <Link
-        href="/radar"
-        className="mt-6 rounded-lg bg-green px-5 py-3 text-sm font-bold text-green-deep hover:bg-green-hover"
+        href="/projetos"
+        className="mt-6 rounded-lg bg-green px-5 py-3 text-sm font-bold text-white hover:bg-green-hover"
       >
-        Explorar o Radar
+        Explorar a plataforma
       </Link>
     </div>
   );

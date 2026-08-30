@@ -1,11 +1,11 @@
-# A Patrinu — PRD v3.0
+# A Patrinu — PRD v4.0
 
-**O ecossistema digital do patrimônio.**
+**O Radar do Patrimônio e Restauro do Brasil.**
 
-- **Versão:** 3.0 — Radar + Marketplace
+- **Versão:** 4.0 — hub vertical de 6 pilares
 - **Data:** Agosto de 2026
-- **Base:** PRD v1.1 (GPT) → revisão v2 → v3
-- **Escopo:** Nacional · restauro e conservação de patrimônio
+- **Base:** PRD v3 (Radar + Marketplace)
+- **Modelo:** Assinatura · sem comissão
 - **Status:** Proposta para discussão
 - **Artifact:** https://claude.ai/code/artifact/41a40295-20b9-4973-8d87-c23d60aec933
 
@@ -13,425 +13,343 @@
 
 ## 00 — Resumo executivo
 
-### Um produto com dois motores: Radar e Marketplace
+### A rede profissional e o marketplace do restauro brasileiro
 
-A Patrinu é a infraestrutura digital do mercado de **restauro e conservação de patrimônio**
-no Brasil. Ela conecta profissionais, empresas, instituições, oportunidades e recursos ao
-longo de um ciclo: `descoberta → conexão → proposta → contratação → execução → documentação
-→ reputação`. A v3 fixa a forma do produto em **dois motores que se alimentam**: o **Radar
-de Oportunidades** (recorrência, hábito, dado) e o **Marketplace** (transação, reputação,
-efeito de rede). Os dois entram já no MVP.
+A Patrinu reúne num só lugar tudo que o setor de patrimônio e restauro do Brasil precisa:
+**projetos, profissionais, notícias, cursos, editais e financiamento**. O paralelo não é
+"Fiverr do restauro" — é **Behance / ArchDaily / Houzz**: tornar-se o lugar onde a
+comunidade se concentra e monetizar por cima, com **planos de assinatura — nunca comissão
+sobre contrato**. A promessa da marca é o *Radar*: se está acontecendo em patrimônio e
+restauro no Brasil, está na Patrinu.
 
-### Evolução do documento
+### O que muda em relação à v3
 
-| Versão | Ideia central |
+| | |
 |---|---|
-| v1.1 (GPT) | Marketplace vertical de 4 pilares lançado de uma vez; Radar na Fase 2, financiamento na Fase 3, Passaporte na Fase 4. |
-| v2 | Inverter a ordem: Radar sozinho como cunha na Fase 1, marketplace só depois de haver tração de um lado. |
-| **v3 (esta)** | **Radar + Marketplace juntos no MVP**, com o Radar atuando como motor de tráfego que mantém o lado da oferta sempre presente e resolve o *cold-start* do marketplace. Beachhead **nacional**, patrimônio em geral. TAM tratado com **foco estrito** em restauro/conservação. |
+| **PRD v3** | Dois motores: Radar de editais (motor de tráfego) + Marketplace. Foco central nos editais e no fluxo de habilitação. |
+| **PRD v4** | A lógica se inverte. O **marketplace de projetos e profissionais é o núcleo**. Editais e financiamento viram **dois pilares entre seis**. Entram dois novos: **Notícias** e **Cursos**. "Radar" vira a marca; o módulo de licitações passa a se chamar **Editais**. |
 
 ### Decisões fixadas nesta versão
 
-- **Escopo do produto:** Radar + Marketplace, ambos no v1. O Marketplace começa como *camada
-  de trabalho sobre o feed do Radar* (responder a licitações e editais), e ganha projetos
-  privados nativos com o tempo.
-- **Beachhead:** **nacional, todo tipo de patrimônio** (religioso, civil, urbano, industrial,
-  ferroviário, arqueológico, acervos). Sem recorte de segmento nem de região no cadastro.
-- **TAM:** enquadramento estrito no mercado de **restauro e conservação de bens
-  patrimoniais**. Adjacências (retrofit/AEC, seguros, acervos) e LATAM ficam como tese de
-  expansão, não como mercado-base.
-- **Receita âncora:** três produtos — **Empresa/Ateliê Business** (assinatura por assento),
-  **Institucional** (plano customizado) e **Patrocinador/Vitrine** (deal flow de projetos
-  incentiváveis para bancos e institutos). A assinatura Pro individual é alavanca de
-  aquisição e engajamento, não a âncora.
-- **Take rate sobre contratos** continua fora do centro do modelo — existe só como taxa
-  opcional sobre projetos privados originados e geridos de ponta a ponta na plataforma.
-- **Passaporte do Patrimônio** permanece puxado para a Fase 1–2 como o ativo de dado
-  defensável.
-
-> **Nota.** Marketplace vertical em mercado pequeno morre de falta de liquidez. A v3 não
-> elimina esse risco pela sequência — elimina pela arquitetura: o Radar traz o profissional
-> todo dia, e o Marketplace só precisa converter atenção que já está na plataforma.
+- **Seis pilares:** Projetos · Profissionais · Notícias · Cursos · Editais · Financiamento.
+  Transversal: Passaporte do Patrimônio (dentro de Projetos).
+- **Projetos = um único objeto com dois modos, ambos no v1:** *vitrine* de obras concluídas
+  (estilo ArchDaily) e *briefs abertos* para disputar (estilo Workana).
+- **Notícias e Cursos entram leves:** Notícias = newsletter semanal + curadoria de links +
+  poucas matérias. Cursos = diretório curado com link para inscrição. **Sem CMS pesado, sem
+  LMS.**
+- **Monetização = assinatura.** Sem *take rate*. A plataforma não custodia pagamento.
+- **Renomeação:** "Radar do Patrimônio" = plataforma inteira. Módulo de
+  licitações/editais/chamamentos = "Editais".
 
 ---
 
-## 01 — Tese: dois motores que se alimentam
+## 01 — Tese: ser a casa profissional do setor — e ter um marketplace dentro
 
-O ecossistema de patrimônio é pequeno, técnico e movido a indicação. Um marketplace
-horizontal não tem vantagem aqui, e um marketplace vertical isolado não atinge liquidez. A
-Patrinu resolve isso rodando duas máquinas ao mesmo tempo, cada uma cobrindo a fraqueza da
-outra.
+O setor de patrimônio e restauro no Brasil não tem casa comum. Profissionais dependem de
+indicação; não há referência canônica de projetos executados; a formação técnica é escassa
+e dispersa; editais estão espalhados em centenas de portais; projetos travam por falta de
+recurso. Cada um é um pilar da Patrinu.
 
-| Motor | O que é | Papel |
+Plataformas verticais vencem ao concentrar a comunidade primeiro e monetizar depois:
+Behance/Dribbble (designers), ArchDaily (arquitetos), Houzz (reforma residencial), Doximity
+(médicos). A Patrinu segue esse manual para conservação-restauro.
+
+| Camada | Pilares | Função |
 |---|---|---|
-| **1. Radar de Oportunidades** | Ingestão e estruturação, com IA, de toda licitação, edital, chamamento, credenciamento, bolsa e programa relevante a patrimônio no Brasil. Feed personalizado, *match* com o perfil, alertas. | Recorrência · hábito diário · dado de comportamento · barreira de execução · tráfego. |
-| **2. Marketplace** | Onde a atenção do Radar vira trabalho: montar candidatura e habilitação para as oportunidades públicas, formar consórcio/equipe, e — crescendo com o tempo — publicar e disputar projetos privados nativos. | Transação · reputação verificável · efeito de rede · monetização âncora. |
-
-### Como um alimenta o outro
-
-- O Radar dá razão para o profissional entrar **todo dia** — isso mantém o lado da oferta
-  sempre "aceso" no Marketplace, sem campanha de aquisição contínua.
-- Cada oportunidade do Radar é **demanda pronta**: o profissional não precisa de projeto
-  nativo no dia 1, precisa de ajuda para ganhar a licitação que já existe.
-- Cada projeto respondido ou executado deixa **evidência no portfólio** e uma entrada no
-  **Passaporte do bem** — o que melhora o *match* do Radar e a reputação exibida no
-  Marketplace.
-- O comportamento no Radar (o que salva, no que se candidata, o que ganha) treina o
-  ranqueamento dos dois lados.
-
-### Posicionamento
-
-| Público | Promessa |
-|---|---|
-| Profissionais | Mostre seu trabalho, construa reputação verificável e receba as oportunidades certas antes dos concorrentes. |
-| Empresas / ateliês | Monitore todo edital e licitação compatível, encontre especialistas e monte a proposta mais rápido que o concorrente. |
-| Instituições | Estruture a demanda, encontre quem executa e descubra como financiar antes de abrir o processo. |
-| Patrocinadores | Acesse projetos financiáveis já curados, com dossiê e enquadramento fiscal prontos. |
+| Identidade | Profissionais | Quem é quem — perfil, portfólio, reputação. O cadastro que ninguém mais tem. |
+| Descoberta & transação | Projetos | Obras concluídas como referência; briefs abertos para disputar. |
+| Hábito & autoridade | Notícias · Cursos · Editais | Razões para voltar toda semana. Tráfego, SEO, e-mails, autoridade. |
+| Dinheiro | Financiamento | Conectar projeto financiável a lei de incentivo e a patrocinador. |
 
 ---
 
-## 02 — Problema
+## 02 — Os seis pilares
 
-Profissionais dependem de indicação. Empresas e instituições têm dificuldade de encontrar
-especialistas. Licitações, editais e oportunidades estão dispersos em centenas de portais.
-Muitos projetos não avançam por falta de recurso — ou por desconhecimento sobre como captar.
-
-### Dores por ator
-
-| Ator | Dor | Consequência hoje |
+| # | Pilar | O que é |
 |---|---|---|
-| Profissional | Portfólio não padronizado; difícil comprovar experiência; oportunidades invisíveis; habilitação em licitação é um labirinto. | Renda instável, dependência de rede pessoal, editais perdidos por prazo ou documento. |
-| Empresa / ateliê | Não sabe quem existe nem quem está disponível; monitorar editais é trabalho manual; montar proposta técnica consome dias. | Perde prazos; contrata por indicação, sem histórico; margem corroída pelo custo de licitar. |
-| Instituição | Não sabe descrever tecnicamente a intervenção nem estimar orçamento; não conhece as fontes de recurso. | Projeto trava no diagnóstico ou no edital; obra não sai do papel. |
-| Patrocinador | Não encontra projetos com aderência e narrativa; enquadramento fiscal é opaco. | Recurso incentivado subutilizado; projetos bons sem apoio. |
+| 01 | **Projetos** | Vitrine de obras concluídas (referência, ArchDaily) + briefs abertos para disputar (Workana). Mesmo objeto, estados diferentes. |
+| 02 | **Profissionais** | Diretório, perfil e portfólio com antes/durante/depois, especialidades, técnicas, registros e selo verificado. |
+| 03 | **Notícias** | Editorial do setor — obras, técnicas, políticas de preservação. Newsletter semanal + curadoria + matérias originais. |
+| 04 | **Cursos** | Diretório curado de cursos, oficinas e pós-graduações de conservação-restauro. Depois, workshops de profissionais. |
+| 05 | **Editais** | Licitações, editais, chamamentos e credenciamentos de patrimônio, estruturados por IA, com checklist de habilitação. (Era o "Radar".) |
+| 06 | **Financiamento** | Match entre projeto e lei de incentivo, editais de banco e patrocinador. Vitrine de projetos financiáveis. |
 
-> **Fricção subestimada na v1.1.** A obra de restauro no Brasil trava em três pontos:
-> **diagnóstico** (o que fazer e com que técnica), **orçamento** (difícil de estimar) e
-> **conformidade** (IPHAN / órgão estadual, termo de referência, ART/RRT, atestado de
-> capacidade técnica, acervo técnico). O Marketplace da Patrinu ataca especificamente a
-> terceira — a mais mecânica e a mais dolorosa.
+**Transversal — Passaporte do Patrimônio:** registro longitudinal de cada bem. Vive dentro
+de Projetos.
 
 ---
 
-## 03 — Mercado e por que é investível
+## 03 — A espinha: um objeto Projeto que atravessa tudo
 
-**Nicho estreito na base.** A base de profissionais formais de conservação-restauro no
-Brasil é da ordem de poucos milhares. Uma assinatura individual, sozinha, é um negócio
-pequeno. A tese de escala depende de **cobrar de quem tem orçamento** (empresas,
-instituições, patrocinadores) e de **capturar o dado do setor**.
+O que impede seis pilares de virarem seis produtos soltos é **um único objeto de dados — o
+Projeto — que muda de estado ao longo do ciclo do setor**:
 
-### Dimensionamento (ordens de grandeza — a validar)
+```
+nasce como Edital (ou cadastro direto de instituição)
+  → vira brief aberto — profissionais enviam proposta
+  → busca recurso no pilar Financiamento — match com lei de incentivo e patrocinador
+  → é executado por Profissionais — que registram antes/durante/depois
+  → é publicado como matéria no pilar Notícias
+  → encerra como vitrine (referência pública) e entrada no Passaporte do bem
+```
+
+**Consequência:** a vitrine de projetos concluídos vista *por obra/profissional/técnica* é a
+mesma base que o Passaporte vista *por monumento/linha do tempo*. Esse acervo canônico de
+intervenções de restauro no Brasil é o **fosso de escala tipo ArchDaily** — e é semeável sem
+liquidez: o time cura ~100 restauros notáveis com créditos, fotos e técnicas.
+
+---
+
+## 04 — Problema
+
+| Ator | Dor | Pilar que responde |
+|---|---|---|
+| Profissional | Portfólio não padronizado; difícil comprovar experiência; oportunidades invisíveis; formação escassa. | Profissionais · Projetos · Cursos · Editais |
+| Empresa / ateliê | Não sabe quem existe; monitorar editais é manual; montar proposta consome dias. | Profissionais · Projetos · Editais |
+| Instituição | Não sabe descrever a intervenção nem estimar orçamento; não conhece fontes de recurso; não tem histórico do bem. | Projetos · Financiamento · Passaporte |
+| Estudante / recém-formado | Não há referência de projetos executados; poucos cursos; entrada por indicação. | Projetos (vitrine) · Notícias · Cursos |
+| Patrocinador | Não encontra projetos com aderência e narrativa; enquadramento fiscal opaco. | Financiamento · Projetos |
+
+**A dor comum:** não existe um lugar onde o setor se encontre. A informação está fragmentada
+entre grupos de WhatsApp, sites de órgãos, revistas acadêmicas, portais de licitação e a
+memória de quem está há 30 anos na área. A Patrinu é esse lugar.
+
+---
+
+## 05 — Mercado e por que é investível
+
+A base de profissionais formais de conservação-restauro é da ordem de poucos milhares. Mas a
+**rede** alcança um público muito maior: arquitetos e engenheiros de restauro, estudantes,
+técnicos, instituições, gestores culturais, jornalistas, pesquisadores e patrocinadores.
 
 | Camada | Estimativa | Como monetiza |
 |---|---|---|
-| Profissionais de conservação-restauro (formais) | ~3–5 mil | Free → Pro (aquisição / engajamento) |
-| Arquitetos / engenheiros com atuação em restauro | ~8–15 mil | Pro + assento em plano Business |
-| Ateliês e empresas especializadas | ~800–1.500 | **Business (âncora)** · assinatura por assento |
-| Instituições detentoras de patrimônio protegido | dezenas de milhar (federal + estadual + municipal) | Plano institucional / enterprise |
-| Volume anual de editais / licitações de restauro | centenas–milhares | Radar premium, alertas, dados de desfecho |
-| Recurso incentivado dirigido a patrimônio / ano | ordem de R$ 0,5–1 bi | Patrocinador / Vitrine · curadoria + match |
+| Conservadores-restauradores formais | ~3–5 mil | Pro (aquisição / engajamento) |
+| Arquitetos / engenheiros com atuação em restauro | ~8–15 mil | Pro + assento em plano de empresa |
+| Ateliês e empresas especializadas | ~800–1.500 | **Assinatura por assento (âncora)** |
+| Instituições detentoras de patrimônio protegido | dezenas de milhar | Plano institucional / enterprise |
+| Estudantes e público interessado (audiência editorial) | centenas de milhar | Topo de funil · newsletter · cursos |
+| Recurso incentivado dirigido a patrimônio / ano | ordem de R$ 0,5–1 bi | Patrocinador / Vitrine · curadoria |
 
 ### Tese de escala
 
-1. **Vertical, mas com muitos bolsos:** mesmo restrito a restauro, a receita soma
-   profissionais + ateliês + instituições + patrocinadores + licenciamento de dado. É
-   estreito em usuários, não em fontes de receita.
-2. **Adjacências:** retrofit e requalificação de edifícios históricos (AEC), gestão de
-   acervos e ativos culturais, seguro de arte e patrimônio, *due diligence* de imóveis
+1. **Autoridade e SEO:** o acervo de projetos + notícias vira a referência indexável do
+   setor no Brasil (modelo ArchDaily).
+2. **Muitos bolsos no mesmo vertical:** profissionais + ateliês + instituições +
+   patrocinadores + cursos + dado licenciável.
+3. **Adjacências:** retrofit/AEC, acervos e museus, seguro de arte, due diligence de imóveis
    tombados.
-3. **Geográfica:** LATAM e países lusófonos com forte patrimônio colonial e mecanismos de
-   incentivo — México, Portugal, Colômbia, Peru.
-4. **Dado como produto:** a base estruturada de estado de conservação, intervenções e fontes
-   de recurso é licenciável para órgãos públicos, seguradoras, pesquisa e fomento.
+4. **Geográfica:** LATAM e países lusófonos.
+5. **Dado como produto:** base estruturada de estado de conservação, intervenções e fontes
+   de recurso — licenciável.
 
-> **O que torna o negócio defensável.** Não é a intermediação de contratos. É o **banco de
-> dados proprietário** que a operação gera: perfis verificados com histórico de obra, o
-> Passaporte de cada bem, e o corpus de editais estruturados *com desfecho* (quem venceu,
-> por quanto, com que habilitação). Esse dado cresce a cada projeto documentado e ninguém
-> mais o tem.
+**O que torna o negócio defensável:** a gravidade da rede, o acervo canônico de projetos e
+do Passaporte, e a autoridade editorial. Nenhum concorrente tem os três juntos.
 
 ---
 
-## 04 — Estratégia de entrada
+## 06 — Quem paga: assinatura, sem comissão
 
-Decisão do fundador: lançar **nacional** e sem recorte de tipo de bem. O cadastro é aberto a
-qualquer profissional, empresa, instituição ou bem. Isso maximiza alcance e a história de
-mercado, mas transfere o peso para a **operação de curadoria** — cobertura de fontes e
-densidade de oferta.
+A plataforma não custodia pagamento e não tira percentual de contrato.
 
-### Como isso é executável mesmo sendo amplo
-
-- **Radar:** priorizar as **~30 fontes que concentram o grosso do volume** (ver
-  `radar-fontes.md`). Ampliar por demanda observada.
-- **Oferta:** a curadoria de profissionais começa pelos **polos de patrimônio** — MG, BA,
-  PE, RJ, SP, RS — mesmo sem restringir o cadastro.
-- **Demanda do Marketplace no dia 1:** vem do próprio Radar. As oportunidades públicas *são*
-  o inventário inicial.
-- **Concierge:** o time da Patrinu posta manualmente os primeiros projetos privados e
-  institucionais, sourced de dioceses, museus e prefeituras, até o fluxo orgânico se
-  sustentar.
-
-### Sequência de construção
-
-| Passo | Quando | Conteúdo |
-|---|---|---|
-| 1 — Radar manual + lista | pré-produto | Curadoria manual de editais por e-mail/WhatsApp; vira lista de espera qualificada e valida os critérios de *match*. |
-| 2 — Radar + Perfil no produto | v1.0 | Ingestão automatizada + estruturação com IA; feed, filtros, alertas. Perfil e portfólio como pré-requisito do *match*. |
-| 3 — Marketplace sobre o feed | v1.0 | Responder a oportunidade: checklist de habilitação, montar equipe/consórcio, anexar atestados. Diretório público, selo verificado. |
-| 4 — Projetos privados nativos | v1.1 | Instituições e empresas publicam projeto; manifestação de interesse e comparação de propostas. Concierge → orgânico. |
-
-**Canais de aquisição de oferta:** primeiros ~150 profissionais na mão — ABRACOR, cursos de
-conservação e restauro (CECOR-UFMG, UFPel, UFRJ), ateliês de referência, ex-alunos, redes de
-arquitetos de restauro. Importar bases públicas.
-
----
-
-## 05 — Quem paga
-
-Instituições têm problema de caixa; profissionais são *cash-poor*. A receita âncora vem das
-empresas que disputam obra, das grandes instituições e do lado do dinheiro incentivado.
-
-| Produto | Público | Modelo | Papel |
+| Plano | Público | Inclui | Papel |
 |---|---|---|---|
-| Profissional Free | Restauradores, conservadores, arquitetos | Grátis — perfil, portfólio limitado, Radar básico, responder a até N oportunidades/mês | Aquisição / oferta |
-| Profissional Pro | Idem, ativos | Assinatura mensal (ticket baixo) — portfólio ilimitado, Radar completo, alertas avançados, checklist de habilitação, analytics, destaque | Engajamento / receita secundária |
-| **Empresa / Ateliê Business** | Ateliês, escritórios, construtoras especializadas, consultorias de projeto cultural | **Assinatura por assento — faixa R$ 300–900 / assento / mês** conforme porte e módulos. Radar de licitações, busca de profissionais, banco de talentos, publicação de projetos e vagas, ferramentas de proposta e habilitação, gestão de consórcio | **Âncora de receita** |
-| **Institucional / Enterprise** | Museus, órgãos públicos, fundações, dioceses e redes, universidades | **Plano customizado** — gestão de fornecedores, Passaporte dos acervos, compliance e histórico, apoio a termo de referência, relatórios | Alto ticket, ciclo longo |
-| **Patrocinador / Vitrine** | Bancos, institutos, estatais, fundações empresariais (Itaú Cultural, BNDES, Petrobras, institutos…) | **Assinatura + curadoria** — *deal flow* de projetos incentiváveis já estruturados, com dossiê, narrativa de impacto e enquadramento fiscal; filtros por tema, região e linha de incentivo | Receita do lado do dinheiro |
-| Dados Patrinu | Seguradoras, fomento, pesquisa, poder público | Licenciamento de dados agregados de estado de conservação, intervenções e mercado | Receita futura, alta margem |
+| Profissional Free | Restauradores, conservadores, arquitetos, estudantes | Perfil, portfólio limitado, ver projetos e vitrine, ler notícias, diretório de cursos, alertas básicos de edital | Aquisição / rede |
+| Profissional Pro | Idem, ativos | Portfólio ilimitado, destaque, Editais completo + checklist, candidatura a briefs, analytics, desconto em cursos | Engajamento / receita secundária |
+| **Empresa / Ateliê** | Ateliês, escritórios, construtoras especializadas | Assinatura por assento — tudo do Pro + publicação de briefs e vagas, busca de talentos, gestão de consórcio, cofre compartilhado | **Âncora de receita** |
+| Institucional / Enterprise | Museus, órgãos, fundações, dioceses, universidades | Gestão de fornecedores, Passaporte dos acervos, publicação de projetos, apoio a TR, relatórios | Alto ticket, ciclo longo |
+| Patrocinador / Vitrine | Bancos, institutos, estatais | Deal flow de projetos financiáveis já estruturados, com dossiê e enquadramento fiscal | Receita do lado do dinheiro |
+| Dados Patrinu | Seguradoras, fomento, pesquisa, poder público | Licenciamento de dados agregados | Receita futura, alta margem |
 
-> **Fora do centro do modelo: take rate sobre contratos.** Obra pública sai por licitação e
-> não é taxável pela plataforma; a privada é relacional e vaza. Existe apenas como **taxa
-> opcional** sobre projetos privados originados *e* geridos de ponta a ponta na Patrinu.
-
-**Sequenciamento da receita:** v1 — Free, Pro, Business. v1–v2 — Institucional (contas-farol)
-e Patrocinador/Vitrine (piloto *concierge*: vender 2–3 contratos de patrocínio na mão antes
-de construir o produto). v3+ — Dados Patrinu.
+**Por que assinatura funciona aqui — e comissão não:** marketplace sem comissão sofre de
+**desintermediação**. Os seis pilares são o antídoto — você mantém a assinatura pelos
+alertas, pelo portfólio, pelos cursos, pelas notícias e pelos dados, *independente de
+qualquer contrato fechado*. Cobrar percentual de obra pública, aliás, não é possível — sai
+por licitação.
 
 ---
 
-## 06 — Produto
+## 07 — Produto por pilar
 
-### 6.1 Radar de Oportunidades — v1
+### 7.1 Projetos — v1
 
-O radar central do mercado de patrimônio e restauração.
+**Modo vitrine (obras concluídas):** página por projeto (bem, localização, ano, escopo,
+técnicas e materiais, galeria antes/durante/depois); créditos linkados aos perfis; vínculo
+com o Passaporte e com o edital de origem; busca e filtros; coleções curadas; ~100 restauros
+de referência na largada.
 
-- **Categorias:** licitações e concorrências · chamamentos e credenciamentos · editais ·
-  projetos privados e públicos · vagas · bolsas, residências e programas · parcerias e
-  patrocínios.
-- **Radar personalizado:** o usuário define especialidades, regiões, faixas de valor e tipos
-  de oportunidade. A Patrinu gera feed personalizado e alertas — *"Nova licitação de
-  restauração de talha compatível com seu perfil, em Minas Gerais, até R$ 180 mil,
-  habilitação exige acervo técnico em bens móveis."*
-- **Funcionalidades MVP:** ingestão automatizada das ~30 fontes prioritárias + estruturação
-  com IA (objeto, valor, prazo, exigências de habilitação, técnica); filtros por localização,
-  categoria, valor, prazo; salvar oportunidades; histórico; alertas e-mail/WhatsApp/in-app;
-  *match* perfil ↔ oportunidade; página detalhada com documentos e link para a fonte oficial;
-  botão "responder" que abre o fluxo do Marketplace.
-- **Evolução:** score de aderência e probabilidade de enquadramento na habilitação; resumo
-  automático do edital e checklist de documentos; base histórica de editais com desfecho.
+**Modo brief (projeto aberto):** instituição/empresa publica (título, escopo, localização,
+fotos, prazo, faixa de orçamento, requisitos); visibilidade pública ou convite; recebimento
+e comparação de propostas; sem custódia de pagamento; concierge no início.
 
-### 6.2 Marketplace — v1
+### 7.2 Profissionais — v1
 
-Duas camadas, entregues em ordem.
+Perfil (foto, bio, localização, áreas, especialidades, técnicas); formação, certificações,
+registros (CAU/CREA, ART/RRT, ABRACOR); portfólio com ficha por projeto (puxa dos Projetos
+creditados); página compartilhável; busca e filtros; selo verificado; Patrinu Score
+(evolução).
 
-**Camada A — Responder a oportunidades públicas (v1.0)**
-- **Checklist de habilitação** gerado do edital: documentos exigidos, prazos, o que o
-  profissional já tem no perfil e o que falta.
-- **Formação de equipe / consórcio:** encontrar parceiros complementares (técnica, região,
-  atestado, porte).
-- **Cofre de documentos:** ART/RRT, atestados de capacidade técnica, acervo técnico,
-  certidões — reutilizáveis entre candidaturas.
-- **Manifestação de interesse** registrada na plataforma; acompanhamento do resultado.
+### 7.3 Notícias — v1 leve
 
-**Camada B — Projetos privados nativos (v1.1)**
-- Publicação de projeto (título, descrição, categoria, localização, escopo, fotos,
-  documentos, prazo, orçamento, requisitos); visibilidade pública ou convite privado;
-  recebimento e comparação de propostas.
-- Busca e contratação por especialidade, técnica, localização, experiência, disponibilidade;
-  favoritos e listas; histórico de contratações e avaliações.
-- Vagas especializadas; candidaturas com perfil e portfólio; banco de talentos.
+Newsletter semanal (obras, editais que abriram, matéria da semana, curso em foco); curadoria
+de links do setor + poucas matérias originais; página de artigo simples; sem CMS complexo no
+v1. Evolução: contribuições da comunidade, conteúdo patrocinado.
 
-**Apoio à contratação (camada de fricção) — v2**
-- Assistente para redigir termo de referência / escopo a partir de fotos e descrição.
-- Pré-diagnóstico por foto (triagem de patologias).
-- Referências de custo por tipo de intervenção, a partir do histórico da plataforma.
+### 7.4 Cursos — v1 leve
 
-### 6.3 Perfil & Portfólio profissional — v1
+Diretório curado (cursos técnicos, oficinas, especializações, pós — CECOR-UFMG, UFPel, UFRJ,
+ateliês); ficha por curso (instituição, formato, carga horária, próxima turma, link de
+inscrição); filtros; desconto para Pro quando houver parceria. Evolução (Fase 3): workshops
+vendidos por profissionais.
 
-- **MVP:** perfil (foto, bio, localização, áreas, especialidades, técnicas); formação,
-  certificações, experiência; registros profissionais (CAU/CREA), ART/RRT, filiações;
-  portfólio com imagens de **antes, durante e depois** e ficha por projeto (bem, técnica,
-  materiais, ano, papel); página compartilhável; busca e filtros; candidatura; selo de
-  perfil verificado.
-- **Evolução:** Patrinu Score; analytics; destaque regional e por especialidade;
-  certificações verificadas; página premium; comunidade.
+### 7.5 Editais — v1 (já construído)
 
-### 6.4 Passaporte do Patrimônio — v1–v2
+Ingestão automatizada das ~30 fontes prioritárias + estruturação com IA (ver
+`radar-fontes.md`); feed personalizado, filtros, salvar, alertas, match com o perfil;
+checklist de habilitação cruzado com o cofre de documentos; base histórica com desfecho.
 
-*Puxado da Fase 4 para o centro.* Registro canônico e longitudinal de cada bem: intervenções,
-técnicas e materiais, profissionais responsáveis, laudos, evolução de estado.
+### 7.6 Financiamento — v1 leve → v2
 
-- **MVP mínimo:** uma página por bem, criada a partir dos projetos documentados; linha do
-  tempo de intervenções; galeria antes/durante/depois agregada; vínculo com profissionais e
-  empresas que atuaram.
-- **Por que agora:** é o dado mais defensável e cresce sem custo marginal a cada projeto
-  registrado. Interessa a órgãos de preservação, seguradoras, instituições e pesquisa — e é
-  licenciável.
+Cadastro de projeto para captação; match de recursos (leis de incentivo, editais de banco,
+fundos internacionais) por regras no v1, IA depois; vitrine de projetos financiáveis com
+dossiê gerado; sem operar a gestão do incentivo no v1.
 
-### 6.5 Financiamento & match de recursos — v3
+### 7.7 Passaporte do Patrimônio — v1–v2
 
-- **Cadastro de projeto para captação:** descrição do patrimônio, objetivo, orçamento e
-  meta, localização, documentação, impacto, status, contrapartidas.
-- **Match de recursos:** leis de incentivo (federal e estaduais), editais de bancos e
-  estatais, fundos internacionais — com estimativa de enquadramento. No MVP por regras;
-  evolui para IA. Abastece o produto Patrocinador/Vitrine.
-- **Vitrine de projetos:** projetos abertos para apoio; meta e progresso; botão de interesse;
-  página pública; dossiê gerado.
+Página por bem (linha do tempo de intervenções, técnicas e materiais, responsáveis, laudos,
+evolução de estado); gerado a partir dos Projetos documentados; identificador do bem a
+definir (IPHAN/SICG vs. próprio).
 
 ---
 
-## 07 — Camada de IA
+## 08 — Camada de IA
 
-| Uso | O que faz | Fase |
+| Uso | O que faz | Pilar |
 |---|---|---|
-| Extração de editais | Ingere PDF de licitação / termo de referência e estrutura objeto, valor, prazo, exigências de habilitação e técnica. | v1 |
-| Classificação de relevância | Decide se uma oportunidade dispersa é de patrimônio e a que especialidade pertence. | v1 |
-| Match perfil ↔ oportunidade | Casa especialidade, técnica, região, porte e histórico; aprende com o comportamento. | v1 |
-| Checklist de habilitação | Do edital, gera a lista de documentos exigidos e cruza com o cofre de documentos do profissional. | v1 |
-| Resumo do edital | Resumo em linguagem clara + pontos de atenção. | v1–v2 |
-| Sugestão de consórcio | Aponta profissionais/empresas complementares para disputar em conjunto. | v2 |
-| Pré-diagnóstico por foto | Triagem de patologias (fissuras, colonização biológica, eflorescência salina, perda de policromia, destacamento). Não substitui laudo. | v2 |
-| Rascunho de escopo | Minuta de termo de referência a partir de foto + descrição. | v2 |
-| Match de financiamento | Dado um projeto, quais leis, editais e patrocinadores têm aderência, com estimativa de enquadramento fiscal. | v3 |
+| Extração de editais | Estrutura PDF de licitação em objeto, valor, prazo, habilitação e técnica. | Editais (v1) |
+| Classificação de relevância | Decide se uma oportunidade é de patrimônio e a que especialidade pertence. | Editais (v1) |
+| Match | Perfil ↔ edital, perfil ↔ brief, projeto ↔ financiamento; recomenda projetos, profissionais, cursos. | Todos (v1) |
+| Checklist de habilitação | Do edital, lista documentos exigidos e cruza com o cofre. | Editais (v1) |
+| Curadoria editorial | Resume e classifica notícias; sugere pauta a partir de projetos e editais novos. | Notícias (v1–v2) |
+| Ficha de projeto | A partir de fotos e texto, propõe técnicas, materiais e rascunho de descrição. | Projetos (v2) |
+| Pré-diagnóstico por foto | Triagem de patologias. | Projetos / Passaporte (v2) |
+| Match de financiamento | Quais leis, editais e patrocinadores têm aderência, com estimativa de enquadramento. | Financiamento (v2–v3) |
 
 ---
 
-## 08 — Arquitetura de navegação
+## 09 — Arquitetura de navegação
 
 | Área | Principais páginas | Fase |
 |---|---|---|
-| Início | Feed personalizado, busca, destaques, oportunidades e projetos | v1 |
-| Oportunidades | Radar, licitações, editais, chamamentos, vagas; salvos e alertas | v1 |
-| Responder | Fluxo de candidatura: checklist de habilitação, consórcio, cofre de documentos, acompanhamento | v1 |
+| Início | Busca do hub, projetos e profissionais em destaque, editais abertos, últimas notícias, cursos | v1 |
+| Projetos | Vitrine (concluídos) · Abertos (briefs) · página de projeto · coleções | v1 |
 | Profissionais | Diretório, filtros, perfil e portfólio | v1 |
-| Projetos | Projetos privados e públicos; publicação e propostas | v1.1 |
-| Patrimônio | Passaporte dos bens — linha do tempo, intervenções, responsáveis | v1–v2 |
-| Minha conta | Perfil, candidaturas, favoritos, alertas, assinatura, documentos | v1 |
-| Empresas | Dashboard, assentos, projetos, vagas, profissionais, propostas, consórcios | v1 |
-| Instituições | Fornecedores, acervos, Passaporte, termo de referência, relatórios | v2 |
-| Financiamento | Fontes, projetos, patrocinadores e captação; Vitrine | v3 |
-| Comunidade | Conteúdo, discussões e networking | v3 |
+| Notícias | Feed de artigos, página de artigo, arquivo, newsletter | v1 |
+| Cursos | Diretório, filtros, ficha de curso | v1 |
+| Editais | Feed, filtros, alertas, página de edital, fluxo "responder" | v1 |
+| Financiamento | Fontes de recurso, cadastrar projeto, vitrine financiável | v1–v2 |
+| Patrimônio | Passaporte dos bens | v1–v2 |
+| Minha conta | Perfil, portfólio, candidaturas, favoritos, alertas, assinatura, cofre | v1 |
+| Para empresas / instituições | Planos, assentos, dashboard, briefs, vagas, fornecedores | v1 |
 
 ---
 
-## 09 — MVP
+## 10 — MVP
 
-O primeiro lançamento valida duas perguntas: **o Radar retém sozinho?** e **o profissional
-usa a Patrinu para *responder* à oportunidade, e não só para descobri-la?**
+O MVP valida: **o setor adota a Patrinu como o lugar onde se encontra?** — medido por
+tráfego, perfis completos e inscrições na newsletter, antes de qualquer receita de
+marketplace.
 
-**Dentro do MVP:** cadastro e perfil profissional · portfólio (antes/durante/depois) ·
-diretório e busca · página pública · Radar com ingestão automatizada das ~30 fontes
-prioritárias · *match* perfil ↔ oportunidade · filtros, salvar, histórico · alertas
-e-mail/WhatsApp/in-app · fluxo de resposta (checklist de habilitação, cofre de documentos,
-formação de consórcio, manifestação de interesse) · selo verificado · Passaporte mínimo
-(página por bem) · dashboard e assentos de Empresa Business · assinatura Pro · publicação de
-projetos privados (concierge + orgânico leve).
+**Dentro do MVP:** Projetos — vitrine curada (~100) + briefs abertos (concierge) ·
+Profissionais — diretório, perfil e portfólio, selo verificado · Editais — feed, filtros,
+alertas, checklist (já pronto) · Notícias — newsletter semanal + curadoria + poucas matérias
+· Cursos — diretório curado · Passaporte mínimo · planos Free, Pro e Empresa · cofre de
+documentos.
 
-**Fora do MVP:** apoio à contratação com IA (termo de referência, pré-diagnóstico) · banco
-de talentos avançado · módulo Institucional completo · Patrocinador/Vitrine (só piloto
-concierge) · módulo de financiamento e captação · comunidade · pagamentos · take rate ·
-Dados Patrinu · expansão para adjacências.
+**Fora do MVP:** CMS editorial completo · LMS / aulas hospedadas · venda de workshops ·
+pagamentos e contratos na plataforma · take rate · módulo de financiamento completo ·
+Patrocinador/Vitrine além do piloto concierge · Dados Patrinu · app nativo · adjacências.
 
-> **Consequência da decisão "nacional e geral".** Sem recorte, a operação de curadoria
-> carrega o produto. O MVP precisa vir com: as ~30 fontes prioritárias já ingeridas, ~150
-> profissionais semeados nos polos, e o time postando os primeiros projetos privados na mão.
+**Custo além do produto:** Notícias e Cursos são **opex editorial contínuo**. A vitrine de
+~100 projetos é trabalho de pesquisa e licenciamento de imagem. Orçar como parte do MVP.
 
 ---
 
-## 10 — Roadmap
+## 11 — Roadmap
 
-**Fase 1 — Radar + Marketplace (MVP):** perfis + portfólios; diretório e busca; Radar +
-ingestão + *match* + alertas; Marketplace camada A (checklist de habilitação, cofre de
-documentos, consórcio); projetos privados nativos (concierge → orgânico); Passaporte mínimo;
-Empresa Business (assentos) + assinatura Pro + avaliações e reputação.
+**Fase 1 — Hub de conteúdo (MVP):** Projetos (vitrine + briefs concierge); Profissionais;
+Editais (pronto); Notícias (newsletter + curadoria); Cursos (diretório); Passaporte mínimo;
+planos Free/Pro/Empresa.
 
-**Fase 2 — Instituições & fricção (pós-tração):** módulo Institucional (fornecedores,
-acervos, compliance, relatórios); apoio à contratação (rascunho de TR, pré-diagnóstico por
-foto, referências de custo); Patrinu Recursos / Vitrine (sai do piloto concierge); Passaporte
-completo; sugestão de consórcio com IA; base histórica de desfecho de editais.
+**Fase 2 — Marketplace transacional:** briefs orgânicos + propostas + comparação; busca de
+talentos, vagas, consórcio; plano Institucional; apoio à contratação (rascunho de TR,
+pré-diagnóstico); Passaporte completo; contrato leve opcional.
 
-**Fase 3 — Financiamento:** cadastro de projetos para captação; base de fontes de recurso;
-match projeto ↔ financiamento; Vitrine; dossiê e enquadramento fiscal automáticos.
+**Fase 3 — Dinheiro & educação:** Financiamento completo (match IA, dossiê automático);
+Patrinu Recursos / Vitrine; workshops vendidos por profissionais; contribuições da comunidade
+em Notícias.
 
-**Fase 4 — Inteligência & expansão:** IA de matching avançada; recomendações; Patrinu Score
-avançado; dados de mercado; licenciamento de dados; adjacências (AEC, seguros) e LATAM.
+**Fase 4 — Inteligência & expansão:** recomendação e Patrinu Score avançados; licenciamento
+de dados; adjacências (AEC, seguros, acervos) e LATAM.
 
 ---
 
-## 11 — Métricas de sucesso
+## 12 — Métricas de sucesso
 
-**Fase 1 — as métricas que decidem tudo:** retenção do Radar (W4 ≥ meta) · alerta → resposta
-(%) · perfis completos (% da base) · MRR de assentos Business.
+**Fase 1:** visitantes/mês · inscritos na newsletter · perfis completos (% da base) ·
+retenção semanal W4.
 
 | Dimensão | KPIs |
 |---|---|
-| Oferta | Profissionais cadastrados, perfis completos, projetos no portfólio, cobertura por polo |
-| Radar | Oportunidades ingeridas/dia, cobertura de fontes, precisão do *match*, alertas enviados, CTR, retenção semanal |
-| Marketplace | Alerta → resposta iniciada → manifestação enviada, consórcios formados, candidaturas concluídas na plataforma, win-rate autorreportado |
-| Demanda privada | Projetos publicados (concierge vs. orgânico), propostas por projeto, taxa de conexão, contratos originados |
-| Patrimônio | Bens com Passaporte, intervenções registradas, cobertura por região |
-| Instituições / Patrocínio | Contas institucionais, projetos na Vitrine, valor potencial, conexões com financiadores (F2–F3) |
-| Receita | MRR, ARPU, mix Business / Institucional / Pro, retenção líquida, conversão Free→Pro |
+| Rede | Profissionais cadastrados, perfis completos, projetos com crédito, cobertura por polo |
+| Conteúdo | Visitantes, páginas de projeto vistas, inscritos e abertura da newsletter, tráfego orgânico |
+| Editais | Oportunidades ingeridas/dia, cobertura de fontes, precisão do match, alertas, CTR |
+| Marketplace | Briefs publicados (concierge vs. orgânico), propostas por brief, taxa de conexão (F2) |
+| Cursos | Cursos no diretório, cliques para inscrição, parcerias com desconto |
+| Financiamento | Projetos em captação, valor potencial, conexões com financiadores (F2–F3) |
+| Receita | MRR, ARPU, mix Pro / Empresa / Institucional, retenção líquida, conversão Free→Pro |
 
 ---
 
-## 12 — Riscos e mitigações
+## 13 — Riscos e mitigações
 
 | Risco | Por quê | Mitigação |
 |---|---|---|
-| **Cold-start do Marketplace no v1** | Lançar as duas camadas cedo aumenta o risco de os projetos privados ficarem vazios. | Camada A não precisa de projeto nativo — usa as oportunidades públicas do Radar como inventário. Camada B entra depois, com concierge. O Radar garante presença do lado da oferta. |
-| Lançamento nacional fica raso | Sem recorte, a curadoria se dilui e nenhum lugar tem densidade. | Cadastro nacional, curadoria concentrada: ~30 fontes de maior volume, oferta semeada nos polos. |
-| Desintermediação | Mercado pequeno e relacional; partes se conhecem e fecham fora. | Não depender de take rate. Valor recorrente no Radar, no cofre de documentos e na reputação — que só existem *dentro* da plataforma. |
-| TAM estreito na base | Poucos milhares de profissionais formais. | Receita âncora em Business/Institucional/Patrocinador; muitos bolsos no mesmo vertical; adjacências e LATAM depois; dado licenciável. |
-| Ciclo de venda institucional longo | Órgãos públicos e grandes instituições compram devagar. | Entrar por baixo (profissionais e ateliês), subir para institucional na Fase 2, começando por contas-farol. |
-| Cobertura e qualidade do *match* | Editais em centenas de portais heterogêneos; match ruim destrói a confiança no alerta. | Priorizar as fontes de maior volume; humano no circuito na fase de curadoria manual para calibrar critérios antes de automatizar. |
-| Sobrecarga de escopo no MVP | Radar + Marketplace + Passaporte + Business ao mesmo tempo é muito para um time pequeno. | Marketplace no MVP é só a camada A. Passaporte é uma página gerada, não um módulo. Business v1 é dashboard + assentos, sem apoio à contratação com IA. |
+| **Escopo — 6 pilares = 3–4 produtos** | Time pequeno não constrói tudo bem ao mesmo tempo. | Só 2 pilares nascem "produto completo" (Projetos, Profissionais). Editais já existe. Notícias e Cursos nascem "diretório/newsletter". Financiamento entra leve. |
+| Custo editorial contínuo | Notícias e Cursos exigem curadoria toda semana — opex, não dev. | Orçado no MVP. Newsletter enxuta + curadoria + press releases. Comunidade contribui na Fase 3. |
+| Dois marketplaces rasos | Briefs e workshops precisam de liquidez dos dois lados. | Vitrine-primeiro (sem liquidez) e diretório-primeiro. Briefs por concierge. Workshops só na Fase 3. |
+| Foco na narrativa | "Fiverr + Workana + ArchDaily + financiamento" soa disperso. | Frase-âncora única: *a rede profissional + o marketplace do restauro brasileiro*. |
+| Desintermediação (sem comissão) | Depois de se acharem, por que continuar pagando? | O valor recorrente está nos alertas, portfólio, cursos, notícias e dados — não no contrato. |
+| SEO / autoridade é lento | ArchDaily levou anos. | Jogo de longo prazo no conteúdo, em paralelo com a receita B2B que tem loop mais rápido. |
+| TAM estreito na base formal | Poucos milhares de restauradores. | Receita âncora em Empresa/Institucional; a rede alcança 10× mais; dado licenciável; adjacências. |
 
 ---
 
-## 13 — Princípios de produto
+## 14 — Princípios de produto
 
-- Especialização acima de escala genérica.
+- A rede vem primeiro — tudo tem que aumentar a gravidade da comunidade.
+- Um objeto Projeto atravessa os pilares; nada de dados duplicados entre módulos.
 - Portfólio e evidência acima de autodeclaração.
-- Reputação como ativo central.
-- O Radar tem que "só funcionar" — descoberta sem esforço.
-- Prender o fluxo de trabalho, não só a descoberta: o alerta tem que levar à resposta dentro
-  da plataforma.
-- Cada tela deixa dado estruturado — perfil, edital, intervenção, desfecho.
+- Diretório antes de produto: começar curando, construir quando o interesse se provar.
+- Assinatura, nunca comissão. A plataforma conecta; não custodia dinheiro no v1.
+- Cada tela deixa dado estruturado.
 - IA como camada de inteligência, não como substituta do especialista.
-- Cobrar de quem tem orçamento; o lado *cash-poor* usa de graça.
-- Cadastro amplo, curadoria concentrada — alcance nacional não significa esforço uniforme.
+- Conteúdo é opex — se não dá para sustentar a curadoria, não lançar o pilar.
 
 ---
 
-## 14 — Decisões em aberto
+## 15 — Decisões em aberto
 
-1. **Fontes de verdade do Radar:** quais são as ~30 fontes prioritárias? PNCP resolve quanto
-   do volume público? Quais órgãos estaduais têm API e quais exigem scraping? *(Detalhado em
-   `radar-fontes.md`.)*
-2. **Verificação de profissionais:** o que conta como "verificado" — diploma, registro
-   CAU/CREA, ART/RRT, filiação a associação, projeto documentado com foto? Há verificação em
-   níveis?
-3. **Identificador do bem no Passaporte:** usar cadastro do IPHAN (SICG) / órgãos estaduais
-   como chave, ou criar identificador próprio com *mapeamento* para os cadastros oficiais?
-4. **Preço:** valor do Pro; posição exata do Business dentro da faixa R$ 300–900/assento e o
-   que separa os níveis; base de cobrança do Institucional (por acervo? por usuário? por
-   bem?).
-5. **Marketplace camada B:** quanto de concierge o time aguenta operar, e qual o gatilho para
-   ligar a publicação orgânica aberta?
-6. **Patrocinador/Vitrine:** começar o piloto concierge com qual perfil de patrocinador —
-   banco, instituto empresarial ou estatal?
-7. **Modelo de captação (Fase 3):** a Patrinu apenas conecta, ou também opera a gestão do
-   incentivo (proponente, prestação de contas)?
-8. **Prioridade de expansão:** adjacência (AEC / retrofit) antes ou depois de LATAM?
+1. **Aquisição da vitrine:** quem produz as ~100 fichas de projeto e como se resolve o
+   direito de imagem?
+2. **Operação editorial:** quem edita a newsletter e as matérias?
+3. **Identificador do bem no Passaporte:** IPHAN/SICG como chave, ou identificador próprio?
+4. **Preço:** valores de Pro e Empresa (faixa R$ 300–900/assento indicada); base de cobrança
+   do Institucional.
+5. **Verificação de profissionais:** o que conta como "verificado" e há níveis?
+6. **Contrato leve:** a Patrinu oferece um modelo de contrato entre as partes, ou só conecta?
+7. **Cursos — modelo de receita:** só diretório com link de afiliado, ou comissão de
+   indicação nas parcerias?
+8. **Financiamento (Fase 3):** a Patrinu apenas conecta, ou também opera a gestão do
+   incentivo?

@@ -10,7 +10,7 @@ import type { OpportunityFilters, OpportunitySort } from "@/lib/types";
 import type { KindKey, OrganScopeKey, SpecialtyKey } from "@/lib/taxonomy";
 
 export const metadata: Metadata = {
-  title: "Radar de Oportunidades",
+  title: "Editais e licitações",
   description:
     "Licitações, editais e chamamentos de restauro e conservação de patrimônio, estruturados e filtráveis.",
 };
@@ -51,12 +51,12 @@ export default async function RadarPage({
               Resultados para <span className="accent">“{q}”</span>
             </>
           ) : (
-            "Radar de Oportunidades"
+            "Editais e licitações"
           )}
         </h1>
         <p className="mt-1 text-ink-soft">
-          Feed do mercado de restauro e conservação. Dados de demonstração no formato da
-          ingestão real —{" "}
+          Licitações, editais e chamamentos de patrimônio, estruturados por IA. Dados de
+          demonstração —{" "}
           <a
             href="/docs/radar-fontes.html"
             className="font-semibold text-green-ink underline underline-offset-2"
@@ -74,10 +74,10 @@ export default async function RadarPage({
       </div>
 
       <div className="mb-6 border-b border-border pb-3">
-        <CategoryRail className="pb-1" />
+        <CategoryRail base="/editais" className="pb-1" />
       </div>
 
-      <div className="sticky top-[72px] z-10 -mx-4 mb-6 border-b border-border bg-bg/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-11 lg:px-11">
+      <div className="sticky top-[64px] z-10 -mx-4 mb-6 border-b border-border bg-bg/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-11 lg:px-11">
         <Suspense>
           <RadarFilters total={opportunities.length} />
         </Suspense>

@@ -55,7 +55,7 @@ export function SpecialtyThumb({
         className="absolute -bottom-6 -right-4 text-white/15"
       />
       {label ? (
-        <span className="absolute left-3 top-3 rounded-md bg-black/25 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+        <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-xs font-semibold text-ink">
           {label}
         </span>
       ) : null}

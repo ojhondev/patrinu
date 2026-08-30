@@ -1,19 +1,34 @@
 # Patrinu — instruções do projeto
 
-**Patrinu** ("O ecossistema digital do patrimônio") é a infraestrutura digital do mercado de
-**restauro e conservação de patrimônio** no Brasil. Produto de **dois motores**:
+**Patrinu** — "O Radar do Patrimônio e Restauro do Brasil". Hub vertical + marketplace do
+setor de **restauro e conservação de patrimônio**. A rede profissional é o fosso; o
+marketplace é a receita. **Assinatura, nunca comissão.**
 
-- **Radar de Oportunidades** — ingestão e estruturação (com IA) de toda licitação, edital,
-  chamamento, credenciamento, bolsa e programa relevante a patrimônio. Feed personalizado,
-  match com o perfil, alertas. É o motor de recorrência, hábito e dado.
-- **Marketplace** — onde a atenção do Radar vira trabalho e reputação: montar candidatura e
-  habilitação para as oportunidades públicas, formar consórcio/equipe e (crescendo com o
-  tempo) publicar e disputar projetos privados nativos.
+**Seis pilares** (PRD v4), um objeto `Projeto` que atravessa todos:
 
-Documentos de produto em [`docs/`](docs/): `PRD.md` (v3) e `radar-fontes.md` (as ~30 fontes
-prioritárias do Radar). Artifacts de referência:
-- PRD v3: https://claude.ai/code/artifact/41a40295-20b9-4973-8d87-c23d60aec933
-- Fontes do Radar: https://claude.ai/code/artifact/9df43684-c324-4673-bbc7-ba9e33af17aa
+1. **Projetos** — vitrine de obras concluídas (estilo ArchDaily) + briefs abertos para
+   disputar (estilo Workana). Mesmo objeto, estados diferentes.
+2. **Profissionais** — diretório, perfil, portfólio, reputação verificável.
+3. **Notícias** — editorial leve: newsletter + curadoria + poucas matérias (sem CMS).
+4. **Cursos** — diretório curado com link de inscrição (sem LMS).
+5. **Editais** — licitações/chamamentos estruturados por IA + checklist de habilitação.
+   (Era o "Radar" — renomeado; "Radar do Patrimônio" agora é a marca.)
+6. **Financiamento** — match projeto ↔ lei de incentivo / edital de banco / patrocinador.
+
+Transversal: **Passaporte do Patrimônio** (dentro de Projetos).
+
+Documentos em [`docs/`](docs/): `PRD.md` (v4), `radar-fontes.md` (as ~30 fontes de Editais).
+Artifacts: PRD v4 https://claude.ai/code/artifact/41a40295-20b9-4973-8d87-c23d60aec933 ·
+Fontes https://claude.ai/code/artifact/9df43684-c324-4673-bbc7-ba9e33af17aa
+
+## Design
+
+**Fundo branco + verde.** Sem preto de plataforma — preto só para contraste pontual em
+botões. Verde primário `#1dbf73`, faixa escura = verde profundo (`--band`), nunca preto.
+Fontes: **Hanken Grotesk** (display + corpo) + **Fraunces itálico** (palavras de ênfase,
+classe `.accent`). Tokens em `src/app/globals.css`. Padrões de marketplace tipo Fiverr:
+header sticky com busca que colapsa ao rolar, cards estilo "gig", thumbnail gerado por
+especialidade (`specialty-visual.tsx`, sem foto de estoque).
 
 ## Stack
 
@@ -36,9 +51,10 @@ Pasta do projeto: **`A:/patrinu`** (minúsculo — o casing importa no Windows; 
 
 ## Convenções
 
-- **Mockado primeiro** — integrações reais (fontes do Radar, gateway, etc.) que ainda não
-  podem ser conectadas são construídas com mocks no formato da API real e trocadas depois
-  sem mudar a arquitetura.
+- **Mockado primeiro** — integrações reais que ainda não podem ser conectadas são
+  construídas com mocks no formato da API real e trocadas depois sem mudar a arquitetura.
+  Mocks em `src/lib/mock/`; acesso a dados em `src/lib/{opportunities,projects,directory}.ts`
+  (lê mock hoje, troca para Drizzle sem mudar assinatura).
 - **Schema em código** — Drizzle em TypeScript, nunca editar o banco direto. Mudança de
   schema gera migration (`generate`) antes de aplicar.
 - **Commits pequenos e descritivos** — um por mudança de comportamento. Mensagens em

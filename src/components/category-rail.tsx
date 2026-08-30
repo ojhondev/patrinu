@@ -4,7 +4,13 @@ import { SPECIALTIES, type SpecialtyKey } from "@/lib/taxonomy";
 import { SpecialtyIcon } from "@/components/specialty-visual";
 import { cn } from "@/lib/cn";
 
-export function CategoryRail({ className }: { className?: string }) {
+export function CategoryRail({
+  className,
+  base = "/projetos",
+}: {
+  className?: string;
+  base?: string;
+}) {
   const entries = Object.entries(SPECIALTIES) as [SpecialtyKey, string][];
   return (
     <nav
@@ -17,7 +23,7 @@ export function CategoryRail({ className }: { className?: string }) {
       {entries.map(([key, label]) => (
         <Link
           key={key}
-          href={`/radar?specialty=${key}`}
+          href={`${base}?specialty=${key}`}
           className="group flex shrink-0 flex-col items-center gap-2 rounded-xl border border-transparent px-4 py-3 text-center transition-colors hover:border-border hover:bg-sunk"
         >
           <SpecialtyIcon

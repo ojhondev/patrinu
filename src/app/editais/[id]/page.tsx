@@ -52,7 +52,7 @@ export default async function OpportunityPage({
   const pro = DEMO_PROFESSIONAL;
   const checklist = op.habilitacao.map((req) => ({
     ...req,
-    met: documentSatisfies(req.label, pro),
+    met: documentSatisfies(req.label),
   }));
   const metCount = checklist.filter((c) => c.met).length;
   const missing = checklist.length - metCount;
@@ -62,13 +62,13 @@ export default async function OpportunityPage({
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-11">
       {/* breadcrumb */}
       <nav className="flex items-center gap-1.5 text-sm text-ink-soft">
-        <Link href="/radar" className="inline-flex items-center gap-1 hover:text-ink">
+        <Link href="/editais" className="inline-flex items-center gap-1 hover:text-ink">
           <ArrowLeft size={14} />
-          Radar
+          Editais
         </Link>
         <ChevronRight size={13} className="text-muted" />
         <Link
-          href={`/radar?specialty=${op.specialties[0]}`}
+          href={`/editais?specialty=${op.specialties[0]}`}
           className="hover:text-ink"
         >
           {specialtyLabel(op.specialties[0] ?? "arquitetura")}
@@ -79,7 +79,7 @@ export default async function OpportunityPage({
         {/* ---------------- main ---------------- */}
         <article className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="ink">{kindLabel(op.kind)}</Badge>
+            <Badge tone="green">{kindLabel(op.kind)}</Badge>
             {op.specialties.map((s) => (
               <Badge key={s} tone="neutral">
                 {specialtyLabel(s)}
@@ -173,7 +173,7 @@ export default async function OpportunityPage({
                 {op.outcome.homologatedAt
                   ? ` em ${formatDate(op.outcome.homologatedAt)}`
                   : ""}
-                . Mantido no Radar para a base histórica.
+                . Mantido no acervo para a base histórica.
               </p>
             </section>
           )}
@@ -184,7 +184,7 @@ export default async function OpportunityPage({
                 href={op.url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-2 font-semibold hover:border-ink"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-2 font-semibold hover:border-green-ink"
               >
                 Ver na fonte oficial
                 <ExternalLink size={14} />
@@ -197,7 +197,7 @@ export default async function OpportunityPage({
         </article>
 
         {/* ---------------- responder panel ---------------- */}
-        <aside className="lg:sticky lg:top-[92px] lg:h-max">
+        <aside className="lg:sticky lg:top-[84px] lg:h-max">
           <div className="rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)]">
             <div className="flex items-center justify-between border-b border-border px-5 py-3">
               <span className="font-bold">Responder</span>
@@ -260,7 +260,7 @@ export default async function OpportunityPage({
 
                   <button
                     type="button"
-                    className="mt-5 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-green-deep transition-colors hover:bg-green-hover"
+                    className="mt-5 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-green-hover"
                   >
                     {missing === 0
                       ? "Manifestar interesse"
@@ -268,7 +268,7 @@ export default async function OpportunityPage({
                   </button>
                   <button
                     type="button"
-                    className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-ink"
+                    className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-green-ink"
                   >
                     <Users size={15} />
                     Formar consórcio

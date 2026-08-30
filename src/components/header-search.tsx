@@ -21,7 +21,7 @@ export function HeaderSearch({
   function submit(e: FormEvent) {
     e.preventDefault();
     const term = q.trim();
-    router.push(term ? `/radar?q=${encodeURIComponent(term)}` : "/radar");
+    router.push(term ? `/projetos?q=${encodeURIComponent(term)}` : "/projetos");
   }
 
   return (
@@ -50,7 +50,7 @@ export function HeaderSearch({
         type="submit"
         aria-label="Buscar"
         className={cn(
-          "grid place-items-center bg-ink text-white transition-colors hover:bg-black",
+          "grid place-items-center bg-green text-white transition-colors hover:bg-green-hover",
           compact ? "w-11" : "w-14 sm:w-[54px]",
         )}
       >

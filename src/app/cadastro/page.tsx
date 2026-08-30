@@ -18,14 +18,14 @@ export default function CadastroPage() {
       </p>
       <div className="mt-6 flex gap-3">
         <Link
-          href="/radar"
-          className="rounded-lg bg-green px-5 py-3 text-sm font-bold text-green-deep hover:bg-green-hover"
+          href="/projetos"
+          className="rounded-lg bg-green px-5 py-3 text-sm font-bold text-white hover:bg-green-hover"
         >
-          Ver o Radar
+          Ver os projetos
         </Link>
         <Link
           href="/#como-funciona"
-          className="rounded-lg border border-border-strong px-5 py-3 text-sm font-bold hover:border-ink"
+          className="rounded-lg border border-border-strong px-5 py-3 text-sm font-bold hover:border-green-ink"
         >
           Como funciona
         </Link>

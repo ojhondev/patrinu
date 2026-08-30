@@ -2,11 +2,11 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 const ITEMS: { label: string; href: string }[] = [
-  { label: "Talha e douramento", href: "/radar?q=talha" },
-  { label: "Restauro de fachada", href: "/radar?q=fachada" },
-  { label: "Conservação de acervo", href: "/radar?specialty=acervo" },
-  { label: "Cantaria", href: "/radar?q=cantaria" },
-  { label: "Editais Rouanet", href: "/radar?q=rouanet" },
+  { label: "Talha e douramento", href: "/projetos?q=talha" },
+  { label: "Restauro de fachada", href: "/projetos?q=fachada" },
+  { label: "Conservação de acervo", href: "/projetos?specialty=acervo" },
+  { label: "Editais abertos", href: "/editais" },
+  { label: "Cursos e oficinas", href: "/cursos" },
 ];
 
 export function PopularSearches({ dark = false }: { dark?: boolean }) {
@@ -24,7 +24,7 @@ export function PopularSearches({ dark = false }: { dark?: boolean }) {
           className={
             dark
               ? "inline-flex items-center gap-1.5 rounded-full border border-white/30 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-ink"
-              : "inline-flex items-center gap-1.5 rounded-full border border-border-strong px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-ink"
+              : "inline-flex items-center gap-1.5 rounded-full border border-border-strong px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-green-ink"
           }
         >
           {item.label}

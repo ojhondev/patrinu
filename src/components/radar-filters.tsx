@@ -46,13 +46,13 @@ function FilterSelect({
       className={cn(
         "relative inline-flex items-center rounded-full border text-sm font-semibold transition-colors",
         active
-          ? "border-ink bg-ink text-white"
-          : "border-border-strong text-ink hover:border-ink",
+          ? "border-green bg-green text-white"
+          : "border-border-strong text-ink hover:border-green-ink",
       )}
     >
       <span className="pointer-events-none flex items-center gap-1.5 pl-4 pr-8">
         {active ? current : label}
-        <ChevronDown size={15} className={active ? "text-white/70" : "text-muted"} />
+        <ChevronDown size={15} className={active ? "text-white/75" : "text-muted"} />
       </span>
       <select
         aria-label={label}
@@ -135,7 +135,7 @@ export function RadarFilters({ total }: { total: number }) {
           <select
             value={sort}
             onChange={(e) => setParam("sort", e.target.value === "prazo" ? "" : e.target.value)}
-            className="rounded-md border border-border bg-surface px-2 py-1 font-semibold text-ink outline-none focus:border-ink"
+            className="rounded-md border border-border bg-surface px-2 py-1 font-semibold text-ink outline-none focus:border-green-ink"
           >
             <option value="prazo">Prazo mais próximo</option>
             <option value="valor">Maior valor</option>

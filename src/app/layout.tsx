@@ -21,11 +21,11 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Patrinu — o marketplace do patrimônio",
+    default: "Patrinu — o Radar do Patrimônio e Restauro do Brasil",
     template: "%s · Patrinu",
   },
   description:
-    "Encontre e dispute todas as licitações, editais e chamamentos de restauro e conservação de patrimônio do Brasil. Monte a habilitação, forme consórcio e ganhe.",
+    "Projetos, profissionais, notícias, cursos, editais e financiamento do restauro brasileiro, num só lugar. A rede profissional e o marketplace do patrimônio.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -91,8 +91,8 @@ export default function EmpresasPage() {
                 href="/cadastro"
                 className={
                   plan.highlight
-                    ? "mt-6 block rounded-lg bg-green px-4 py-2.5 text-center text-sm font-bold text-green-deep hover:bg-green-hover"
-                    : "mt-6 block rounded-lg border border-border-strong px-4 py-2.5 text-center text-sm font-bold hover:border-ink"
+                    ? "mt-6 block rounded-lg bg-green px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-green-hover"
+                    : "mt-6 block rounded-lg border border-border-strong px-4 py-2.5 text-center text-sm font-bold hover:border-green-ink"
                 }
               >
                 {plan.cta}

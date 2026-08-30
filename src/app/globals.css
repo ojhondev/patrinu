@@ -19,12 +19,14 @@
 
   --green: #1dbf73;
   --green-hover: #19a463;
-  --green-deep: #0b3b2c;
+  --green-deep: #0c4a37;
   --green-weak: #e8f8f0;
+  --green-mid: #12805c;
   --green-ink: #0d6b45;
 
-  --burgundy: #3d1a26;
-  --burgundy-2: #2b0f1a;
+  /* faixa escura da plataforma = verde profundo (nunca preto) */
+  --band: #0c4a37;
+  --band-2: #083a2b;
 
   --star: #ffb33e;
   --ok: #1a8f57;
@@ -53,10 +55,11 @@
   --green-hover: #38d48f;
   --green-deep: #0c3f30;
   --green-weak: #14312a;
+  --green-mid: #1c9e73;
   --green-ink: #6fd8a8;
 
-  --burgundy: #4a2231;
-  --burgundy-2: #351522;
+  --band: #0c3f30;
+  --band-2: #0a3327;
 
   --star: #ffc061;
   --ok: #4cc188;
@@ -84,10 +87,11 @@
     --green-hover: #38d48f;
     --green-deep: #0c3f30;
     --green-weak: #14312a;
+    --green-mid: #1c9e73;
     --green-ink: #6fd8a8;
 
-    --burgundy: #4a2231;
-    --burgundy-2: #351522;
+    --band: #0c3f30;
+    --band-2: #0a3327;
 
     --star: #ffc061;
     --ok: #4cc188;
@@ -113,9 +117,10 @@
   --color-green-hover: var(--green-hover);
   --color-green-deep: var(--green-deep);
   --color-green-weak: var(--green-weak);
+  --color-green-mid: var(--green-mid);
   --color-green-ink: var(--green-ink);
-  --color-burgundy: var(--burgundy);
-  --color-burgundy-2: var(--burgundy-2);
+  --color-band: var(--band);
+  --color-band-2: var(--band-2);
   --color-star: var(--star);
   --color-ok: var(--ok);
   --color-warn: var(--warn);

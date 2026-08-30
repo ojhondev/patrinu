@@ -4,21 +4,24 @@ import { Wordmark } from "@/components/wordmark";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "Oportunidades",
+    title: "Explorar",
     links: [
-      { label: "Radar de licitações", href: "/radar?kind=licitacao" },
-      { label: "Editais de fomento", href: "/radar?kind=edital" },
-      { label: "Chamamentos", href: "/radar?kind=chamamento" },
-      { label: "Fontes do Radar", href: "/docs/radar-fontes.html" },
+      { label: "Projetos", href: "/projetos" },
+      { label: "Profissionais", href: "/profissionais" },
+      { label: "Editais e licitações", href: "/editais" },
+      { label: "Notícias", href: "/noticias" },
+      { label: "Cursos", href: "/cursos" },
+      { label: "Financiamento", href: "/financiamento" },
     ],
   },
   {
     title: "Especialidades",
     links: [
-      { label: "Bens integrados", href: "/radar?specialty=bens_integrados" },
-      { label: "Arquitetura e edificações", href: "/radar?specialty=arquitetura" },
-      { label: "Acervos e conservação", href: "/radar?specialty=acervo" },
-      { label: "Arqueologia", href: "/radar?specialty=arqueologia" },
+      { label: "Bens integrados", href: "/projetos?specialty=bens_integrados" },
+      { label: "Arquitetura e edificações", href: "/projetos?specialty=arquitetura" },
+      { label: "Acervos e conservação", href: "/projetos?specialty=acervo" },
+      { label: "Arqueologia", href: "/projetos?specialty=arqueologia" },
+      { label: "Jardins históricos", href: "/projetos?specialty=paisagismo" },
     ],
   },
   {
@@ -26,8 +29,8 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Perfil e portfólio", href: "/profissionais" },
       { label: "Passaporte do Patrimônio", href: "/passaporte" },
-      { label: "Formar consórcio", href: "/radar" },
-      { label: "Cofre de documentos", href: "/entrar" },
+      { label: "Formar consórcio", href: "/editais" },
+      { label: "Alertas de edital", href: "/entrar" },
     ],
   },
   {
@@ -35,15 +38,15 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: "Patrinu para empresas", href: "/empresas" },
       { label: "Planos institucionais", href: "/empresas" },
-      { label: "Vitrine de projetos", href: "/empresas" },
       { label: "Publicar um projeto", href: "/entrar" },
+      { label: "Vitrine de projetos", href: "/financiamento" },
     ],
   },
   {
     title: "Patrinu",
     links: [
-      { label: "PRD do produto", href: "/docs/PRD-v3.html" },
-      { label: "Como funciona", href: "/#como-funciona" },
+      { label: "PRD do produto", href: "/docs/PRD-v4.html" },
+      { label: "Fontes do Radar", href: "/docs/radar-fontes.html" },
       { label: "Cadastrar", href: "/cadastro" },
       { label: "Entrar", href: "/entrar" },
     ],
@@ -63,7 +66,7 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-ink-soft hover:text-ink hover:underline"
+                      className="text-sm text-ink-soft hover:text-green-ink hover:underline"
                     >
                       {link.label}
                     </Link>
@@ -80,7 +83,7 @@ export function SiteFooter() {
             <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
           </div>
           <p className="text-sm text-muted">
-            O ecossistema digital do patrimônio · restauro e conservação · Brasil
+            O Radar do Patrimônio e Restauro do Brasil
           </p>
         </div>
       </div>

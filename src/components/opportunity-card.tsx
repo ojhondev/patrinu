@@ -35,7 +35,7 @@ function Deadline({ op }: { op: Opportunity }) {
 export function OpportunityCard({ op }: { op: Opportunity }) {
   return (
     <Link
-      href={`/radar/${op.id}`}
+      href={`/editais/${op.id}`}
       className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]"
     >
       <SpecialtyThumb

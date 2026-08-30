@@ -85,3 +85,47 @@ export function daysUntil(value: string | Date | null | undefined): number | nul
   const diff = target.getTime() - Date.now();
   return Math.ceil(diff / 86_400_000);
 }
+
+/* ---------------- rótulos dos pilares novos ---------------- */
+
+const PROJECT_STATUS: Record<string, string> = {
+  vitrine: "Vitrine",
+  concluido: "Concluído",
+  em_execucao: "Em execução",
+  aberto: "Projeto aberto",
+  em_captacao: "Em captação",
+};
+export const projectStatusLabel = (k: string) => PROJECT_STATUS[k] ?? k;
+
+const ARTICLE_CATEGORY: Record<string, string> = {
+  obra: "Obra",
+  tecnica: "Técnica",
+  politica: "Política",
+  mercado: "Mercado",
+  curso: "Formação",
+  edital: "Edital",
+};
+export const articleCategoryLabel = (k: string) => ARTICLE_CATEGORY[k] ?? k;
+
+const COURSE_FORMAT: Record<string, string> = {
+  presencial: "Presencial",
+  online: "Online",
+  hibrido: "Híbrido",
+};
+export const courseFormatLabel = (k: string) => COURSE_FORMAT[k] ?? k;
+
+const COURSE_LEVEL: Record<string, string> = {
+  introducao: "Introdução",
+  tecnico: "Técnico",
+  especializacao: "Especialização",
+  pos_graduacao: "Graduação / Pós",
+};
+export const courseLevelLabel = (k: string) => COURSE_LEVEL[k] ?? k;
+
+const FUNDING_KIND: Record<string, string> = {
+  lei_incentivo: "Lei de incentivo",
+  edital_banco: "Edital de banco/estatal",
+  fundo_internacional: "Fundo internacional",
+  fundo_estadual: "Fundo estadual",
+};
+export const fundingKindLabel = (k: string) => FUNDING_KIND[k] ?? k;
