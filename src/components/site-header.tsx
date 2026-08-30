@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Search, Menu } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { Wordmark } from "@/components/wordmark";
+import { Logo } from "@/components/logo";
 import { HeaderSearch } from "@/components/header-search";
 
 const NAV = [
@@ -46,7 +46,7 @@ export function SiteHeader() {
     >
       <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-4 px-4 sm:px-6 lg:h-[68px] lg:px-11">
         <Link href="/" aria-label="Patrinu — início" className="shrink-0">
-          <Wordmark className="text-[24px]" />
+          <Logo className="h-7" />
         </Link>
 
         {/* search collapses into the bar once scrolled past the hero (xl+) */}

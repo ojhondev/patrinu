@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { Wordmark } from "@/components/wordmark";
+import { Logo } from "@/components/logo";
 
 export const metadata: Metadata = { title: "Cadastrar" };
 
 export default function CadastroPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-20 text-center">
-      <Wordmark className="text-3xl" />
+      <Logo className="h-9" />
       <h1 className="mt-6 font-display text-2xl font-bold tracking-tight">
         Cadastro em breve
       </h1>

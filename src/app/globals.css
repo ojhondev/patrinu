@@ -19,16 +19,21 @@
   --ink-soft: #4c5a52;
   --muted: #8a948d;
 
-  --green: #1dbf73;
-  --green-hover: #19a463;
-  --green-deep: #0c4a37;
-  --green-weak: #e8f8f0;
-  --green-mid: #12805c;
-  --green-ink: #0d6b45;
+  /* cor principal da marca */
+  --brand: #004116;
+  --green: #004116;
+  --green-hover: #00591f;
+  --green-deep: #00320f;
+  --green-weak: #e6efe8;
+  --green-mid: #0f7a3a;
+  --green-ink: #005c20;
 
-  /* faixa escura da plataforma = verde profundo (nunca preto) */
-  --band: #0c4a37;
-  --band-2: #083a2b;
+  /* verde vivo do logo — apenas realces pequenos */
+  --accent: #2fae55;
+
+  /* faixa escura da plataforma = verde da marca (nunca preto) */
+  --band: #004116;
+  --band-2: #00320f;
 
   /* contraste pontual permitido em alguns botões */
   --contrast: #14201a;
@@ -38,7 +43,7 @@
   --warn: #9a6a1f;
   --crit: #c0392b;
 
-  --ring: #1dbf73;
+  --ring: #004116;
   --shadow-card: 0 1px 2px rgba(20, 40, 30, 0.05), 0 6px 20px rgba(20, 40, 30, 0.07);
   --shadow-pop: 0 8px 30px rgba(20, 40, 30, 0.13);
 }
@@ -59,6 +64,8 @@
   --color-green-weak: var(--green-weak);
   --color-green-mid: var(--green-mid);
   --color-green-ink: var(--green-ink);
+  --color-brand: var(--brand);
+  --color-accent: var(--accent);
   --color-band: var(--band);
   --color-band-2: var(--band-2);
   --color-contrast: var(--contrast);

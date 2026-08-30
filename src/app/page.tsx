@@ -58,15 +58,15 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------- hero ---------------- */}
-      <section className="relative overflow-hidden border-b border-border bg-green-weak">
-        <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-green/20 lg:block" />
+      <section className="relative overflow-hidden bg-band text-white">
+        <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />
         <div className="relative mx-auto max-w-[1400px] px-4 py-14 sm:px-6 sm:py-18 lg:px-11 lg:py-22">
           <div className="max-w-2xl">
-            <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-balance text-ink sm:text-5xl lg:text-[54px]">
+            <h1 className="font-display text-4xl font-semibold leading-[1.08] tracking-tight text-balance sm:text-5xl lg:text-[54px]">
               Tudo sobre patrimônio e restauro do Brasil,{" "}
-              <span className="accent text-green-ink">num só lugar</span>.
+              <span className="accent text-accent">num só lugar</span>.
             </h1>
-            <p className="mt-5 max-w-xl text-lg text-ink-soft">
+            <p className="mt-5 max-w-xl text-lg text-white/75">
               Projetos, profissionais, notícias, cursos, editais e financiamento. A rede
               profissional e o marketplace do restauro brasileiro.
             </p>
@@ -75,11 +75,11 @@ export default async function HomePage() {
               <HeaderSearch />
             </div>
             <div className="mt-4">
-              <PopularSearches />
+              <PopularSearches dark />
             </div>
           </div>
 
-          <dl className="mt-12 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 border-t border-green/25 pt-6 sm:grid-cols-4">
+          <dl className="mt-12 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-4 border-t border-white/15 pt-6 sm:grid-cols-4">
             {[
               ["Projetos na vitrine", "100+"],
               ["Profissionais", `${pros.length * 40}+`],
@@ -87,10 +87,10 @@ export default async function HomePage() {
               ["Cursos no diretório", `${courses.length * 8}+`],
             ].map(([label, value]) => (
               <div key={label}>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-green-ink/70">
+                <dt className="text-xs font-semibold uppercase tracking-wide text-white/55">
                   {label}
                 </dt>
-                <dd className="mt-1 text-xl font-extrabold tabular-nums text-ink">{value}</dd>
+                <dd className="mt-1 text-xl font-extrabold tabular-nums text-white">{value}</dd>
               </div>
             ))}
           </dl>

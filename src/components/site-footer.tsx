@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Wordmark } from "@/components/wordmark";
+import { Logo } from "@/components/logo";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
@@ -79,7 +79,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <Wordmark className="text-xl" />
+            <Logo className="h-6" />
             <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
           </div>
           <p className="text-sm text-muted">
