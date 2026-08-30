@@ -2,24 +2,76 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useTransition } from "react";
-import { Search, X } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 
+import { cn } from "@/lib/cn";
 import { KINDS, SPECIALTIES, UFS, HERITAGE_HUBS } from "@/lib/taxonomy";
 
-const SELECTS = [
+const UF_OPTIONS: [string, string][] = [
+  ...HERITAGE_HUBS.map((uf) => [uf, `${uf} · polo`] as [string, string]),
+  ...UFS.filter((uf) => !HERITAGE_HUBS.includes(uf)).map((uf) => [uf, uf] as [string, string]),
+];
+
+const SELECTS: { key: string; label: string; options: [string, string][] }[] = [
   { key: "specialty", label: "Especialidade", options: Object.entries(SPECIALTIES) },
   { key: "kind", label: "Tipo", options: Object.entries(KINDS) },
+  { key: "uf", label: "Localização", options: UF_OPTIONS },
   {
-    key: "uf",
-    label: "UF",
+    key: "minValue",
+    label: "Valor mínimo",
     options: [
-      ...HERITAGE_HUBS.map((uf) => [uf, `${uf} · polo`] as [string, string]),
-      ...UFS.filter((uf) => !HERITAGE_HUBS.includes(uf)).map((uf) => [uf, uf] as [string, string]),
+      ["100000", "R$ 100 mil+"],
+      ["300000", "R$ 300 mil+"],
+      ["1000000", "R$ 1 mi+"],
+      ["3000000", "R$ 3 mi+"],
     ],
   },
-] as const;
+];
 
-export function RadarFilters() {
+function FilterSelect({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: [string, string][];
+  onChange: (v: string) => void;
+}) {
+  const active = value !== "";
+  const current = options.find(([v]) => v === value)?.[1];
+  return (
+    <div
+      className={cn(
+        "relative inline-flex items-center rounded-full border text-sm font-semibold transition-colors",
+        active
+          ? "border-ink bg-ink text-white"
+          : "border-border-strong text-ink hover:border-ink",
+      )}
+    >
+      <span className="pointer-events-none flex items-center gap-1.5 pl-4 pr-8">
+        {active ? current : label}
+        <ChevronDown size={15} className={active ? "text-white/70" : "text-muted"} />
+      </span>
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+      >
+        <option value="">{label}: todos</option>
+        {options.map(([v, t]) => (
+          <option key={v} value={v}>
+            {t}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function RadarFilters({ total }: { total: number }) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -37,56 +89,61 @@ export function RadarFilters() {
     [params, pathname, router],
   );
 
-  const hasFilters = [...params.keys()].length > 0;
+  const activeCount = SELECTS.filter((s) => params.get(s.key)).length + (params.get("q") ? 1 : 0);
+  const sort = params.get("sort") ?? "prazo";
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2"
+      className="flex flex-wrap items-center gap-2 py-1"
       data-pending={pending ? "" : undefined}
     >
-      <label className="relative flex-1 min-w-[14rem]">
-        <Search
-          size={15}
-          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
-        />
-        <input
-          type="search"
-          defaultValue={params.get("q") ?? ""}
-          placeholder="Buscar por técnica, bem, órgão…"
-          onChange={(e) => setParam("q", e.target.value)}
-          className="w-full rounded-md border border-border bg-surface py-2 pl-9 pr-3 text-sm outline-none placeholder:text-muted focus:border-accent"
-        />
-      </label>
+      <span className="mr-1 inline-flex items-center gap-1.5 text-sm font-bold text-ink">
+        <SlidersHorizontal size={15} />
+        Filtros
+      </span>
 
-      {SELECTS.map(({ key, label, options }) => (
-        <select
-          key={key}
-          value={params.get(key) ?? ""}
-          onChange={(e) => setParam(key, e.target.value)}
-          className="rounded-md border border-border bg-surface px-2.5 py-2 text-sm outline-none focus:border-accent"
-          aria-label={label}
-        >
-          <option value="">{label}</option>
-          {options.map(([value, text]) => (
-            <option key={value} value={value}>
-              {text}
-            </option>
-          ))}
-        </select>
+      {SELECTS.map((s) => (
+        <FilterSelect
+          key={s.key}
+          label={s.label}
+          value={params.get(s.key) ?? ""}
+          options={s.options}
+          onChange={(v) => setParam(s.key, v)}
+        />
       ))}
 
-      {hasFilters && (
+      {activeCount > 0 && (
         <button
           type="button"
           onClick={() =>
             startTransition(() => router.replace(pathname, { scroll: false }))
           }
-          className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-2 text-sm text-muted hover:text-ink hover:border-border-strong"
+          className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold text-ink-soft hover:text-ink"
         >
           <X size={14} />
-          Limpar
+          Limpar ({activeCount})
         </button>
       )}
+
+      <div className="ml-auto flex items-center gap-3">
+        <span className="hidden text-sm text-ink-soft sm:inline">
+          <strong className="font-bold text-ink tabular-nums">{total}</strong>{" "}
+          {total === 1 ? "resultado" : "resultados"}
+        </span>
+        <label className="inline-flex items-center gap-1.5 text-sm">
+          <span className="text-ink-soft">Ordenar:</span>
+          <select
+            value={sort}
+            onChange={(e) => setParam("sort", e.target.value === "prazo" ? "" : e.target.value)}
+            className="rounded-md border border-border bg-surface px-2 py-1 font-semibold text-ink outline-none focus:border-ink"
+          >
+            <option value="prazo">Prazo mais próximo</option>
+            <option value="valor">Maior valor</option>
+            <option value="aderencia">Maior aderência</option>
+            <option value="recentes">Mais recentes</option>
+          </select>
+        </label>
+      </div>
     </div>
   );
 }

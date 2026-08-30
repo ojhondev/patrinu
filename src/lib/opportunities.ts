@@ -11,7 +11,8 @@ import { MOCK_OPPORTUNITIES } from "./mock/opportunities";
 
 function matches(op: Opportunity, f: OpportunityFilters): boolean {
   if (f.q) {
-    const hay = `${op.title} ${op.summary} ${op.object} ${op.organ} ${op.city ?? ""} ${op.techniques.join(" ")}`.toLowerCase();
+    const hay =
+      `${op.title} ${op.summary} ${op.object} ${op.organ} ${op.city ?? ""} ${op.techniques.join(" ")}`.toLowerCase();
     if (!hay.includes(f.q.toLowerCase())) return false;
   }
   if (f.specialty && !op.specialties.includes(f.specialty)) return false;
@@ -23,23 +24,40 @@ function matches(op: Opportunity, f: OpportunityFilters): boolean {
   return true;
 }
 
-function sortKey(op: Opportunity): number {
-  // Abertas primeiro, depois por prazo mais próximo; sem prazo vai ao fim.
-  const openBias = op.status === "aberta" ? 0 : 1e15;
-  const deadline = op.deadlineAt ? new Date(op.deadlineAt).getTime() : 8.64e15;
-  return openBias + deadline;
-}
+const SORTERS: Record<string, (a: Opportunity, b: Opportunity) => number> = {
+  prazo: (a, b) => {
+    const openBias = (o: Opportunity) => (o.status === "aberta" ? 0 : 1e15);
+    const dl = (o: Opportunity) =>
+      o.deadlineAt ? new Date(o.deadlineAt).getTime() : 8.64e15;
+    return openBias(a) - openBias(b) || dl(a) - dl(b);
+  },
+  valor: (a, b) => (b.estimatedValue ?? 0) - (a.estimatedValue ?? 0),
+  aderencia: (a, b) => b.relevanceScore - a.relevanceScore,
+  recentes: (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
+};
 
 export async function listOpportunities(
   filters: OpportunityFilters = {},
 ): Promise<Opportunity[]> {
-  return MOCK_OPPORTUNITIES.filter((op) => matches(op, filters)).sort(
-    (a, b) => sortKey(a) - sortKey(b),
-  );
+  const sorter = SORTERS[filters.sort ?? "prazo"] ?? SORTERS.prazo;
+  return MOCK_OPPORTUNITIES.filter((op) => matches(op, filters)).sort(sorter);
 }
 
 export async function getOpportunity(id: string): Promise<Opportunity | null> {
   return MOCK_OPPORTUNITIES.find((op) => op.id === id) ?? null;
+}
+
+export async function relatedOpportunities(
+  op: Opportunity,
+  limit = 4,
+): Promise<Opportunity[]> {
+  return MOCK_OPPORTUNITIES.filter(
+    (o) =>
+      o.id !== op.id &&
+      (o.specialties.some((s) => op.specialties.includes(s)) || o.uf === op.uf),
+  )
+    .sort((a, b) => b.relevanceScore - a.relevanceScore)
+    .slice(0, limit);
 }
 
 export async function radarStats(): Promise<{
@@ -55,4 +73,11 @@ export async function radarStats(): Promise<{
     ufs: new Set(MOCK_OPPORTUNITIES.map((o) => o.uf).filter(Boolean)).size,
     valorAberto: abertas.reduce((sum, o) => sum + (o.estimatedValue ?? 0), 0),
   };
+}
+
+export async function featuredOpportunities(limit = 8): Promise<Opportunity[]> {
+  return [...MOCK_OPPORTUNITIES]
+    .filter((o) => o.status === "aberta")
+    .sort((a, b) => b.relevanceScore - a.relevanceScore)
+    .slice(0, limit);
 }

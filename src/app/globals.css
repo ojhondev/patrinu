@@ -1,83 +1,131 @@
 @import "tailwindcss";
 
-/* ---------------------------------------------------------------- */
-/*  Patrinu — tokens                                                 */
-/*  Paleta arquivística: papel quente, tinta, verde pátina, ferrugem */
-/* ---------------------------------------------------------------- */
+/* ================================================================ */
+/*  Patrinu — design system                                          */
+/*  Padrões de marketplace (à la Fiverr) + alma de patrimônio        */
+/* ================================================================ */
 
 :root {
-  --bg: #f6f5f0;
-  --surface: #fffefb;
-  --surface-sunk: #eceae2;
-  --border: #ddd9cd;
-  --border-strong: #c6c1af;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --sunk: #f5f5f5;
+  --sunk-2: #efeff0;
+  --border: #e4e5e7;
+  --border-strong: #c9cace;
 
-  --ink: #23262a;
-  --ink-soft: #494e50;
-  --muted: #767a72;
+  --ink: #222325;
+  --ink-soft: #62646a;
+  --muted: #95979d;
 
-  --accent: #2f6b5e;
-  --accent-hover: #245448;
-  --accent-fg: #ffffff;
-  --accent-weak: #e4efe9;
+  --green: #1dbf73;
+  --green-hover: #19a463;
+  --green-deep: #0b3b2c;
+  --green-weak: #e8f8f0;
+  --green-ink: #0d6b45;
 
-  --rust: #9a5a31;
-  --rust-weak: #f1e6db;
+  --burgundy: #3d1a26;
+  --burgundy-2: #2b0f1a;
 
-  --ok: #3d7a4e;
+  --star: #ffb33e;
+  --ok: #1a8f57;
   --warn: #9a6a1f;
-  --crit: #a23b32;
+  --crit: #c0392b;
 
-  --ring: color-mix(in oklab, var(--accent) 55%, transparent);
+  --ring: #1dbf73;
+  --shadow-card: 0 1px 2px rgba(34, 35, 37, 0.04), 0 6px 20px rgba(34, 35, 37, 0.06);
+  --shadow-pop: 0 8px 30px rgba(34, 35, 37, 0.12);
+}
+
+:root.dark,
+.dark {
+  --bg: #1b1b1d;
+  --surface: #232326;
+  --sunk: #17171a;
+  --sunk-2: #202024;
+  --border: #34343a;
+  --border-strong: #48484f;
+
+  --ink: #f1f1f2;
+  --ink-soft: #b6b7bd;
+  --muted: #8a8b92;
+
+  --green: #23c67c;
+  --green-hover: #38d48f;
+  --green-deep: #0c3f30;
+  --green-weak: #14312a;
+  --green-ink: #6fd8a8;
+
+  --burgundy: #4a2231;
+  --burgundy-2: #351522;
+
+  --star: #ffc061;
+  --ok: #4cc188;
+  --warn: #d0a259;
+  --crit: #e0776b;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #16191a;
-    --surface: #1e2223;
-    --surface-sunk: #121516;
-    --border: #333937;
-    --border-strong: #464d4a;
+  :root:not(.light) {
+    --bg: #1b1b1d;
+    --surface: #232326;
+    --sunk: #17171a;
+    --sunk-2: #202024;
+    --border: #34343a;
+    --border-strong: #48484f;
 
-    --ink: #e9e7dd;
-    --ink-soft: #cdccc1;
-    --muted: #969b93;
+    --ink: #f1f1f2;
+    --ink-soft: #b6b7bd;
+    --muted: #8a8b92;
 
-    --accent: #63b7a4;
-    --accent-hover: #7cc7b6;
-    --accent-fg: #10201c;
-    --accent-weak: #1f2e2a;
+    --green: #23c67c;
+    --green-hover: #38d48f;
+    --green-deep: #0c3f30;
+    --green-weak: #14312a;
+    --green-ink: #6fd8a8;
 
-    --rust: #cd9067;
-    --rust-weak: #2c2620;
+    --burgundy: #4a2231;
+    --burgundy-2: #351522;
 
-    --ok: #6fb182;
-    --warn: #c99a4d;
-    --crit: #d9776c;
+    --star: #ffc061;
+    --ok: #4cc188;
+    --warn: #d0a259;
+    --crit: #e0776b;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
+    --shadow-pop: 0 8px 30px rgba(0, 0, 0, 0.5);
   }
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
-  --color-surface-sunk: var(--surface-sunk);
+  --color-sunk: var(--sunk);
+  --color-sunk-2: var(--sunk-2);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-fg: var(--accent-fg);
-  --color-accent-weak: var(--accent-weak);
-  --color-rust: var(--rust);
-  --color-rust-weak: var(--rust-weak);
+  --color-green: var(--green);
+  --color-green-hover: var(--green-hover);
+  --color-green-deep: var(--green-deep);
+  --color-green-weak: var(--green-weak);
+  --color-green-ink: var(--green-ink);
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-2: var(--burgundy-2);
+  --color-star: var(--star);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
   --color-crit: var(--crit);
 
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
+
+  --radius-card: 8px;
 }
 
 * {
@@ -86,22 +134,37 @@
 
 html {
   color-scheme: light dark;
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: var(--accent-weak);
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 a {
   color: inherit;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--green) 26%, transparent);
 }
 
 :focus-visible {
@@ -110,11 +173,19 @@ a {
   border-radius: 3px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+/* Emphasis word — Fiverr's italic-serif accent */
+.accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Utility: hide scrollbar on horizontal rails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

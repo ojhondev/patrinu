@@ -4,15 +4,17 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   Check,
+  ChevronRight,
   ExternalLink,
   FileWarning,
   MapPin,
   Building2,
   CalendarClock,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 
-import { getOpportunity } from "@/lib/opportunities";
+import { getOpportunity, relatedOpportunities } from "@/lib/opportunities";
 import {
   daysUntil,
   formatBRL,
@@ -22,6 +24,9 @@ import {
   specialtyLabel,
 } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
+import { MatchScore } from "@/components/match-score";
+import { SpecialtyThumb } from "@/components/specialty-visual";
+import { OpportunityCard } from "@/components/opportunity-card";
 import { DEMO_PROFESSIONAL, documentSatisfies } from "@/lib/mock/professional";
 
 export async function generateMetadata({
@@ -43,6 +48,7 @@ export default async function OpportunityPage({
   const op = await getOpportunity(id);
   if (!op) notFound();
 
+  const related = await relatedOpportunities(op);
   const pro = DEMO_PROFESSIONAL;
   const checklist = op.habilitacao.map((req) => ({
     ...req,
@@ -53,72 +59,78 @@ export default async function OpportunityPage({
   const d = daysUntil(op.deadlineAt);
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-8">
-      <Link
-        href="/radar"
-        className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
-      >
-        <ArrowLeft size={15} />
-        Radar
-      </Link>
+    <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-11">
+      {/* breadcrumb */}
+      <nav className="flex items-center gap-1.5 text-sm text-ink-soft">
+        <Link href="/radar" className="inline-flex items-center gap-1 hover:text-ink">
+          <ArrowLeft size={14} />
+          Radar
+        </Link>
+        <ChevronRight size={13} className="text-muted" />
+        <Link
+          href={`/radar?specialty=${op.specialties[0]}`}
+          className="hover:text-ink"
+        >
+          {specialtyLabel(op.specialties[0] ?? "arquitetura")}
+        </Link>
+      </nav>
 
-      <div className="mt-4 grid gap-8 lg:grid-cols-[1fr_20rem]">
-        {/* main */}
-        <article>
-          <div className="flex flex-wrap items-center gap-1.5">
-            <Badge tone="rust">{kindLabel(op.kind)}</Badge>
-            <Badge tone={op.status === "aberta" ? "accent" : op.status === "homologada" ? "ok" : "neutral"}>
-              {op.status}
-            </Badge>
+      <div className="mt-4 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        {/* ---------------- main ---------------- */}
+        <article className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="ink">{kindLabel(op.kind)}</Badge>
             {op.specialties.map((s) => (
-              <Badge key={s}>{specialtyLabel(s)}</Badge>
+              <Badge key={s} tone="neutral">
+                {specialtyLabel(s)}
+              </Badge>
             ))}
           </div>
 
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight leading-snug text-balance">
+          <h1 className="mt-3 font-display text-2xl font-bold leading-snug tracking-tight text-balance sm:text-[32px]">
             {op.title}
           </h1>
 
-          <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
-            <div className="flex items-center gap-2 text-ink-soft">
-              <Building2 size={15} className="text-muted shrink-0" />
-              {op.organ}
-            </div>
-            <div className="flex items-center gap-2 text-ink-soft">
-              <MapPin size={15} className="text-muted shrink-0" />
-              {op.city ? `${op.city}/${op.uf}` : op.uf ?? "Nacional"} · {scopeLabel(op.organScope)}
-            </div>
-            <div className="flex items-center gap-2 text-ink-soft">
-              <CalendarClock size={15} className="text-muted shrink-0" />
-              {op.deadlineAt
-                ? `Prazo ${formatDate(op.deadlineAt)}${d != null && d >= 0 ? ` · ${d} d` : ""}`
-                : "Fluxo contínuo"}
-            </div>
-            <div className="flex items-center gap-2 font-mono tabular-nums text-ink-soft">
-              {formatBRL(op.estimatedValue)}
-            </div>
-          </dl>
+          {/* órgão "seller" row */}
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-border py-3 text-sm">
+            <span className="inline-flex items-center gap-2 font-semibold text-ink">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-sunk text-ink-soft">
+                <Building2 size={16} />
+              </span>
+              {op.organ.split("—")[0].trim()}
+            </span>
+            <span className="inline-flex items-center gap-1 text-ink-soft">
+              <MapPin size={14} />
+              {op.city ? `${op.city}/${op.uf}` : op.uf ?? "Nacional"} ·{" "}
+              {scopeLabel(op.organScope)}
+            </span>
+            <MatchScore score={op.relevanceScore} />
+          </div>
 
-          <section className="mt-6">
-            <h2 className="font-mono text-xs uppercase tracking-wide text-muted">Resumo</h2>
-            <p className="mt-2 text-ink-soft leading-relaxed">{op.summary}</p>
+          {/* gallery */}
+          <SpecialtyThumb
+            specialty={op.specialties[0] ?? "arquitetura"}
+            className="mt-6 aspect-[16/8] w-full rounded-[var(--radius-card)]"
+          />
+
+          <section className="mt-8">
+            <h2 className="text-lg font-bold">Resumo</h2>
+            <p className="mt-2 text-ink-soft">{op.summary}</p>
           </section>
 
-          <section className="mt-5">
-            <h2 className="font-mono text-xs uppercase tracking-wide text-muted">
-              Objeto (texto do edital)
-            </h2>
-            <p className="mt-2 text-sm text-ink-soft leading-relaxed">{op.object}</p>
+          <section className="mt-6">
+            <h2 className="text-lg font-bold">Objeto</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">{op.object}</p>
           </section>
 
           {op.techniques.length > 0 && (
-            <section className="mt-5">
-              <h2 className="font-mono text-xs uppercase tracking-wide text-muted">Técnicas</h2>
-              <div className="mt-2 flex flex-wrap gap-1.5">
+            <section className="mt-6">
+              <h2 className="text-lg font-bold">Técnicas envolvidas</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
                 {op.techniques.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-xs text-ink-soft"
+                    className="rounded-full border border-border bg-surface px-3 py-1 text-sm text-ink-soft"
                   >
                     {t}
                   </span>
@@ -127,10 +139,33 @@ export default async function OpportunityPage({
             </section>
           )}
 
+          <section className="mt-6 grid gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:grid-cols-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                {op.kind === "licitacao" ? "Valor estimado" : "Recurso"}
+              </p>
+              <p className="mt-1 font-bold tabular-nums">{formatBRL(op.estimatedValue)}</p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                Prazo
+              </p>
+              <p className="mt-1 font-bold">
+                {op.deadlineAt ? formatDate(op.deadlineAt) : "Fluxo contínuo"}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                Publicado
+              </p>
+              <p className="mt-1 font-bold">{formatDate(op.publishedAt)}</p>
+            </div>
+          </section>
+
           {op.outcome && (
-            <section className="mt-6 rounded-lg border border-ok/40 bg-ok/5 p-4 text-sm">
-              <h2 className="font-mono text-xs uppercase tracking-wide text-ok">Desfecho</h2>
-              <p className="mt-1.5 text-ink-soft">
+            <section className="mt-6 rounded-[var(--radius-card)] border border-ok/40 bg-[color-mix(in_oklab,var(--ok)_7%,transparent)] p-4">
+              <h2 className="text-sm font-bold text-ok">Desfecho registrado</h2>
+              <p className="mt-1 text-sm text-ink-soft">
                 Homologado para <strong className="text-ink">{op.outcome.winner}</strong>
                 {op.outcome.winnerValue
                   ? ` por ${formatBRL(op.outcome.winnerValue)}`
@@ -138,96 +173,135 @@ export default async function OpportunityPage({
                 {op.outcome.homologatedAt
                   ? ` em ${formatDate(op.outcome.homologatedAt)}`
                   : ""}
-                .
+                . Mantido no Radar para a base histórica.
               </p>
             </section>
           )}
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
             {op.url && (
               <a
                 href={op.url}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm hover:border-border-strong"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-2 font-semibold hover:border-ink"
               >
-                Fonte oficial
+                Ver na fonte oficial
                 <ExternalLink size={14} />
               </a>
             )}
-            <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs font-mono text-muted">
+            <span className="text-muted">
               {op.source.name} · {op.externalId}
             </span>
           </div>
         </article>
 
-        {/* responder — Marketplace camada A */}
-        <aside className="lg:sticky lg:top-20 h-max rounded-lg border border-border bg-surface p-5">
-          <h2 className="font-semibold">Responder</h2>
-          <p className="mt-1 text-xs text-muted">
-            Perfil: {pro.displayName} · {pro.city}/{pro.uf}
-          </p>
-
-          {op.status === "aberta" ? (
-            <>
-              <div className="mt-4 flex items-baseline gap-2">
-                <span className="text-2xl font-semibold tabular-nums">
-                  {metCount}/{checklist.length}
+        {/* ---------------- responder panel ---------------- */}
+        <aside className="lg:sticky lg:top-[92px] lg:h-max">
+          <div className="rounded-[var(--radius-card)] border border-border bg-surface shadow-[var(--shadow-card)]">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3">
+              <span className="font-bold">Responder</span>
+              {d != null && d >= 0 && op.status === "aberta" && (
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-warn">
+                  <CalendarClock size={13} />
+                  {d} dias
                 </span>
-                <span className="text-xs text-muted">
-                  itens de habilitação cobertos pelo seu cofre
-                </span>
-              </div>
+              )}
+            </div>
 
-              <ul className="mt-3 space-y-2">
-                {checklist.map((item) => (
-                  <li key={item.label} className="flex gap-2 text-sm">
-                    <span
-                      className={
-                        item.met
-                          ? "mt-0.5 shrink-0 text-ok"
-                          : "mt-0.5 shrink-0 text-warn"
-                      }
-                    >
-                      {item.met ? <Check size={15} /> : <FileWarning size={15} />}
-                    </span>
-                    <span className={item.met ? "text-ink-soft" : "text-ink"}>
-                      {item.label}
-                      {item.detail && (
-                        <span className="block text-xs text-muted">{item.detail}</span>
-                      )}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+            <div className="p-5">
+              {op.status === "aberta" ? (
+                <>
+                  <div className="flex items-center gap-2 text-sm text-ink-soft">
+                    <ShieldCheck size={15} className="text-green-ink" />
+                    Perfil {pro.displayName}
+                    {pro.verified && (
+                      <Badge tone="green" className="ml-1">
+                        verificado
+                      </Badge>
+                    )}
+                  </div>
 
-              <button
-                type="button"
-                className="mt-4 w-full rounded-md bg-accent px-3 py-2.5 text-sm font-medium text-accent-fg hover:bg-accent-hover"
-              >
-                {missing === 0
-                  ? "Manifestar interesse"
-                  : `Manifestar interesse · faltam ${missing}`}
-              </button>
-              <button
-                type="button"
-                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm hover:border-border-strong"
-              >
-                <Users size={14} />
-                Formar consórcio
-              </button>
-              <p className="mt-3 text-[0.68rem] leading-relaxed text-muted">
-                Protótipo — o fluxo de manifestação, cofre de documentos e consórcio será
-                persistido no banco (ver PRD §6.2, camada A).
-              </p>
-            </>
-          ) : (
-            <p className="mt-4 text-sm text-muted">
-              Oportunidade {op.status}. Mantida no Radar para a base histórica de desfecho.
-            </p>
-          )}
+                  <div className="mt-4 flex items-baseline gap-2">
+                    <span className="font-display text-3xl font-extrabold tabular-nums">
+                      {metCount}/{checklist.length}
+                    </span>
+                    <span className="text-xs text-ink-soft">
+                      itens de habilitação já cobertos pelo seu cofre
+                    </span>
+                  </div>
+
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sunk">
+                    <div
+                      className="h-full rounded-full bg-green"
+                      style={{ width: `${(metCount / checklist.length) * 100}%` }}
+                    />
+                  </div>
+
+                  <ul className="mt-4 space-y-2.5">
+                    {checklist.map((item) => (
+                      <li key={item.label} className="flex gap-2 text-sm">
+                        <span
+                          className={
+                            item.met ? "mt-0.5 shrink-0 text-ok" : "mt-0.5 shrink-0 text-warn"
+                          }
+                        >
+                          {item.met ? <Check size={15} /> : <FileWarning size={15} />}
+                        </span>
+                        <span className={item.met ? "text-ink-soft" : "text-ink"}>
+                          {item.label}
+                          {item.detail && (
+                            <span className="block text-xs text-muted">{item.detail}</span>
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    type="button"
+                    className="mt-5 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-green-deep transition-colors hover:bg-green-hover"
+                  >
+                    {missing === 0
+                      ? "Manifestar interesse"
+                      : `Manifestar interesse · faltam ${missing}`}
+                  </button>
+                  <button
+                    type="button"
+                    className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-ink"
+                  >
+                    <Users size={15} />
+                    Formar consórcio
+                  </button>
+                  <p className="mt-3 text-xs leading-relaxed text-muted">
+                    Protótipo — manifestação, cofre e consórcio serão persistidos no banco
+                    (PRD §6.2, camada A).
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm text-ink-soft">
+                  Oportunidade {op.status}. Mantida no Radar para a base histórica de
+                  desfecho.
+                </p>
+              )}
+            </div>
+          </div>
         </aside>
       </div>
-    </main>
+
+      {/* ---------------- related ---------------- */}
+      {related.length > 0 && (
+        <section className="mt-14 border-t border-border pt-10">
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Oportunidades relacionadas
+          </h2>
+          <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {related.map((r) => (
+              <OpportunityCard key={r.id} op={r} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
   );
 }

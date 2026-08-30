@@ -55,6 +55,8 @@ export type Opportunity = {
   relevanceScore: number;
 };
 
+export type OpportunitySort = "prazo" | "valor" | "aderencia" | "recentes";
+
 export type OpportunityFilters = {
   q?: string;
   specialty?: SpecialtyKey;
@@ -63,4 +65,5 @@ export type OpportunityFilters = {
   scope?: OrganScopeKey;
   minValue?: number;
   status?: Opportunity["status"];
+  sort?: OpportunitySort;
 };
