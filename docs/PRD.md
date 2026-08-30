@@ -1,10 +1,47 @@
-# A Patrinu — PRD v5.0
+# A Patrinu — PRD v6.0
 
 **O Radar do Patrimônio e Restauro do Brasil.**
 
-- **Versão:** 5.0 — Patrinu Pro & Área do Usuário (sobre a v4)
+- **Versão:** 6.0 — Pro, regra de acesso/paywall, conta Master & moderação
 - **Data:** Agosto de 2026
-- **Documento completo:** `docs/PRD-v5.html` (este .md tem o corpo da v4 + o delta v5 abaixo)
+- **Documento completo:** `docs/PRD-v6.html` (este .md tem o corpo da v4 + os deltas v5 e v6)
+
+---
+
+## v6 — Regra de acesso, conta Master e moderação
+
+**Acesso, em três níveis:**
+
+| Nível | Vê | Borrado / bloqueado |
+|---|---|---|
+| **Visitante** | Vitrine de projetos, profissionais, notícias, cursos; publica **1 projeto/mês** | Valores de projeto · nome de contratante/empresa · Radar de Editais inteiro |
+| **Cadastrado** (grátis, cadastro leve) | + valores de projeto + salvar | Radar de Editais · enviar proposta · checklist · alertas |
+| **Pro** (assinante) | Tudo | — |
+
+- **Radar de Editais é 100% Pro** (lista e detalhe borrados com CTA para não-Pro).
+- **Informação-ouro borrada, não removida** — borrar em vez de bloquear é o gatilho da
+  assinatura. Valores, nomes de contratante, o Radar.
+- **Enviar proposta** exige Pro; **ver valores** exige ao menos cadastro leve.
+- Cadastro leve: entra com o mínimo, completa o perfil no painel para liberar cada
+  funcionalidade.
+
+**Conta Master** (`/master`, link no rodapé): acesso total. Auth por env
+(`MASTER_EMAIL` + `MASTER_PASSWORD_HASH` scrypt + `SESSION_SECRET`) e cookie assinado —
+senha em claro nunca no repo.
+
+**Moderação prévia obrigatória:** projeto, vaga, edital ingerido e pedido de divulgação de
+curso entram numa fila de aprovação; só vão ao ar com o OK do Master. Popup "Projeto em
+análise" ao publicar. **Novos perfis não são revisados.**
+
+**Outras decisões v6:** multi-trilha permitida sem conflito de interesse · elegibilidade
+sinalizada manualmente · painel do contratante com duas seções (candidatos / matches) ·
+"formar consórcio" → **"Quero participar"** (lista de interessados por projeto que o
+vencedor pode contratar) · **Passaporte do Patrimônio sai do escopo** · divulgar curso =
+contato por e-mail.
+
+**Ainda em aberto (§18):** regra concreta do conflito de interesse · o que acontece com o
+2º projeto do mês · SLA da moderação · rotação do segredo Master · preço · verificação ·
+contrato leve · receita de cursos.
 
 ---
 
