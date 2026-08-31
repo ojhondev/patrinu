@@ -2,7 +2,7 @@
 
 /* ================================================================ */
 /*  Patrinu — design system                                          */
-/*  Fundo branco + vermelho (#ED1A1A). Sem preto de plataforma.      */
+/*  Fundo branco + vermelho (#C6090E). Sem preto de plataforma.      */
 /*  Preto só entra como contraste pontual em botões (tom `ink`).     */
 /*  NB: os tokens ainda se chamam `--green*` / `bg-band` por         */
 /*  compatibilidade — os valores é que passaram a ser vermelhos.     */
@@ -22,31 +22,31 @@
   --muted: #948a8a;
 
   /* cor principal da marca */
-  --brand: #ED1A1A;
-  --green: #ED1A1A;
-  --green-hover: #c81414;
-  --green-deep: #9e1010;
-  --green-weak: #fdeaea;
-  --green-mid: #f24e3c;
-  --green-ink: #c71414;
+  --brand: #C6090E;
+  --green: #C6090E;
+  --green-hover: #a3070b;
+  --green-deep: #7d0509;
+  --green-weak: #fbe6e6;
+  --green-mid: #de3a34;
+  --green-ink: #bd0a0e;
 
   /* vermelho claro (coral) — apenas realces pequenos e texto sobre faixa */
-  --accent: #ff6b5b;
+  --accent: #ff6a58;
 
   /* faixa escura da plataforma = vinho profundo da marca (nunca preto).
-     O vermelho vivo #ED1A1A fica reservado a botões/realces. */
-  --band: #4a1213;
-  --band-2: #2b0a0b;
+     O vermelho vivo #C6090E fica reservado a botões/realces. */
+  --band: #470f11;
+  --band-2: #290809;
 
   /* contraste pontual permitido em alguns botões */
-  --contrast: #201414;
+  --contrast: #1f1313;
 
   --star: #f0a730;
   --ok: #1a8f57;
   --warn: #9a6a1f;
-  --crit: #a51d1d;
+  --crit: #9c1c1c;
 
-  --ring: #ED1A1A;
+  --ring: #C6090E;
   --shadow-card: 0 1px 2px rgba(40, 22, 22, 0.05), 0 6px 20px rgba(40, 22, 22, 0.08);
   --shadow-pop: 0 8px 30px rgba(40, 22, 22, 0.14);
 }
@@ -81,7 +81,8 @@
   --font-display: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
-  --radius-card: 8px;
+  /* recorte arquitetônico — cantos discretos, nada de "pílula" */
+  --radius-card: 3px;
 }
 
 @layer base {
@@ -155,6 +156,48 @@ body {
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.01em;
+}
+
+/* ---- linguagem editorial (pass de arte MASP) ---- */
+
+/* rótulo/eyebrow em caixa-alta espaçada */
+.kicker {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* título grande de página */
+.display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+/* botão "museu": contorno que preenche no hover */
+.btn-museum {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--ink);
+  padding: 0.6rem 1.15rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: background-color 0.15s, color 0.15s;
+}
+.btn-museum:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+/* régua fina editorial */
+.rule {
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
 }
 
 /* Utility: hide scrollbar on horizontal rails */

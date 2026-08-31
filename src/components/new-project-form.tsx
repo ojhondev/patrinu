@@ -18,17 +18,19 @@ export function NewProjectForm() {
       <fieldset className="space-y-1.5">
         <legend className="text-sm font-semibold text-ink">Tipo de publicação</legend>
         <div className="grid gap-2 sm:grid-cols-2">
-          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border p-3 text-sm has-[:checked]:border-green-ink has-[:checked]:bg-green-weak">
+          <label className="flex cursor-pointer items-start gap-2 border border-ink/20 p-3 text-sm has-[:checked]:border-green-ink has-[:checked]:bg-green-weak">
             <input type="radio" name="mode" value="aberto" defaultChecked className="mt-0.5" />
             <span>
-              <strong className="block">Brief aberto</strong>
-              <span className="text-ink-soft">Busco profissionais para executar a obra.</span>
+              <strong className="block">Oportunidade</strong>
+              <span className="text-ink-soft">
+                Busco profissionais para executar — recebe propostas.
+              </span>
             </span>
           </label>
-          <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border p-3 text-sm has-[:checked]:border-green-ink has-[:checked]:bg-green-weak">
+          <label className="flex cursor-pointer items-start gap-2 border border-ink/20 p-3 text-sm has-[:checked]:border-green-ink has-[:checked]:bg-green-weak">
             <input type="radio" name="mode" value="vitrine" className="mt-0.5" />
             <span>
-              <strong className="block">Vitrine</strong>
+              <strong className="block">Projeto para a vitrine</strong>
               <span className="text-ink-soft">Obra concluída, publicada como referência.</span>
             </span>
           </label>

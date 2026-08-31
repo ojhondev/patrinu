@@ -6,7 +6,7 @@ import { Badge } from "@/components/badge";
 
 export function FundingCard({ source: f }: { source: FundingSource }) {
   return (
-    <div className="flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-5">
+    <div className="flex flex-col border border-ink/12 bg-surface p-5">
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <Badge tone="green">{fundingKindLabel(f.kind)}</Badge>
         <Badge tone="outline" className="capitalize">
@@ -28,7 +28,7 @@ export function FundingCard({ source: f }: { source: FundingSource }) {
         ))}
       </ul>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-xs text-ink-soft">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-ink/12 pt-3 text-xs text-ink-soft">
         {f.ticket ? <span>{f.ticket}</span> : null}
         {f.cycle ? <span>· {f.cycle}</span> : null}
         <a

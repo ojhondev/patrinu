@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
-import { Logo } from "@/components/logo";
+import { AuthShell } from "@/components/auth-shell";
 import { AuthForm } from "@/components/auth-form";
 import { TRACKS } from "@/lib/pro";
 import type { ProTrack } from "@/lib/types";
@@ -20,23 +20,19 @@ export default async function CadastroPage({
   const track = trilha && TRACKS[trilha as ProTrack] ? (trilha as ProTrack) : undefined;
 
   return (
-    <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-16 text-center">
-      <Logo className="h-8" />
-      <h1 className="mt-6 font-display text-2xl font-bold tracking-tight">Criar conta</h1>
-      <p className="mt-1 text-sm text-ink-soft">
-        {track
-          ? `Trilha: ${TRACKS[track].label}. Você completa o perfil depois, no painel.`
-          : "Grátis. Você completa o perfil depois, no painel."}
-      </p>
-
+    <AuthShell
+      heading="Criar conta"
+      sub={
+        <>
+          {track ? `Trilha: ${TRACKS[track].label}. ` : "Grátis. "}
+          Já possui uma conta?{" "}
+          <Link href="/entrar" className="font-semibold text-green-ink hover:underline">
+            Entre aqui
+          </Link>
+        </>
+      }
+    >
       <AuthForm mode="signup" track={track} next={next} />
-
-      <p className="mt-6 text-sm text-ink-soft">
-        Já tem conta?{" "}
-        <Link href="/entrar" className="font-semibold text-green-ink hover:underline">
-          Entrar
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   );
 }

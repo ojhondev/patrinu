@@ -21,7 +21,7 @@ export function HeaderSearch({
   function submit(e: FormEvent) {
     e.preventDefault();
     const term = q.trim();
-    router.push(term ? `/projetos?q=${encodeURIComponent(term)}` : "/projetos");
+    router.push(term ? `/oportunidades?q=${encodeURIComponent(term)}` : "/oportunidades");
   }
 
   return (
@@ -29,8 +29,8 @@ export function HeaderSearch({
       onSubmit={submit}
       role="search"
       className={cn(
-        "flex w-full items-stretch overflow-hidden border border-border bg-surface",
-        compact ? "h-11 rounded-lg" : "h-14 rounded-xl shadow-[var(--shadow-card)] sm:h-[54px]",
+        "flex w-full items-stretch overflow-hidden border border-ink/20 bg-surface",
+        compact ? "h-11" : "h-14 sm:h-[54px]",
       )}
     >
       <input

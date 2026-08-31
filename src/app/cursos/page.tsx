@@ -5,6 +5,7 @@ import { listCourses } from "@/lib/directory";
 import { courseFormatLabel, courseLevelLabel } from "@/lib/taxonomy";
 import { CourseCard } from "@/components/course-card";
 import { CategoryRail } from "@/components/category-rail";
+import { PageHero } from "@/components/page-hero";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
@@ -40,23 +41,21 @@ export default async function CursosPage({
 
   const chip = (active: boolean) =>
     cn(
-      "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors",
+      "text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
       active
-        ? "border-green bg-green text-white"
-        : "border-border-strong text-ink hover:border-green-ink",
+        ? "text-ink underline decoration-2 underline-offset-[6px]"
+        : "text-muted hover:text-ink",
     );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
-      <header className="mb-6">
-        <h1 className="font-display text-3xl font-bold tracking-tight">Cursos</h1>
-        <p className="mt-1 text-ink-soft">
-          Diretório curado de cursos, oficinas e pós-graduações de conservação-restauro. No
-          v1 é só listagem com link de inscrição
-        </p>
-      </header>
+    <div>
+      <PageHero tone="paper" eyebrow="Formação em conservação-restauro" title={<>Cursos</>}>
+        Diretório curado de cursos, oficinas e pós-graduações. Listagem com link direto de
+        inscrição.
+      </PageHero>
 
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
+      <div className="mb-3 flex flex-wrap gap-x-5 gap-y-2">
         <Link href={qs({ formato: undefined })} className={chip(!format)}>
           Todos os formatos
         </Link>
@@ -77,21 +76,21 @@ export default async function CursosPage({
         ))}
       </div>
 
-      <div className="mb-6 border-b border-border pb-3">
+      <div className="my-5">
         <CategoryRail base="/cursos" />
       </div>
 
-      <p className="mb-3 text-sm text-ink-soft">
+      <p className="rule mb-5 pb-3 text-sm text-ink-soft">
         <strong className="font-bold text-ink tabular-nums">{courses.length}</strong>{" "}
         {courses.length === 1 ? "curso" : "cursos"}
       </p>
 
       {courses.length === 0 ? (
-        <div className="rounded-[var(--radius-card)] border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
+        <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
           Nenhum curso com esses filtros.
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((c) => (
             <CourseCard key={c.slug} course={c} />
           ))}
@@ -105,6 +104,7 @@ export default async function CursosPage({
         </Link>
         .
       </p>
+      </div>
     </div>
   );
 }

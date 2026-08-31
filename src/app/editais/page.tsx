@@ -6,6 +6,7 @@ import { RadarFilters } from "@/components/radar-filters";
 import { OpportunityCard } from "@/components/opportunity-card";
 import { CategoryRail } from "@/components/category-rail";
 import { HeaderSearch } from "@/components/header-search";
+import { PageHero } from "@/components/page-hero";
 import { LockedPanel } from "@/components/locked";
 import { listOpportunities } from "@/lib/opportunities";
 import { has } from "@/lib/membership";
@@ -65,30 +66,32 @@ export default async function RadarPage({
     );
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
-      <header className="mb-5">
-        <h1 className="font-display text-3xl font-bold tracking-tight">
-          {q ? (
+    <div>
+      <PageHero
+        tone="band"
+        eyebrow="O Radar de Editais"
+        title={
+          q ? (
             <>
-              Resultados para <span className="accent">“{q}”</span>
+              Editais <span className="accent text-accent">“{q}”</span>
             </>
           ) : (
-            "Editais e licitações"
-          )}
-        </h1>
-        <p className="mt-1 text-ink-soft">
-          Licitações, editais e chamamentos de patrimônio, estruturados por IA. Dados de
-          demonstração —{" "}
-          <Link
-            href="/fontes"
-            className="font-semibold text-green-ink underline underline-offset-2"
-          >
-            ver as 30 fontes
-          </Link>
-          .
-        </p>
-      </header>
+            <>
+              Licitações e chamamentos de{" "}
+              <span className="accent text-accent">patrimônio</span>
+            </>
+          )
+        }
+      >
+        Estruturados por IA, com checklist de habilitação e histórico de desfecho. Dados de
+        demonstração —{" "}
+        <Link href="/fontes" className="font-semibold text-accent underline">
+          ver as 30 fontes
+        </Link>
+        .
+      </PageHero>
 
+      <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
       <div className="mb-5 max-w-xl md:hidden">
         <Suspense>
           <HeaderSearch compact defaultValue={q ?? ""} />
@@ -116,6 +119,7 @@ export default async function RadarPage({
           {grid}
         </LockedPanel>
       )}
+      </div>
     </div>
   );
 }

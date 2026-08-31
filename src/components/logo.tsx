@@ -16,8 +16,8 @@ export function Logo({
     <img
       src={pro ? "/logo-patrinupro.png" : "/logo-patrinu.png"}
       alt={pro ? "Patrinu Pro" : "Patrinu"}
-      width={pro ? 1262 : 1219}
-      height={pro ? 227 : 293}
+      width={pro ? 1262 : 881}
+      height={pro ? 227 : 222}
       className={cn("w-auto", className)}
     />
   );

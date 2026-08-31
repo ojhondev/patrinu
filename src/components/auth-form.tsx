@@ -30,7 +30,7 @@ export function AuthForm({
             name="name"
             required
             autoComplete="name"
-            className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+            className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
           />
         </label>
       )}
@@ -42,7 +42,7 @@ export function AuthForm({
           name="email"
           required
           autoComplete="email"
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
         />
       </label>
 
@@ -54,7 +54,7 @@ export function AuthForm({
           required
           minLength={mode === "signup" ? 8 : undefined}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
-          className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
         />
         {mode === "signup" && (
           <span className="mt-1 block text-xs text-muted">Ao menos 8 caracteres.</span>
@@ -68,7 +68,7 @@ export function AuthForm({
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded-lg bg-green px-4 py-2.5 text-sm font-bold text-white hover:bg-green-hover disabled:opacity-60"
+        className="w-full bg-green px-4 py-2.5 text-xs font-bold uppercase tracking-[0.13em] text-white hover:bg-green-hover disabled:opacity-60"
       >
         {pending
           ? "Aguarde…"

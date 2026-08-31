@@ -9,7 +9,7 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
   return (
     <Link
       href={`/profissionais/${pro.slug}`}
-      className="group flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-5 transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
     >
       <div className="flex items-start gap-3">
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink">
@@ -17,7 +17,7 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
         </span>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <h3 className="truncate font-semibold text-ink group-hover:underline">
+            <h3 className="truncate font-display font-bold text-ink group-hover:text-green-ink">
               {pro.displayName}
             </h3>
             {pro.verified && <BadgeCheck size={16} className="shrink-0 text-green" />}
@@ -30,14 +30,14 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
         {pro.specialties.slice(0, 3).map((s) => (
           <span
             key={s}
-            className="rounded-md bg-sunk px-2 py-0.5 text-xs font-semibold text-ink-soft"
+            className="border border-ink/15 px-2 py-0.5 text-xs text-ink-soft"
           >
             {specialtyLabel(s)}
           </span>
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-xs text-ink-soft">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-ink/12 pt-3 text-xs text-ink-soft">
         <span className="inline-flex items-center gap-1">
           <MapPin size={13} />
           {pro.city}/{pro.uf}

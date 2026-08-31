@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import type { Article } from "@/lib/types";
 import { articleCategoryLabel, formatDate } from "@/lib/taxonomy";
-import { Badge } from "@/components/badge";
 
 export function ArticleCard({
   article: a,
@@ -14,18 +13,18 @@ export function ArticleCard({
   return (
     <Link
       href={`/noticias/${a.slug}`}
-      className="group flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-5 transition-colors hover:border-green-ink"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
     >
       <div className="flex items-center gap-2 text-xs text-ink-soft">
-        <Badge tone="green">{articleCategoryLabel(a.category)}</Badge>
+        <span className="kicker text-green-ink">{articleCategoryLabel(a.category)}</span>
         <span>{formatDate(a.publishedAt)}</span>
         <span>· {a.readingMinutes} min</span>
       </div>
       <h3
         className={
           compact
-            ? "mt-2 line-clamp-2 font-semibold leading-snug text-ink group-hover:underline"
-            : "mt-2 line-clamp-3 text-lg font-bold leading-snug text-ink group-hover:underline"
+            ? "mt-2 line-clamp-2 font-display font-bold leading-snug text-ink group-hover:text-green-ink"
+            : "mt-2 line-clamp-3 font-display text-lg font-bold leading-snug text-ink group-hover:text-green-ink"
         }
       >
         {a.title}

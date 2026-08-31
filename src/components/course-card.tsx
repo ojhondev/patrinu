@@ -10,7 +10,7 @@ export function CourseCard({ course: c }: { course: Course }) {
       href={c.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex flex-col rounded-[var(--radius-card)] border border-border bg-surface p-5 transition-colors hover:border-green-ink"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
     >
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <Badge tone="green">{courseLevelLabel(c.level)}</Badge>
@@ -31,7 +31,7 @@ export function CourseCard({ course: c }: { course: Course }) {
         ))}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border pt-3 text-xs text-ink-soft">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-ink/12 pt-3 text-xs text-ink-soft">
         {c.city ? (
           <span className="inline-flex items-center gap-1">
             <MapPin size={13} />

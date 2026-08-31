@@ -19,6 +19,7 @@ export type HeaderAccount = {
 } | null;
 
 const NAV = [
+  { href: "/oportunidades", label: "Oportunidades" },
   { href: "/projetos", label: "Projetos" },
   { href: "/profissionais", label: "Profissionais" },
   { href: "/editais", label: "Editais" },
@@ -73,7 +74,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
           <HeaderSearch compact />
         </div>
 
-        <nav className="ml-auto hidden items-center gap-0.5 lg:flex">
+        <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => {
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
@@ -81,7 +82,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-md px-2.5 py-2 text-sm font-semibold transition-colors",
+                  "px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
                   active ? "text-green-ink" : "text-ink-soft hover:text-ink",
                 )}
               >
@@ -89,25 +90,25 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
               </Link>
             );
           })}
-          <span className="mx-1.5 h-5 w-px bg-border" />
+          <span className="mx-1.5 h-4 w-px bg-ink/15" />
           {account ? (
             <>
               <Link
                 href={account.master ? "/master" : "/painel"}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold",
+                  "inline-flex items-center gap-2 px-2 py-1.5 text-[11px] font-bold uppercase tracking-[0.13em]",
                   pathname.startsWith("/painel") || pathname.startsWith("/master")
                     ? "text-green-ink"
                     : "text-ink-soft hover:text-ink",
                 )}
               >
                 <Avatar name={account.name} src={account.avatarUrl} size={26} />
-                {account.master ? "Painel Master" : firstName}
+                {account.master ? "Master" : firstName}
               </Link>
               {!account.master && account.plan !== "pro" && (
                 <Link
                   href="/pro"
-                  className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
+                  className="bg-green px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white transition-colors hover:bg-green-hover"
                 >
                   Assinar Pro
                 </Link>
@@ -115,7 +116,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="rounded-md px-2.5 py-2 text-sm font-semibold text-ink-soft hover:text-ink"
+                  className="px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-ink-soft hover:text-ink"
                 >
                   Sair
                 </button>
@@ -125,13 +126,13 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
             <>
               <Link
                 href="/entrar"
-                className="rounded-md px-2.5 py-2 text-sm font-semibold text-ink-soft hover:text-ink"
+                className="px-2.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-ink-soft hover:text-ink"
               >
                 Entrar
               </Link>
               <Link
                 href="/pro"
-                className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
+                className="bg-green px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white transition-colors hover:bg-green-hover"
               >
                 Patrinu Pro
               </Link>
@@ -143,7 +144,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
           <Link
             href="/editais"
             aria-label="Buscar"
-            className="rounded-lg border border-border p-2 text-ink-soft"
+            className="border border-ink/20 p-2 text-ink-soft"
           >
             <Search size={18} />
           </Link>
@@ -152,7 +153,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
             aria-label="Menu"
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
-            className="rounded-lg border border-border p-2 text-ink-soft"
+            className="border border-ink/20 p-2 text-ink-soft"
           >
             <Menu size={18} />
           </button>
@@ -160,29 +161,29 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
       </div>
 
       {open && (
-        <nav className="border-t border-border bg-surface px-4 py-3 lg:hidden">
+        <nav className="border-t border-ink/12 bg-surface px-4 py-3 lg:hidden">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="block rounded-md px-2 py-2.5 text-sm font-semibold text-ink-soft hover:bg-sunk hover:text-ink"
+              className="block px-2 py-2.5 text-xs font-bold uppercase tracking-[0.13em] text-ink-soft hover:bg-sunk hover:text-ink"
             >
               {item.label}
             </Link>
           ))}
-          <div className="mt-2 flex gap-2 border-t border-border pt-3">
+          <div className="mt-2 flex gap-2 border-t border-ink/12 pt-3">
             {account ? (
               <>
                 <Link
                   href={account.master ? "/master" : "/painel"}
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-bold"
+                  className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.13em]"
                 >
-                  {account.master ? "Painel Master" : "Meu painel"}
+                  {account.master ? "Master" : "Meu painel"}
                 </Link>
                 <form action={signOut} className="flex-1">
                   <button
                     type="submit"
-                    className="w-full rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
+                    className="w-full bg-green px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.13em] text-white"
                   >
                     Sair
                   </button>
@@ -192,13 +193,13 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
               <>
                 <Link
                   href="/entrar"
-                  className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-bold"
+                  className="flex-1 border border-ink px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.13em]"
                 >
                   Entrar
                 </Link>
                 <Link
                   href="/pro"
-                  className="flex-1 rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
+                  className="flex-1 bg-green px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.13em] text-white"
                 >
                   Patrinu Pro
                 </Link>

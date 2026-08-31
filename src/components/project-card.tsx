@@ -3,7 +3,6 @@ import { MapPin, Users } from "lucide-react";
 
 import type { Project } from "@/lib/types";
 import { projectStatusLabel, specialtyLabel } from "@/lib/taxonomy";
-import { Badge } from "@/components/badge";
 import { SpecialtyThumb } from "@/components/specialty-visual";
 import { Locked } from "@/components/locked";
 import { getPlan } from "@/lib/membership";
@@ -16,7 +15,7 @@ export async function ProjectCard({ project: p }: { project: Project }) {
   return (
     <Link
       href={`/projetos/${p.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-surface transition-all hover:-translate-y-0.5 hover:shadow-[var(--shadow-pop)]"
+      className="group flex flex-col overflow-hidden border border-ink/12 bg-surface transition-colors hover:border-ink"
     >
       <SpecialtyThumb
         specialty={p.specialties[0] ?? "arquitetura"}
@@ -24,14 +23,10 @@ export async function ProjectCard({ project: p }: { project: Project }) {
         className="aspect-[16/10] w-full"
       />
       <div className="flex flex-1 flex-col p-4">
-        <div className="flex flex-wrap gap-1.5">
-          {p.specialties.slice(0, 2).map((s) => (
-            <Badge key={s} tone="neutral">
-              {specialtyLabel(s)}
-            </Badge>
-          ))}
-        </div>
-        <h3 className="mt-2 line-clamp-2 text-[15px] font-semibold leading-snug text-ink group-hover:underline">
+        <p className="kicker text-muted">
+          {p.specialties.slice(0, 2).map((s) => specialtyLabel(s)).join(" · ")}
+        </p>
+        <h3 className="mt-2 line-clamp-2 font-display text-[15px] font-bold leading-snug text-ink group-hover:text-green-ink">
           {p.title}
         </h3>
         <p className="mt-1.5 line-clamp-2 text-sm text-ink-soft">{p.summary}</p>
@@ -44,7 +39,7 @@ export async function ProjectCard({ project: p }: { project: Project }) {
           {p.year ? <span>· {p.year}</span> : null}
         </div>
 
-        <div className="mt-3 flex items-end justify-between border-t border-border pt-3 text-xs">
+        <div className="mt-3 flex items-end justify-between border-t border-ink/12 pt-3 text-xs">
           <span className="inline-flex items-center gap-1 text-ink-soft">
             <Users size={13} />
             {p.credits[0]?.name}
