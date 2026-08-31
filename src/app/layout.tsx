@@ -4,6 +4,7 @@ import { Hanken_Grotesk, Fraunces } from "next/font/google";
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -28,14 +29,21 @@ export const metadata: Metadata = {
     "Projetos, profissionais, notícias, cursos, editais e financiamento do restauro brasileiro, num só lugar. A rede profissional e o marketplace do patrimônio.",
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const [user, master] = await Promise.all([getCurrentUser(), isMasterSession()]);
+  const account = master
+    ? { name: "Master", plan: "pro" as const, master: true }
+    : user
+      ? { name: user.name, plan: user.plan, master: false }
+      : null;
+
   return (
     <html
       lang="pt-BR"
       className={`${hanken.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
-        <SiteHeader />
+        <SiteHeader account={account} />
         <div className="flex-1">{children}</div>
         <SiteFooter />
       </body>

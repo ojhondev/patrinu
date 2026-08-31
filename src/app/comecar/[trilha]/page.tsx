@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { getCurrentUser } from "@/lib/auth";
 import { TRACKS } from "@/lib/pro";
 import type { ProTrack } from "@/lib/types";
 import { OnboardingFlow, type OnboardingStep } from "@/components/onboarding-flow";
@@ -168,10 +169,14 @@ export default async function ComecarPage({
   const track = TRACKS[trilha as ProTrack];
   if (!track) notFound();
 
+  if (!(await getCurrentUser())) {
+    redirect(`/cadastro?trilha=${trilha}&next=/comecar/${trilha}`);
+  }
+
   return (
     <OnboardingFlow
       steps={STEPS[trilha as ProTrack]}
-      finishHref={`/painel?perfil=${track.perfil}&novo=1`}
+      finishHref={`/painel?perfil=${track.perfil}`}
       trackLabel={track.label}
     />
   );

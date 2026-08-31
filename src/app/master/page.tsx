@@ -4,22 +4,17 @@ import { redirect } from "next/navigation";
 import { ShieldCheck, Clock, Check, X } from "lucide-react";
 
 import { isMasterSession } from "@/lib/auth";
-import { logoutMaster } from "./actions";
-import { MOCK_PENDING } from "@/lib/mock/moderation";
+import { logoutMaster, moderateProject } from "./actions";
+import { pendingProjects } from "@/lib/projects";
 import { Badge } from "@/components/badge";
-import { formatDate } from "@/lib/taxonomy";
+import { formatDate, specialtyLabel } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Master", robots: { index: false } };
 
-const KIND_LABEL: Record<string, string> = {
-  projeto: "Projeto",
-  edital: "Edital",
-  curso: "Curso",
-  vaga: "Vaga",
-};
-
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
+
+  const pending = await pendingProjects();
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-8 sm:px-6 lg:px-11">
@@ -43,7 +38,6 @@ export default async function MasterPage() {
         </form>
       </header>
 
-      {/* atalhos */}
       <div className="mb-8 grid gap-3 sm:grid-cols-3">
         {[
           ["Projetos", "/projetos"],
@@ -65,58 +59,87 @@ export default async function MasterPage() {
 
       <section>
         <h2 className="text-lg font-bold">
-          Aprovação de conteúdo{" "}
-          <span className="font-mono text-sm text-muted">({MOCK_PENDING.length} na fila)</span>
+          Projetos aguardando aprovação{" "}
+          <span className="font-mono text-sm text-muted">({pending.length} na fila)</span>
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
-          Tudo que usuários publicam — projetos, vagas, editais ingeridos, pedidos de
-          divulgação de curso — passa por aqui antes de ir ao ar. Novos perfis não precisam
-          de revisão.
+          Todo projeto publicado por um usuário passa por aqui antes de ir ao ar. Novos
+          perfis não precisam de revisão. Editais e cursos entram na fila quando esses
+          módulos forem ligados.
         </p>
 
         <div className="mt-4 space-y-3">
-          {MOCK_PENDING.map((item) => (
-            <div
-              key={item.id}
-              className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone="neutral">{KIND_LABEL[item.kind]}</Badge>
-                  <span className="inline-flex items-center gap-1 text-xs text-muted">
-                    <Clock size={12} />
-                    {formatDate(item.submittedAt)}
-                  </span>
-                </div>
-                <p className="mt-1 font-semibold text-ink">{item.title}</p>
-                <p className="text-sm text-ink-soft">Enviado por {item.submittedBy}</p>
-                {item.note ? (
-                  <p className="mt-1 text-xs text-muted">{item.note}</p>
-                ) : null}
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
-                >
-                  <Check size={15} />
-                  Aprovar
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
-                >
-                  <X size={15} />
-                  Recusar
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+          {pending.length === 0 && (
+            <p className="rounded-[var(--radius-card)] border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Nada na fila.
+            </p>
+          )}
 
-        <p className="mt-6 text-xs text-muted">
-          Protótipo — a fila usa dados de demonstração e os botões ainda não persistem.
-        </p>
+          {pending.map((p) => {
+            const mode =
+              (p.requirements ?? []).find((r) => r.startsWith("__mode:"))?.slice(7) ??
+              "aberto";
+            return (
+              <div
+                key={p.id}
+                className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-start"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tone="neutral">
+                      {mode === "vitrine" ? "Vitrine" : "Brief aberto"}
+                    </Badge>
+                    <span className="inline-flex items-center gap-1 text-xs text-muted">
+                      <Clock size={12} />
+                      {p.submittedAt ? formatDate(p.submittedAt.toISOString()) : "—"}
+                    </span>
+                  </div>
+                  <p className="mt-1 font-semibold text-ink">{p.title}</p>
+                  <p className="text-sm text-ink-soft">
+                    {p.assetName} · {p.city}/{p.uf}
+                    {p.year ? ` · ${p.year}` : ""}
+                  </p>
+                  <p className="mt-1 line-clamp-3 text-sm text-ink-soft">{p.summary}</p>
+                  {p.specialties.length > 0 && (
+                    <p className="mt-1 text-xs text-muted">
+                      {p.specialties.map((s) => specialtyLabel(s)).join(" · ")}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex shrink-0 flex-col gap-2 sm:w-56">
+                  <form action={moderateProject} className="contents">
+                    <input type="hidden" name="id" value={p.id} />
+                    <input type="hidden" name="decision" value="approve" />
+                    <button
+                      type="submit"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+                    >
+                      <Check size={15} />
+                      Aprovar e publicar
+                    </button>
+                  </form>
+                  <form action={moderateProject} className="flex gap-1.5">
+                    <input type="hidden" name="id" value={p.id} />
+                    <input type="hidden" name="decision" value="reject" />
+                    <input
+                      name="reason"
+                      placeholder="Motivo (opcional)"
+                      className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-2 py-2 text-xs outline-none focus:border-crit"
+                    />
+                    <button
+                      type="submit"
+                      aria-label="Recusar"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
+                    >
+                      <X size={15} />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </section>
     </div>
   );

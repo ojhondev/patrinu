@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
     return [
       { source: "/radar", destination: "/editais", permanent: true },
       { source: "/radar/:id", destination: "/editais/:id", permanent: true },
-      { source: "/cadastro", destination: "/pro", permanent: false },
     ];
   },
 };

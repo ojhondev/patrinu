@@ -1,37 +1,86 @@
+import { and, desc, eq, sql } from "drizzle-orm";
+
 import type { Article, Course, FundingSource, Professional } from "./types";
-import { MOCK_PROFESSIONALS } from "./mock/professionals";
+import type { SpecialtyKey } from "./taxonomy";
+import { db } from "@/db";
+import { professionals } from "@/db/schema";
 import { MOCK_ARTICLES } from "./mock/articles";
 import { MOCK_COURSES } from "./mock/courses";
 import { MOCK_FUNDING } from "./mock/funding";
 
-/* ---------------- Profissionais ---------------- */
+/* ---------------- Profissionais (banco) ---------------- */
+
+type ProRow = typeof professionals.$inferSelect;
+
+const VERIF_TO_TYPE: Record<string, Professional["verificationLevel"]> = {
+  email: "email",
+  registro_profissional: "registro",
+  projeto_documentado: "projeto_documentado",
+  completo: "completo",
+  nao_verificado: "email",
+};
+
+function rowToProfessional(r: ProRow): Professional {
+  return {
+    slug: r.slug,
+    displayName: r.displayName,
+    headline: r.headline ?? "",
+    bio: r.bio ?? "",
+    uf: r.uf ?? "",
+    city: r.city ?? "",
+    specialties: (r.specialties ?? []) as SpecialtyKey[],
+    techniques: r.techniques ?? [],
+    verified: r.verified,
+    verificationLevel: VERIF_TO_TYPE[r.verificationLevel] ?? "email",
+    plan: (r.plan === "pro" ? "pro" : "free") as Professional["plan"],
+    memberSince: r.createdAt.toISOString(),
+    registros: (r.registros ?? []) as string[],
+    projectSlugs: [],
+    responseHours: r.responseHours ?? undefined,
+    score: r.score ?? undefined,
+  };
+}
 
 export async function listProfessionals(
   opts: { q?: string; specialty?: string; uf?: string; verifiedOnly?: boolean } = {},
 ): Promise<Professional[]> {
   const { q, specialty, uf, verifiedOnly } = opts;
-  return MOCK_PROFESSIONALS.filter((p) => {
-    if (verifiedOnly && !p.verified) return false;
-    if (uf && p.uf !== uf) return false;
-    if (specialty && !p.specialties.includes(specialty as Professional["specialties"][number]))
-      return false;
-    if (q) {
-      const hay = `${p.displayName} ${p.headline} ${p.bio} ${p.city} ${p.techniques.join(" ")}`.toLowerCase();
-      if (!hay.includes(q.toLowerCase())) return false;
-    }
-    return true;
-  }).sort((a, b) => (b.score ?? 0) - (a.score ?? 0));
+  const rows = await db
+    .select()
+    .from(professionals)
+    .where(
+      and(
+        verifiedOnly ? eq(professionals.verified, true) : undefined,
+        uf ? eq(professionals.uf, uf) : undefined,
+        specialty
+          ? sql`${professionals.specialties} @> ARRAY[${specialty}]::text[]`
+          : undefined,
+        q
+          ? sql`(${professionals.displayName} || ' ' || coalesce(${professionals.headline},'') || ' ' || coalesce(${professionals.bio},'') || ' ' || coalesce(${professionals.city},'')) ILIKE ${"%" + q + "%"}`
+          : undefined,
+      ),
+    )
+    .orderBy(desc(professionals.score));
+  return rows.map(rowToProfessional);
 }
 
 export async function getProfessional(slug: string): Promise<Professional | null> {
-  return MOCK_PROFESSIONALS.find((p) => p.slug === slug) ?? null;
+  const [row] = await db
+    .select()
+    .from(professionals)
+    .where(eq(professionals.slug, slug))
+    .limit(1);
+  return row ? rowToProfessional(row) : null;
 }
 
 export async function featuredProfessionals(limit = 4): Promise<Professional[]> {
-  return [...MOCK_PROFESSIONALS]
-    .filter((p) => p.verified)
-    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
-    .slice(0, limit);
+  const rows = await db
+    .select()
+    .from(professionals)
+    .where(eq(professionals.verified, true))
+    .orderBy(desc(professionals.score))
+    .limit(limit);
+  return rows.map(rowToProfessional);
 }
 
 /* ---------------- Notícias ---------------- */

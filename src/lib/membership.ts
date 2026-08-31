@@ -1,21 +1,27 @@
 import { cookies } from "next/headers";
 
+import { getCurrentUser, isMasterSession } from "@/lib/auth";
+
 /**
- * Plano do visitante. Enquanto a autenticação própria não existe, o plano vem
- * de um cookie de demonstração (`patrinu_plan`), setado pelo onboarding e pelo
- * botão "Assinar Pro". Quando a auth entrar, isto passa a ler a sessão.
+ * Plano do visitante:
+ *  - visitante  → só informações básicas; publica 1 projeto/mês
+ *  - cadastrado → vê valores de projeto; ainda não envia proposta nem usa o Radar
+ *  - pro        → acesso completo
  *
- * - visitante  → só informações básicas; publica 1 projeto/mês
- * - cadastrado → vê valores de projeto; ainda não envia proposta nem usa o Radar
- * - pro        → acesso completo (Radar de Editais, enviar proposta, dados sensíveis)
+ * Ordem de resolução: sessão master → conta de usuário logada → cookie de
+ * demonstração `patrinu_plan` (enquanto não há checkout real).
  */
 export type Plan = "visitante" | "cadastrado" | "pro";
 
 const RANK: Record<Plan, number> = { visitante: 0, cadastrado: 1, pro: 2 };
 
 export async function getPlan(): Promise<Plan> {
+  if (await isMasterSession()) return "pro";
+
+  const user = await getCurrentUser();
+  if (user) return user.plan;
+
   const store = await cookies();
-  if (store.get("patrinu_master")) return "pro"; // master vê tudo
   const raw = store.get("patrinu_plan")?.value;
   return raw === "pro" || raw === "cadastrado" ? raw : "visitante";
 }
@@ -25,6 +31,5 @@ export async function has(min: Plan): Promise<boolean> {
 }
 
 export async function isMaster(): Promise<boolean> {
-  const store = await cookies();
-  return Boolean(store.get("patrinu_master"));
+  return isMasterSession();
 }

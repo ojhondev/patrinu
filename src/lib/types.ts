@@ -62,6 +62,9 @@ export type OpportunitySort = "prazo" | "valor" | "aderencia" | "recentes";
 /* ------------------------------------------------------------------ */
 
 export type ProjectStatus =
+  | "rascunho"
+  | "em_analise" // aguardando aprovação do master
+  | "recusado"
   | "vitrine" // obra concluída, publicada como referência
   | "aberto" // brief buscando profissionais
   | "em_captacao" // buscando recurso

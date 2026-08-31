@@ -84,11 +84,19 @@ export const verificationLevel = pgEnum("verification_level", [
 /* Auth — sessão própria por cookie assinado + scrypt                  */
 /* ------------------------------------------------------------------ */
 
+export const userPlan = pgEnum("user_plan", ["visitante", "cadastrado", "pro"]);
+export const userRole = pgEnum("user_role", ["user", "moderador", "master"]);
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash").notNull(),
   name: text("name").notNull(),
+  plan: userPlan("plan").notNull().default("cadastrado"),
+  role: userRole("role").notNull().default("user"),
+  /** trilha Pro escolhida no cadastro: contratar | oferecer | financiamento */
+  track: text("track"),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -225,13 +233,15 @@ export const professionals = pgTable("professionals", {
     .array()
     .notNull()
     .default(sql`'{}'::text[]`),
-  /** { cau?: string, crea?: string, artRrt?: string[] } */
-  registros: jsonb("registros").$type<Record<string, unknown>>(),
+  /** lista de registros: ["CAU", "ABRACOR", "RRT-…"] */
+  registros: jsonb("registros").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
   verified: boolean("verified").notNull().default(false),
   verificationLevel: verificationLevel("verification_level")
     .notNull()
     .default("nao_verificado"),
   plan: text("plan").notNull().default("free"),
+  responseHours: integer("response_hours"),
+  score: real("score"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -357,6 +367,110 @@ export const consortiumMembers = pgTable(
     invitedAt: timestamp("invited_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("consortium_member_pk").on(t.consortiumId, t.professionalId)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Projetos — vitrine + briefs (o objeto central)                      */
+/* ------------------------------------------------------------------ */
+
+export const projectStatus = pgEnum("project_status", [
+  "rascunho",
+  "em_analise", // aguardando aprovação do master
+  "recusado",
+  "vitrine", // concluído, publicado como referência
+  "aberto", // brief buscando profissionais
+  "em_captacao",
+  "em_execucao",
+  "concluido",
+]);
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull().unique(),
+    /** dono/proponente; null para as fichas de referência curadas pelo time */
+    ownerId: uuid("owner_id").references(() => users.id, { onDelete: "set null" }),
+
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    status: projectStatus("status").notNull().default("rascunho"),
+
+    assetName: text("asset_name").notNull(),
+    uf: text("uf").notNull(),
+    city: text("city").notNull(),
+    year: integer("year"),
+
+    specialties: text("specialties").array().notNull().default(sql`'{}'::text[]`),
+    techniques: text("techniques").array().notNull().default(sql`'{}'::text[]`),
+    materials: text("materials").array().notNull().default(sql`'{}'::text[]`),
+    images: text("images").array().notNull().default(sql`'{}'::text[]`),
+
+    /** créditos: [{ role, name, slug? }] */
+    credits: jsonb("credits").$type<{ role: string; name: string; slug?: string }[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+
+    fromOpportunityId: uuid("from_opportunity_id").references(() => opportunities.id),
+
+    // modo brief
+    budgetRange: text("budget_range"),
+    deadlineAt: timestamp("deadline_at", { withTimezone: true }),
+    requirements: text("requirements").array().notNull().default(sql`'{}'::text[]`),
+
+    featured: boolean("featured").notNull().default(false),
+
+    // moderação
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+    rejectionReason: text("rejection_reason"),
+
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("projects_status_idx").on(t.status)],
+);
+
+/** "Quero participar" — profissional manifesta interesse; o dono vê a lista. */
+export const projectInterests = pgTable(
+  "project_interests",
+  {
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    message: text("message"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("project_interest_pk").on(t.projectId, t.userId)],
+);
+
+export const proposalStatus = pgEnum("proposal_status", [
+  "enviada",
+  "em_conversa",
+  "aceita",
+  "recusada",
+]);
+
+export const proposals = pgTable(
+  "proposals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .notNull()
+      .references(() => projects.id, { onDelete: "cascade" }),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    message: text("message").notNull(),
+    priceRange: text("price_range"),
+    status: proposalStatus("status").notNull().default("enviada"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("proposal_project_user_idx").on(t.projectId, t.userId)],
 );
 
 /* ------------------------------------------------------------------ */

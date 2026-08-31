@@ -8,6 +8,13 @@ import { Search, Menu } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { Logo } from "@/components/logo";
 import { HeaderSearch } from "@/components/header-search";
+import { signOut } from "@/app/conta/actions";
+
+export type HeaderAccount = {
+  name: string;
+  plan: "visitante" | "cadastrado" | "pro";
+  master: boolean;
+} | null;
 
 const NAV = [
   { href: "/projetos", label: "Projetos" },
@@ -18,8 +25,9 @@ const NAV = [
   { href: "/financiamento", label: "Financiamento" },
 ];
 
-export function SiteHeader() {
+export function SiteHeader({ account }: { account: HeaderAccount }) {
   const pathname = usePathname();
+  const firstName = account?.name.trim().split(/\s+/)[0] ?? "";
   const onHome = pathname === "/";
   const [scrolled, setScrolled] = useState(!onHome);
   const [open, setOpen] = useState(false);
@@ -76,18 +84,52 @@ export function SiteHeader() {
             );
           })}
           <span className="mx-1.5 h-5 w-px bg-border" />
-          <Link
-            href="/entrar"
-            className="rounded-md px-2.5 py-2 text-sm font-semibold text-ink-soft hover:text-ink"
-          >
-            Entrar
-          </Link>
-          <Link
-            href="/pro"
-            className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
-          >
-            Patrinu Pro
-          </Link>
+          {account ? (
+            <>
+              <Link
+                href={account.master ? "/master" : "/painel"}
+                className={cn(
+                  "rounded-md px-2.5 py-2 text-sm font-semibold",
+                  pathname.startsWith("/painel") || pathname.startsWith("/master")
+                    ? "text-green-ink"
+                    : "text-ink-soft hover:text-ink",
+                )}
+              >
+                {account.master ? "Painel Master" : `Olá, ${firstName}`}
+              </Link>
+              {!account.master && account.plan !== "pro" && (
+                <Link
+                  href="/pro"
+                  className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
+                >
+                  Assinar Pro
+                </Link>
+              )}
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="rounded-md px-2.5 py-2 text-sm font-semibold text-ink-soft hover:text-ink"
+                >
+                  Sair
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/entrar"
+                className="rounded-md px-2.5 py-2 text-sm font-semibold text-ink-soft hover:text-ink"
+              >
+                Entrar
+              </Link>
+              <Link
+                href="/pro"
+                className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white transition-colors hover:bg-green-hover"
+              >
+                Patrinu Pro
+              </Link>
+            </>
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-1.5 lg:hidden">
@@ -122,18 +164,39 @@ export function SiteHeader() {
             </Link>
           ))}
           <div className="mt-2 flex gap-2 border-t border-border pt-3">
-            <Link
-              href="/entrar"
-              className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-bold"
-            >
-              Entrar
-            </Link>
-            <Link
-              href="/pro"
-              className="flex-1 rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
-            >
-              Patrinu Pro
-            </Link>
+            {account ? (
+              <>
+                <Link
+                  href={account.master ? "/master" : "/painel"}
+                  className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-bold"
+                >
+                  {account.master ? "Painel Master" : "Meu painel"}
+                </Link>
+                <form action={signOut} className="flex-1">
+                  <button
+                    type="submit"
+                    className="w-full rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
+                  >
+                    Sair
+                  </button>
+                </form>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/entrar"
+                  className="flex-1 rounded-lg border border-border px-3 py-2 text-center text-sm font-bold"
+                >
+                  Entrar
+                </Link>
+                <Link
+                  href="/pro"
+                  className="flex-1 rounded-lg bg-green px-3 py-2 text-center text-sm font-bold text-white"
+                >
+                  Patrinu Pro
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       )}

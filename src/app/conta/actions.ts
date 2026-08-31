@@ -1,0 +1,53 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import {
+  createUser,
+  endUserSession,
+  getUserByEmail,
+  startUserSession,
+  verifyPassword,
+} from "@/lib/auth";
+
+type State = { error?: string } | null;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function signIn(_prev: State, form: FormData): Promise<State> {
+  const email = String(form.get("email") ?? "").trim();
+  const password = String(form.get("password") ?? "");
+  const next = String(form.get("next") ?? "/painel");
+
+  const user = await getUserByEmail(email);
+  if (!user || !verifyPassword(password, user.passwordHash)) {
+    return { error: "E-mail ou senha incorretos." };
+  }
+  await startUserSession(user.id);
+  redirect(next.startsWith("/") ? next : "/painel");
+}
+
+export async function signUp(_prev: State, form: FormData): Promise<State> {
+  const name = String(form.get("name") ?? "").trim();
+  const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const password = String(form.get("password") ?? "");
+  const track = String(form.get("track") ?? "") || undefined;
+  const next = String(form.get("next") ?? "/painel");
+
+  if (name.length < 2) return { error: "Informe seu nome." };
+  if (!EMAIL_RE.test(email)) return { error: "E-mail inválido." };
+  if (password.length < 8) return { error: "A senha precisa de ao menos 8 caracteres." };
+
+  if (await getUserByEmail(email)) {
+    return { error: "Já existe uma conta com esse e-mail. Tente entrar." };
+  }
+
+  const user = await createUser({ name, email, password, track });
+  await startUserSession(user.id);
+  redirect(next.startsWith("/") ? next : "/painel");
+}
+
+export async function signOut(): Promise<void> {
+  await endUserSession();
+  redirect("/");
+}

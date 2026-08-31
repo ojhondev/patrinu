@@ -62,6 +62,24 @@ export default async function HomePage() {
     <>
       {/* ---------------- hero ---------------- */}
       <section className="relative overflow-hidden bg-band text-white">
+        <video
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          src="/hero.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden
+        />
+        {/* véu verde: deixa o vídeo aparecer, mantém a copy legível */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(100deg, color-mix(in oklab, var(--band) 90%, transparent) 0%, color-mix(in oklab, var(--band) 74%, transparent) 48%, color-mix(in oklab, var(--band) 60%, transparent) 100%)",
+          }}
+        />
         <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />
         <div className="relative mx-auto max-w-[1400px] px-4 py-14 sm:px-6 sm:py-18 lg:px-11 lg:py-22">
           <div className="max-w-2xl">

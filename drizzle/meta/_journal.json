@@ -15,6 +15,13 @@
       "when": 1788129995683,
       "tag": "0001_vengeful_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788134865206,
+      "tag": "0002_serious_abomination",
+      "breakpoints": true
     }
   ]
 }

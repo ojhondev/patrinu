@@ -1,24 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   BadgeCheck,
   Clock,
   MapPin,
+  Plus,
   Sparkles,
   TrendingUp,
   Users,
 } from "lucide-react";
 
+import { getCurrentUser, isMasterSession } from "@/lib/auth";
+import { getPlan } from "@/lib/membership";
+import { projectsByOwner } from "@/lib/projects";
+import type { Project, ProjectStatus } from "@/lib/types";
 import {
   compatibleForProfissional,
   eligibilityForFinanciamento,
   prospectsForContratante,
-  TRACKS,
 } from "@/lib/pro";
-import { formatDate, daysUntil } from "@/lib/taxonomy";
+import { formatDate, daysUntil, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { SpecialtyIcon } from "@/components/specialty-visual";
-import { PublishProjectButton } from "@/components/publish-project-button";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -32,6 +36,26 @@ const PERFIS: { key: Perfil; label: string }[] = [
   { key: "profissional", label: "Profissional" },
   { key: "financiamento", label: "Financiamento" },
 ];
+
+const TRACK_TO_PERFIL: Record<string, Perfil> = {
+  contratar: "contratante",
+  oferecer: "profissional",
+  financiamento: "financiamento",
+};
+
+const STATUS_BADGE: Record<
+  ProjectStatus,
+  { tone: "green" | "neutral" | "ok" | "warn" | "crit"; label: string }
+> = {
+  rascunho: { tone: "neutral", label: "rascunho" },
+  em_analise: { tone: "warn", label: "em análise" },
+  recusado: { tone: "crit", label: "recusado" },
+  vitrine: { tone: "green", label: "publicado · vitrine" },
+  aberto: { tone: "green", label: "publicado · brief aberto" },
+  em_captacao: { tone: "green", label: "em captação" },
+  em_execucao: { tone: "ok", label: "em execução" },
+  concluido: { tone: "ok", label: "concluído" },
+};
 
 function Tile({
   label,
@@ -58,66 +82,156 @@ export default async function PainelPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  if (await isMasterSession()) redirect("/master");
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/painel");
+
   const sp = await searchParams;
-  const perfil = (one(sp.perfil) as Perfil) || "contratante";
-  const novo = one(sp.novo) === "1";
-  const track = TRACKS[perfil === "contratante" ? "contratar" : perfil === "profissional" ? "oferecer" : "financiamento"];
+  const enviado = one(sp.enviado) === "1";
+  const defaultPerfil = TRACK_TO_PERFIL[user.track ?? ""] ?? "contratante";
+  const perfil = (one(sp.perfil) as Perfil) || defaultPerfil;
+
+  const [plan, myProjects] = await Promise.all([
+    getPlan(),
+    projectsByOwner(user.id),
+  ]);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight">Painel</h1>
+          <h1 className="font-display text-3xl font-bold tracking-tight">
+            Olá, {user.name.split(/\s+/)[0]}
+          </h1>
           <p className="mt-1 text-sm text-ink-soft">
-            Área do usuário · trilha <strong className="text-ink">{track.label}</strong>
+            Plano{" "}
+            <strong className="text-ink">
+              {plan === "pro" ? "Pro" : plan === "cadastrado" ? "Cadastrado (grátis)" : "Visitante"}
+            </strong>
+            {plan !== "pro" && (
+              <>
+                {" · "}
+                <Link href="/pro" className="font-semibold text-green-ink hover:underline">
+                  assinar Pro
+                </Link>
+              </>
+            )}
           </p>
         </div>
-        <div className="flex gap-2">
-          {PERFIS.map((p) => (
-            <Link
-              key={p.key}
-              href={`/painel?perfil=${p.key}`}
-              className={cn(
-                "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors",
-                perfil === p.key
-                  ? "border-green bg-green text-white"
-                  : "border-border-strong text-ink hover:border-green-ink",
-              )}
-            >
-              {p.label}
-            </Link>
-          ))}
-        </div>
+        <Link
+          href="/projetos/novo"
+          className="inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2.5 text-sm font-bold text-white hover:bg-green-hover"
+        >
+          <Plus size={16} />
+          Publicar projeto
+        </Link>
       </header>
 
-      {novo && (
+      {enviado && (
         <div className="mb-6 flex items-start gap-3 rounded-[var(--radius-card)] border border-green-ink/30 bg-green-weak p-4">
-          <Sparkles size={18} className="mt-0.5 shrink-0 text-green-ink" />
+          <Clock size={18} className="mt-0.5 shrink-0 text-green-ink" />
           <p className="text-sm text-ink-soft">
-            <strong className="text-ink">Cadastro concluído.</strong>{" "}
-            {perfil === "contratante"
-              ? "Se você optou por publicar o projeto, ele já está em análise pelo time da Patrinu."
-              : perfil === "financiamento"
-                ? "Geramos um primeiro rascunho de dossiê e as fontes com aderência ao seu projeto."
-                : "Estas são as primeiras oportunidades que casam com o seu perfil."}{" "}
-            Dados de demonstração até a autenticação entrar.
+            <strong className="text-ink">Projeto em análise.</strong> Tudo que é publicado
+            passa por revisão do time da Patrinu antes de ir ao ar — normalmente em até 1
+            dia útil.
           </p>
         </div>
       )}
 
+      {/* ---------- MEUS PROJETOS (real) ---------- */}
+      <section className="mb-12">
+        <h2 className="text-lg font-bold">Meus projetos</h2>
+        <div className="mt-4 space-y-3">
+          {myProjects.length === 0 ? (
+            <p className="rounded-[var(--radius-card)] border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Você ainda não publicou nenhum projeto.{" "}
+              <Link href="/projetos/novo" className="font-semibold text-green-ink hover:underline">
+                Publicar o primeiro
+              </Link>
+              .
+            </p>
+          ) : (
+            myProjects.map((p) => <MyProjectRow key={p.id} p={p} />)
+          )}
+        </div>
+      </section>
+
+      {/* ---------- DEMONSTRAÇÃO ---------- */}
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-t border-border pt-8">
+        <div>
+          <h2 className="font-display text-xl font-bold tracking-tight">
+            Oportunidades e conexões
+          </h2>
+          <p className="mt-1 text-sm text-ink-soft">
+            Prévia de demonstração — os dados abaixo ainda são exemplos.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {PERFIS.map((pf) => (
+            <Link
+              key={pf.key}
+              href={`/painel?perfil=${pf.key}`}
+              className={cn(
+                "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors",
+                perfil === pf.key
+                  ? "border-green bg-green text-white"
+                  : "border-border-strong text-ink hover:border-green-ink",
+              )}
+            >
+              {pf.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+
       {perfil === "contratante" && <Contratante />}
       {perfil === "profissional" && <Profissional />}
       {perfil === "financiamento" && <Financiamento />}
-
-      <p className="mt-10 text-xs text-muted">
-        Protótipo — painel com dados de demonstração. Troque a trilha nos
-        botões acima.
-      </p>
     </div>
   );
 }
 
-/* ---------------- contratante ---------------- */
+function MyProjectRow({ p }: { p: Project }) {
+  const s = STATUS_BADGE[p.status];
+  const published = ["vitrine", "aberto", "em_captacao", "em_execucao", "concluido"].includes(
+    p.status,
+  );
+  return (
+    <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <Badge tone={s.tone}>{s.label}</Badge>
+          <span className="text-xs text-muted">
+            {p.city}/{p.uf}
+            {p.year ? ` · ${p.year}` : ""}
+          </span>
+        </div>
+        <p className="mt-1 font-semibold text-ink">{p.title}</p>
+        <p className="line-clamp-1 text-sm text-ink-soft">{p.summary}</p>
+        {p.status === "recusado" && (
+          <p className="mt-1 text-xs font-semibold text-crit">
+            Recusado. Ajuste e publique novamente.
+          </p>
+        )}
+        {p.specialties.length > 0 && (
+          <p className="mt-1 text-xs text-muted">
+            {p.specialties.map((sp) => specialtyLabel(sp)).join(" · ")}
+          </p>
+        )}
+      </div>
+      {published && (
+        <Link
+          href={`/projetos/${p.slug}`}
+          className="shrink-0 rounded-lg border border-border-strong px-3.5 py-2 text-sm font-bold hover:border-green-ink"
+        >
+          Ver publicado
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/* ---------------- contratante (demo) ---------------- */
 
 function ProspectRow({
   p,
@@ -181,11 +295,7 @@ async function Contratante() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Tile label="Candidaturas" value={String(candidatos.length)} icon={BadgeCheck} />
         <Tile label="Matches (não candidatados)" value={String(matches.length)} icon={Sparkles} />
-        <Tile label="Projetos publicados" value="2" icon={TrendingUp} />
-      </div>
-
-      <div className="mt-6">
-        <PublishProjectButton />
+        <Tile label="Projetos publicados" value="—" icon={TrendingUp} />
       </div>
 
       <section className="mt-8">
@@ -236,7 +346,7 @@ function ProspectStatus({ status }: { status: string }) {
   return <Badge tone={m.tone}>{m.label}</Badge>;
 }
 
-/* ---------------- profissional ---------------- */
+/* ---------------- profissional (demo) ---------------- */
 
 async function Profissional() {
   const opps = await compatibleForProfissional();
@@ -244,8 +354,8 @@ async function Profissional() {
     <>
       <div className="grid gap-4 sm:grid-cols-3">
         <Tile label="Oportunidades compatíveis" value={String(opps.length)} icon={Sparkles} />
-        <Tile label="Candidaturas" value="1" icon={BadgeCheck} />
-        <Tile label="Visitas ao perfil (7d)" value="34" icon={TrendingUp} />
+        <Tile label="Candidaturas" value="—" icon={BadgeCheck} />
+        <Tile label="Visitas ao perfil (7d)" value="—" icon={TrendingUp} />
       </div>
 
       <section className="mt-8">
@@ -289,20 +399,6 @@ async function Profissional() {
                   {o.deadlineAt && <span>· prazo {formatDate(o.deadlineAt)}</span>}
                 </div>
                 <p className="mt-2 text-sm text-ink-soft">{o.reason}</p>
-                <div className="mt-3 flex gap-2">
-                  <Link
-                    href={o.kind === "edital" ? `/editais/${o.id}` : `/projetos/${o.id}`}
-                    className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
-                  >
-                    {o.kind === "edital" ? "Responder" : "Enviar proposta"}
-                  </Link>
-                  <button
-                    type="button"
-                    className="rounded-lg border border-border-strong px-3.5 py-2 text-sm font-bold hover:border-green-ink"
-                  >
-                    Salvar
-                  </button>
-                </div>
               </div>
             );
           })}
@@ -312,7 +408,7 @@ async function Profissional() {
   );
 }
 
-/* ---------------- financiamento ---------------- */
+/* ---------------- financiamento (demo) ---------------- */
 
 async function Financiamento() {
   const signals = await eligibilityForFinanciamento();
@@ -322,7 +418,7 @@ async function Financiamento() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Tile label="Investidores sinalizando" value={String(signals.length)} icon={Users} />
         <Tile label="Elegibilidade confirmada" value={String(elegiveis)} icon={BadgeCheck} />
-        <Tile label="Meta de captação" value="R$ 4,2 mi" icon={TrendingUp} />
+        <Tile label="Meta de captação" value="—" icon={TrendingUp} />
       </div>
 
       <section className="mt-8">
@@ -352,20 +448,6 @@ async function Financiamento() {
               </p>
             </div>
           ))}
-        </div>
-
-        <div className="mt-6 rounded-[var(--radius-card)] border border-border bg-green-weak p-5">
-          <h3 className="font-bold text-ink">Dossiê do projeto</h3>
-          <p className="mt-1 text-sm text-ink-soft">
-            Descrição, impacto e enquadramento fiscal gerados — prontos para enviar a um
-            patrocinador.
-          </p>
-          <button
-            type="button"
-            className="mt-3 rounded-lg bg-green px-4 py-2.5 text-sm font-bold text-white hover:bg-green-hover"
-          >
-            Abrir dossiê
-          </button>
         </div>
       </section>
     </>
