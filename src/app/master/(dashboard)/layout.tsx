@@ -1,16 +1,7 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import {
-  ShieldCheck,
-  LayoutDashboard,
-  ClipboardCheck,
-  BadgeCheck,
-  Users,
-  Wallet,
-  Landmark,
-  Settings,
-} from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 
 import { isMasterSession } from "@/lib/auth";
 import { masterOverview } from "@/lib/master";
@@ -24,15 +15,11 @@ export default async function MasterLayout({ children }: { children: ReactNode }
   if (!(await isMasterSession())) redirect("/master/entrar");
   const ov = await masterOverview();
 
-  const nav = [
-    { href: "/master", label: "Visão geral", icon: LayoutDashboard, badge: 0 },
-    { href: "/master/moderacao", label: "Moderação", icon: ClipboardCheck, badge: ov.queue.projetos + ov.queue.editais + ov.queue.noticias },
-    { href: "/master/profissionais", label: "Profissionais", icon: BadgeCheck, badge: 0 },
-    { href: "/master/contas", label: "Contas", icon: Users, badge: ov.banned },
-    { href: "/master/financeiro", label: "Financeiro", icon: Wallet, badge: 0 },
-    { href: "/master/financiamento", label: "Financiamento", icon: Landmark, badge: ov.queue.financiamento },
-    { href: "/master/config", label: "Configurações", icon: Settings, badge: 0 },
-  ];
+  const badges = {
+    moderacao: ov.queue.projetos + ov.queue.editais + ov.queue.noticias,
+    contas: ov.banned,
+    financiamento: ov.queue.financiamento,
+  };
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1500px]">
@@ -41,7 +28,7 @@ export default async function MasterLayout({ children }: { children: ReactNode }
           <ShieldCheck size={20} className="text-green-ink" />
           <span className="font-display text-lg font-bold tracking-tight">Master</span>
         </div>
-        <MasterNav items={nav} />
+        <MasterNav badges={badges} />
         <form action={logoutMaster} className="border-t border-ink/12 p-3">
           <button
             type="submit"
@@ -55,7 +42,7 @@ export default async function MasterLayout({ children }: { children: ReactNode }
       <div className="min-w-0 flex-1">
         {/* nav mobile */}
         <div className="border-b border-ink/12 lg:hidden">
-          <MasterNav items={nav} horizontal />
+          <MasterNav badges={badges} horizontal />
         </div>
         <div className="px-4 py-8 sm:px-8">{children}</div>
       </div>
