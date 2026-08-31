@@ -10,7 +10,17 @@ import { triage } from "./keywords";
 /* Fontes de ingestão (criadas no 1º run)                              */
 /* ------------------------------------------------------------------ */
 
-const NEWS_FEEDS: { slug: string; name: string; feedUrl: string }[] = [
+type NewsFeed = {
+  slug: string;
+  name: string;
+  feedUrl: string;
+  /** feed com licença aberta (CC-BY): pode publicar o texto na íntegra com crédito. */
+  openLicense?: boolean;
+  /** crédito/assinatura quando publicado automaticamente. */
+  credit?: string;
+};
+
+const NEWS_FEEDS: NewsFeed[] = [
   {
     slug: "gnews-restauro-patrimonio",
     name: "Google Notícias — restauro do patrimônio",
@@ -33,6 +43,8 @@ const NEWS_FEEDS: { slug: string; name: string; feedUrl: string }[] = [
     slug: "agenciabrasil-cultura",
     name: "Agência Brasil — Cultura",
     feedUrl: "https://agenciabrasil.ebc.com.br/rss/cultura/feed.xml",
+    openLicense: true, // CC-BY 3.0 Brasil — republicação permitida com crédito
+    credit: "Agência Brasil",
   },
 ];
 
@@ -129,14 +141,14 @@ function slugify(s: string): string {
 
 export type IngestResult = {
   editais: { checked: number; matched: number; inserted: number };
-  noticias: { checked: number; matched: number; inserted: number };
+  noticias: { checked: number; matched: number; inserted: number; published: number };
   ranAt: string;
 };
 
 export async function runIngest(): Promise<IngestResult> {
   const result: IngestResult = {
     editais: { checked: 0, matched: 0, inserted: 0 },
-    noticias: { checked: 0, matched: 0, inserted: 0 },
+    noticias: { checked: 0, matched: 0, inserted: 0, published: 0 },
     ranAt: new Date().toISOString(),
   };
 
@@ -263,24 +275,41 @@ export async function runIngest(): Promise<IngestResult> {
       if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
 
       const clean = item.summary.replace(/\s+/g, " ").trim();
-      const usable = clean.length >= 60 ? clean : "";
+      const paras = item.paragraphs
+        .map((p) => p.replace(/\s+/g, " ").trim())
+        .filter((p) => p.length >= 30);
+      const bodyText = paras.join(" ");
+      const hasBody = paras.length >= 2 && bodyText.length >= 300;
+
+      // publica sozinho só quando: feed de licença aberta + tem corpo de verdade
+      // + casamento forte (termo STRONG e ao menos 2 termos no total)
+      const canAuto =
+        Boolean(feed.openLicense) && hasBody && tri.hasStrong && tri.matched.length >= 2;
+
+      const excerpt = hasBody
+        ? paras[0].slice(0, 280)
+        : clean.length >= 60
+          ? clean.slice(0, 280)
+          : "(rascunho — escreva o resumo da matéria antes de publicar)";
+      const body = hasBody ? paras : clean.length >= 60 ? [clean] : [];
+      const words = bodyText ? bodyText.split(/\s+/).length : 0;
+
       await db.insert(articles).values({
         slug,
         title: item.title,
-        excerpt: usable
-          ? usable.slice(0, 280)
-          : "(rascunho — escreva o resumo da matéria antes de publicar)",
-        body: usable ? [usable] : [],
+        excerpt,
+        body,
         category: guessCategory(`${item.title} ${clean}`),
-        author: "Redação Patrinu",
-        sourceName: item.sourceName,
+        author: canAuto ? feed.credit ?? "Agência Brasil" : "Redação Patrinu",
+        sourceName: item.sourceName ?? (feed.openLicense ? feed.credit ?? null : null),
         sourceUrl: item.link,
-        readingMinutes: 2,
-        reviewStatus: "pendente",
+        readingMinutes: words ? Math.min(15, Math.max(2, Math.round(words / 200))) : 2,
+        reviewStatus: canAuto ? "publicado" : "pendente",
         matchedTerms: tri.matched,
         publishedAt: item.publishedAt ? new Date(item.publishedAt) : new Date(),
       });
       result.noticias.inserted++;
+      if (canAuto) result.noticias.published++;
     }
     await db.update(sources).set({ lastIngestedAt: new Date() }).where(eq(sources.id, src.id));
   }

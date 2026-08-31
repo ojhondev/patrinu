@@ -4,35 +4,59 @@ export type RawArticle = {
   title: string;
   link: string;
   summary: string;
+  /** corpo da matéria em parágrafos, quando o feed entrega texto (ex.: Agência Brasil). */
+  paragraphs: string[];
   publishedAt: string | null;
   sourceName: string | null;
 };
 
+/** decodifica entidades HTML comuns. */
+function entities(s: string): string {
+  return s
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&amp;/g, "&");
+}
+
+/** texto puro de um trecho: entidades → tira tags → tira URLs cruas e rodapé do Google. */
 function decode(s: string): string {
-  return (
-    s
-      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-      // 1. decodifica entidades ANTES de tirar tags (RSS costuma vir com &lt;a&gt;)
-      .replace(/&nbsp;/g, " ")
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;|&apos;/g, "'")
-      .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-      // 2. agora remove todas as tags (inclusive as que estavam codificadas)
-      .replace(/<[^>]*>/g, " ")
-      // 3. tira URLs cruas e o rodapé do Google Notícias
-      .replace(/https?:\/\/\S+/gi, " ")
-      .replace(/view full coverage on google news/gi, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-  );
+  return entities(s)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/https?:\/\/\S+/gi, " ")
+    .replace(/view full coverage on google news/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** quebra um HTML de descrição/conteúdo em parágrafos de texto puro. */
+function paragraphsOf(raw: string): string[] {
+  const html = entities(raw);
+  return html
+    .split(/<\/p>|<br\s*\/?>|<\/div>|<\/li>/i)
+    .map((chunk) =>
+      chunk
+        .replace(/<[^>]*>/g, " ")
+        .replace(/https?:\/\/\S+/gi, " ")
+        .replace(/view full coverage on google news/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    )
+    .filter((p) => p.length >= 30 && !/^(foto|imagem|crédito|legenda)[:\s]/i.test(p));
 }
 
 function tag(block: string, name: string): string | null {
   const m = block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, "i"));
   return m ? decode(m[1]) : null;
+}
+
+function tagRaw(block: string, name: string): string | null {
+  const m = block.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, "i"));
+  return m ? m[1] : null;
 }
 
 export async function collectRss(feedUrl: string): Promise<RawArticle[]> {
@@ -60,14 +84,17 @@ export async function collectRss(feedUrl: string): Promise<RawArticle[]> {
     }
 
     const pub = tag(block, "pubDate") || tag(block, "dc:date");
-    const publishedAt = pub && !Number.isNaN(Date.parse(pub))
-      ? new Date(pub).toISOString()
-      : null;
+    const publishedAt =
+      pub && !Number.isNaN(Date.parse(pub)) ? new Date(pub).toISOString() : null;
+
+    const contentRaw = tagRaw(block, "content:encoded") || tagRaw(block, "description") || "";
+    const paragraphs = paragraphsOf(contentRaw).slice(0, 40);
 
     out.push({
       title,
       link: link.trim(),
       summary: (tag(block, "description") || "").slice(0, 600),
+      paragraphs,
       publishedAt,
       sourceName: sourceName?.replace(/\s+/g, " ").trim() || null,
     });

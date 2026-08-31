@@ -5,11 +5,10 @@ config({ path: ".env" });
 import { sql } from "drizzle-orm";
 
 import { db } from "./index";
-import { users, professionals, projects, sources, opportunities, articles } from "./schema";
+import { users, professionals, projects, sources, opportunities } from "./schema";
 import { MOCK_PROFESSIONALS } from "@/lib/mock/professionals";
 import { MOCK_PROJECTS } from "@/lib/mock/projects";
 import { MOCK_OPPORTUNITIES } from "@/lib/mock/opportunities";
-import { MOCK_ARTICLES } from "@/lib/mock/articles";
 
 const VERIF_MAP: Record<string, "email" | "registro_profissional" | "projeto_documentado" | "completo"> = {
   email: "email",
@@ -165,34 +164,12 @@ async function main() {
     }
   }
 
-  // 4. Notícias de referência (já publicadas)
-  const [artCount] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(articles);
-  if (artCount.count === 0) {
-    for (const a of MOCK_ARTICLES) {
-      await db
-        .insert(articles)
-        .values({
-          slug: a.slug,
-          title: a.title,
-          excerpt: a.excerpt,
-          body: a.body,
-          category: a.category,
-          author: a.author,
-          sourceName: a.source?.name ?? null,
-          sourceUrl: a.source?.url ?? null,
-          readingMinutes: a.readingMinutes,
-          featured: a.featured ?? false,
-          reviewStatus: "publicado",
-          publishedAt: new Date(a.publishedAt),
-        })
-        .onConflictDoNothing();
-    }
-  }
+  // 4. Notícias: NÃO semeamos matérias fictícias. O conteúdo de /noticias vem
+  //    da ingestão real (RSS) — Agência Brasil (CC-BY) publica sozinha, o resto
+  //    entra como rascunho na fila do Master. Ver src/lib/ingest/run.ts.
 
   console.log(
-    `Seed ok: ${MOCK_PROFESSIONALS.length} profissionais, ${MOCK_PROJECTS.length} projetos, ${MOCK_OPPORTUNITIES.length} editais, ${MOCK_ARTICLES.length} notícias.`,
+    `Seed ok: ${MOCK_PROFESSIONALS.length} profissionais, ${MOCK_PROJECTS.length} projetos, ${MOCK_OPPORTUNITIES.length} editais, 0 notícias (ingestão real).`,
   );
 }
 

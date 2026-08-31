@@ -156,17 +156,19 @@ export type Triage = {
   relevant: boolean;
   score: number; // 0..1 grosseiro
   matched: string[];
+  hasStrong: boolean;
 };
 
 export function triage(...texts: (string | null | undefined)[]): Triage {
   const hay = " " + norm(texts.filter(Boolean).join("  ")) + " ";
-  if (!hay.trim()) return { relevant: false, score: 0, matched: [] };
-  if (NEG.some((re) => re.test(hay))) return { relevant: false, score: 0, matched: [] };
+  if (!hay.trim()) return { relevant: false, score: 0, matched: [], hasStrong: false };
+  if (NEG.some((re) => re.test(hay)))
+    return { relevant: false, score: 0, matched: [], hasStrong: false };
 
   const matched = KW.filter((k) => k.re.test(hay)).map((k) => k.label);
   const hasStrong = matched.some((m) => STRONG.has(norm(m)));
   // relevante se: 1 termo forte, OU 2+ termos quaisquer
   const relevant = hasStrong || matched.length >= 2;
   const score = Math.min(1, (matched.length + (hasStrong ? 1 : 0)) / 3);
-  return { relevant, score, matched };
+  return { relevant, score, matched, hasStrong };
 }

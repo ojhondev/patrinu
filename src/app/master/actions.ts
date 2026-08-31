@@ -87,7 +87,10 @@ export async function moderateArticle(formData: FormData) {
 export async function triggerIngest() {
   if (!(await isMasterSession())) redirect("/master/entrar");
   await runIngest().catch((e) => console.error("[master] ingest:", e));
-  revalidatePath("/master");
+  revalidatePath("/master", "layout");
+  revalidatePath("/noticias");
+  revalidatePath("/editais");
+  revalidatePath("/");
 }
 
 export async function loginMaster(_prev: unknown, formData: FormData) {

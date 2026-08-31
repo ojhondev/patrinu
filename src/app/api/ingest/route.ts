@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 
 import { runIngest } from "@/lib/ingest/run";
 
@@ -20,6 +21,9 @@ async function handle(req: Request) {
   }
   try {
     const result = await runIngest();
+    revalidatePath("/noticias");
+    revalidatePath("/editais");
+    revalidatePath("/");
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {
     console.error("[api/ingest]", err);
