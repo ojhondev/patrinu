@@ -13,6 +13,9 @@ import { db } from "@/db";
 import { projects, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { approveProject, rejectProject } from "@/lib/projects";
+import { reviewOpportunity } from "@/lib/opportunities";
+import { reviewArticle } from "@/lib/directory";
+import { runIngest } from "@/lib/ingest/run";
 import { setSetting } from "@/lib/settings";
 import {
   projectApprovedEmail,
@@ -31,6 +34,37 @@ export async function saveBanner(formData: FormData) {
   await setSetting(`${slot}_banner_image`, /^https?:\/\//.test(image) ? image : null);
   await setSetting(`${slot}_banner_link`, /^https?:\/\//.test(link) ? link : null);
   revalidatePath(slot === "news" ? "/noticias" : "/projetos");
+  revalidatePath("/master");
+}
+
+export async function moderateOpportunity(formData: FormData) {
+  if (!(await isMasterSession())) redirect("/master/entrar");
+  const id = String(formData.get("id") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  if (!id || (decision !== "aprovado" && decision !== "recusado")) return;
+  const title = String(formData.get("title") ?? "").trim() || undefined;
+  const summary = String(formData.get("summary") ?? "").trim() || undefined;
+  await reviewOpportunity(id, decision, { title, summary });
+  revalidatePath("/master");
+  revalidatePath("/editais");
+}
+
+export async function moderateArticle(formData: FormData) {
+  if (!(await isMasterSession())) redirect("/master/entrar");
+  const id = String(formData.get("id") ?? "");
+  const decision = String(formData.get("decision") ?? "");
+  if (!id || (decision !== "publicado" && decision !== "recusado")) return;
+  const title = String(formData.get("title") ?? "").trim() || undefined;
+  const excerpt = String(formData.get("excerpt") ?? "").trim() || undefined;
+  const category = String(formData.get("category") ?? "").trim() || undefined;
+  await reviewArticle(id, decision, { title, excerpt, category });
+  revalidatePath("/master");
+  revalidatePath("/noticias");
+}
+
+export async function triggerIngest() {
+  if (!(await isMasterSession())) redirect("/master/entrar");
+  await runIngest().catch((e) => console.error("[master] ingest:", e));
   revalidatePath("/master");
 }
 

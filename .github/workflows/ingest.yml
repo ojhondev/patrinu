@@ -1,0 +1,20 @@
+name: Ingestão (editais + notícias)
+
+on:
+  schedule:
+    - cron: "17 9 * * *" # todo dia ~06:17 BRT
+  workflow_dispatch: {} # permite rodar manualmente na aba Actions
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Chamar /api/ingest
+        run: |
+          code=$(curl -sS -o /tmp/out.json -w "%{http_code}" --max-time 300 \
+            -H "Authorization: Bearer ${{ secrets.INGEST_SECRET }}" \
+            "https://patrinu.vercel.app/api/ingest")
+          echo "HTTP $code"
+          cat /tmp/out.json
+          echo
+          test "$code" = "200"

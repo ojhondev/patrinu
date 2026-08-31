@@ -5,9 +5,11 @@ config({ path: ".env" });
 import { sql } from "drizzle-orm";
 
 import { db } from "./index";
-import { users, professionals, projects } from "./schema";
+import { users, professionals, projects, sources, opportunities, articles } from "./schema";
 import { MOCK_PROFESSIONALS } from "@/lib/mock/professionals";
 import { MOCK_PROJECTS } from "@/lib/mock/projects";
+import { MOCK_OPPORTUNITIES } from "@/lib/mock/opportunities";
+import { MOCK_ARTICLES } from "@/lib/mock/articles";
 
 const VERIF_MAP: Record<string, "email" | "registro_profissional" | "projeto_documentado" | "completo"> = {
   email: "email",
@@ -20,15 +22,12 @@ async function main() {
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)::int` })
     .from(projects);
-  if (count > 0) {
-    console.log(`Já existem ${count} projetos — pulando seed. Use --force para recriar.`);
-    if (!process.argv.includes("--force")) return;
-    await db.delete(projects);
-  }
+  const skipCore = count > 0 && !process.argv.includes("--force");
+  if (count > 0 && process.argv.includes("--force")) await db.delete(projects);
 
   // 1. profissionais (+ um user sintético cada)
   const slugToProId = new Map<string, string>();
-  for (const p of MOCK_PROFESSIONALS) {
+  for (const p of skipCore ? [] : MOCK_PROFESSIONALS) {
     const [u] = await db
       .insert(users)
       .values({
@@ -77,7 +76,7 @@ async function main() {
   }
 
   // 2. projetos (fichas de referência — ownerId null, já aprovadas)
-  for (const p of MOCK_PROJECTS) {
+  for (const p of skipCore ? [] : MOCK_PROJECTS) {
     await db
       .insert(projects)
       .values({
@@ -105,8 +104,95 @@ async function main() {
       .onConflictDoNothing();
   }
 
+  // 3. Radar — fontes + oportunidades de referência (já aprovadas)
+  const [oppCount] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(opportunities);
+  if (oppCount.count === 0) {
+    const srcId = new Map<string, string>();
+    for (const op of MOCK_OPPORTUNITIES) {
+      const s = op.source;
+      if (!srcId.has(s.slug)) {
+        const [row] = await db
+          .insert(sources)
+          .values({
+            slug: s.slug,
+            name: s.name,
+            tier: s.tier,
+            access: s.access,
+            kind: "edital",
+            active: true,
+          })
+          .onConflictDoNothing()
+          .returning();
+        const id =
+          row?.id ??
+          (
+            await db
+              .select({ id: sources.id })
+              .from(sources)
+              .where(sql`${sources.slug} = ${s.slug}`)
+          )[0]?.id;
+        if (id) srcId.set(s.slug, id);
+      }
+      const sid = srcId.get(s.slug);
+      if (!sid) continue;
+      await db
+        .insert(opportunities)
+        .values({
+          sourceId: sid,
+          externalId: op.externalId,
+          url: op.url,
+          kind: op.kind,
+          status: op.status,
+          title: op.title,
+          summary: op.summary,
+          object: op.object,
+          organ: op.organ,
+          organScope: op.organScope,
+          uf: op.uf,
+          city: op.city,
+          estimatedValue: op.estimatedValue != null ? String(op.estimatedValue) : null,
+          specialties: op.specialties,
+          techniques: op.techniques,
+          habilitacao: op.habilitacao,
+          publishedAt: new Date(op.publishedAt),
+          deadlineAt: op.deadlineAt ? new Date(op.deadlineAt) : null,
+          relevanceScore: op.relevanceScore,
+          reviewStatus: "aprovado",
+        })
+        .onConflictDoNothing();
+    }
+  }
+
+  // 4. Notícias de referência (já publicadas)
+  const [artCount] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(articles);
+  if (artCount.count === 0) {
+    for (const a of MOCK_ARTICLES) {
+      await db
+        .insert(articles)
+        .values({
+          slug: a.slug,
+          title: a.title,
+          excerpt: a.excerpt,
+          body: a.body,
+          category: a.category,
+          author: a.author,
+          sourceName: a.source?.name ?? null,
+          sourceUrl: a.source?.url ?? null,
+          readingMinutes: a.readingMinutes,
+          featured: a.featured ?? false,
+          reviewStatus: "publicado",
+          publishedAt: new Date(a.publishedAt),
+        })
+        .onConflictDoNothing();
+    }
+  }
+
   console.log(
-    `Seed ok: ${MOCK_PROFESSIONALS.length} profissionais, ${MOCK_PROJECTS.length} projetos.`,
+    `Seed ok: ${MOCK_PROFESSIONALS.length} profissionais, ${MOCK_PROJECTS.length} projetos, ${MOCK_OPPORTUNITIES.length} editais, ${MOCK_ARTICLES.length} notícias.`,
   );
 }
 

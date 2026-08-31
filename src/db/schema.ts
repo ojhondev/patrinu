@@ -147,7 +147,11 @@ export const sources = pgTable("sources", {
   /** 0..5, ver docs/radar-fontes.md */
   tier: integer("tier").notNull(),
   access: sourceAccess("access").notNull(),
+  /** "edital" | "noticia" */
+  kind: text("kind").notNull().default("edital"),
   homepage: text("homepage"),
+  /** URL do feed RSS, ou query do Google News, ou base da API */
+  feedUrl: text("feed_url"),
   active: boolean("active").notNull().default(false),
   lastIngestedAt: timestamp("last_ingested_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -204,6 +208,11 @@ export const opportunities = pgTable(
     relevanceScore: real("relevance_score"),
     relevanceConfidence: real("relevance_confidence"),
 
+    /** moderação: "pendente" | "aprovado" | "recusado" */
+    reviewStatus: text("review_status").notNull().default("pendente"),
+    /** termos que casaram na triagem, para o Master ver por que entrou */
+    matchedTerms: text("matched_terms").array().notNull().default(sql`'{}'::text[]`),
+
     /** payload bruto da fonte, para reprocessamento */
     raw: jsonb("raw"),
 
@@ -234,6 +243,34 @@ export const opportunitySightings = pgTable(
     seenAt: timestamp("seen_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("sightings_source_external_idx").on(t.sourceId, t.externalId)],
+);
+
+/* ------------------------------------------------------------------ */
+/* Notícias                                                            */
+/* ------------------------------------------------------------------ */
+
+export const articles = pgTable(
+  "articles",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    excerpt: text("excerpt").notNull().default(""),
+    body: text("body").array().notNull().default(sql`'{}'::text[]`),
+    /** obra | tecnica | politica | mercado | curso | edital */
+    category: text("category").notNull().default("mercado"),
+    author: text("author").notNull().default("Redação Patrinu"),
+    sourceName: text("source_name"),
+    sourceUrl: text("source_url"),
+    readingMinutes: integer("reading_minutes").notNull().default(2),
+    featured: boolean("featured").notNull().default(false),
+    /** "pendente" | "publicado" | "recusado" */
+    reviewStatus: text("review_status").notNull().default("pendente"),
+    matchedTerms: text("matched_terms").array().notNull().default(sql`'{}'::text[]`),
+    publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("articles_source_url_idx").on(t.sourceUrl)],
 );
 
 /* ------------------------------------------------------------------ */

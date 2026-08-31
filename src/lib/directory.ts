@@ -3,8 +3,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import type { Article, Course, FundingSource, Professional } from "./types";
 import type { SpecialtyKey } from "./taxonomy";
 import { db } from "@/db";
-import { professionals } from "@/db/schema";
-import { MOCK_ARTICLES } from "./mock/articles";
+import { articles, professionals } from "@/db/schema";
 import { MOCK_COURSES } from "./mock/courses";
 import { MOCK_FUNDING } from "./mock/funding";
 
@@ -83,20 +82,78 @@ export async function featuredProfessionals(limit = 4): Promise<Professional[]> 
   return rows.map(rowToProfessional);
 }
 
-/* ---------------- Notícias ---------------- */
+/* ---------------- Notícias (banco) ---------------- */
+
+type ArticleRow = typeof articles.$inferSelect;
+
+function rowToArticle(r: ArticleRow): Article {
+  return {
+    slug: r.slug,
+    title: r.title,
+    excerpt: r.excerpt,
+    body: r.body?.length ? r.body : [r.excerpt],
+    category: r.category as Article["category"],
+    author: r.author,
+    publishedAt: r.publishedAt.toISOString(),
+    readingMinutes: r.readingMinutes,
+    source: r.sourceUrl
+      ? { name: r.sourceName ?? "Fonte", url: r.sourceUrl }
+      : undefined,
+    featured: r.featured,
+  };
+}
 
 export async function listArticles(category?: string): Promise<Article[]> {
-  return MOCK_ARTICLES.filter((a) => !category || a.category === category).sort(
-    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt),
-  );
+  const rows = await db
+    .select()
+    .from(articles)
+    .where(
+      and(
+        eq(articles.reviewStatus, "publicado"),
+        category ? eq(articles.category, category) : undefined,
+      ),
+    )
+    .orderBy(desc(articles.publishedAt));
+  return rows.map(rowToArticle);
 }
 
 export async function getArticle(slug: string): Promise<Article | null> {
-  return MOCK_ARTICLES.find((a) => a.slug === slug) ?? null;
+  const [row] = await db
+    .select()
+    .from(articles)
+    .where(and(eq(articles.slug, slug), eq(articles.reviewStatus, "publicado")))
+    .limit(1);
+  return row ? rowToArticle(row) : null;
 }
 
 export async function latestArticles(limit = 3): Promise<Article[]> {
   return (await listArticles()).slice(0, limit);
+}
+
+/* ---------------- fila de moderação de notícias (Master) ---------------- */
+
+export async function pendingArticles() {
+  return db
+    .select()
+    .from(articles)
+    .where(eq(articles.reviewStatus, "pendente"))
+    .orderBy(desc(articles.publishedAt));
+}
+
+export async function reviewArticle(
+  id: string,
+  decision: "publicado" | "recusado",
+  patch?: { title?: string; excerpt?: string; category?: string },
+) {
+  await db
+    .update(articles)
+    .set({
+      reviewStatus: decision,
+      ...(patch?.title ? { title: patch.title } : {}),
+      ...(patch?.excerpt ? { excerpt: patch.excerpt } : {}),
+      ...(patch?.category ? { category: patch.category } : {}),
+    })
+    .where(eq(articles.id, id));
 }
 
 /* ---------------- Cursos ---------------- */

@@ -4,14 +4,23 @@ import { redirect } from "next/navigation";
 import { ShieldCheck, Clock, Check, X } from "lucide-react";
 
 import { isMasterSession } from "@/lib/auth";
-import { logoutMaster, moderateProject, saveBanner } from "./actions";
+import {
+  logoutMaster,
+  moderateArticle,
+  moderateOpportunity,
+  moderateProject,
+  saveBanner,
+  triggerIngest,
+} from "./actions";
 import { pendingProjects } from "@/lib/projects";
+import { pendingOpportunities } from "@/lib/opportunities";
+import { pendingArticles } from "@/lib/directory";
 import { getSetting } from "@/lib/settings";
 import { db } from "@/db";
 import { financingRequests } from "@/db/schema";
 import { desc } from "drizzle-orm";
 import { Badge } from "@/components/badge";
-import { formatDate, specialtyLabel } from "@/lib/taxonomy";
+import { formatBRL, formatDate, specialtyLabel } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Master", robots: { index: false } };
 
@@ -31,17 +40,20 @@ const BANNERS = [
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
 
-  const [pending, financing, banners] = await Promise.all([
-    pendingProjects(),
-    db.select().from(financingRequests).orderBy(desc(financingRequests.createdAt)),
-    Promise.all(
-      BANNERS.map(async (b) => ({
-        ...b,
-        image: await getSetting(`${b.slot}_banner_image`),
-        link: await getSetting(`${b.slot}_banner_link`),
-      })),
-    ),
-  ]);
+  const [pending, pendingEditais, pendingNoticias, financing, banners] =
+    await Promise.all([
+      pendingProjects(),
+      pendingOpportunities(),
+      pendingArticles(),
+      db.select().from(financingRequests).orderBy(desc(financingRequests.createdAt)),
+      Promise.all(
+        BANNERS.map(async (b) => ({
+          ...b,
+          image: await getSetting(`${b.slot}_banner_image`),
+          link: await getSetting(`${b.slot}_banner_link`),
+        })),
+      ),
+    ]);
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-8 sm:px-6 lg:px-11">
@@ -204,6 +216,160 @@ export default async function MasterPage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      {/* ---- Radar: editais ingeridos ---- */}
+      <section className="mt-12">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold">
+            Editais a aprovar{" "}
+            <span className="font-mono text-sm text-muted">({pendingEditais.length})</span>
+          </h2>
+          <form action={triggerIngest}>
+            <button
+              type="submit"
+              className="border border-ink px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.13em] hover:bg-ink hover:text-white"
+            >
+              Rodar ingestão agora
+            </button>
+          </form>
+        </div>
+        <p className="mt-1 text-sm text-ink-soft">
+          Coletados do PNCP e triados por palavra-chave. Revise o resumo, aprove ou recuse.
+        </p>
+
+        <div className="mt-4 space-y-3">
+          {pendingEditais.length === 0 && (
+            <p className="border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Nada na fila. Rode a ingestão ou aguarde a execução diária.
+            </p>
+          )}
+          {pendingEditais.map(({ o, s }) => (
+            <div key={o.id} className="border border-border bg-surface p-4">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                <Badge tone="neutral">{s?.name ?? "PNCP"}</Badge>
+                {o.deadlineAt && <span>prazo {formatDate(o.deadlineAt.toISOString())}</span>}
+                {o.estimatedValue != null && <span>{formatBRL(Number(o.estimatedValue))}</span>}
+                {o.uf && <span>{o.city ? `${o.city}/` : ""}{o.uf}</span>}
+                {o.url && (
+                  <a href={o.url} target="_blank" rel="noreferrer" className="text-green-ink hover:underline">
+                    ver no PNCP →
+                  </a>
+                )}
+              </div>
+              <p className="mt-1 text-xs text-muted">
+                casou: {(o.matchedTerms ?? []).join(", ") || "—"}
+              </p>
+              <form action={moderateOpportunity} className="mt-2 space-y-2">
+                <input type="hidden" name="id" value={o.id} />
+                <input
+                  name="title"
+                  defaultValue={o.title}
+                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
+                />
+                <textarea
+                  name="summary"
+                  defaultValue={o.summary ?? o.object ?? ""}
+                  rows={3}
+                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    name="decision"
+                    value="aprovado"
+                    className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+                  >
+                    <Check size={15} /> Aprovar
+                  </button>
+                  <button
+                    type="submit"
+                    name="decision"
+                    value="recusado"
+                    className="inline-flex items-center gap-1.5 border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
+                  >
+                    <X size={15} /> Recusar
+                  </button>
+                </div>
+              </form>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ---- Radar: notícias ingeridas ---- */}
+      <section className="mt-12">
+        <h2 className="text-lg font-bold">
+          Notícias a aprovar{" "}
+          <span className="font-mono text-sm text-muted">({pendingNoticias.length})</span>
+        </h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Vindas de feeds RSS. Ajuste título/resumo, escolha a editoria, publique ou recuse.
+        </p>
+
+        <div className="mt-4 space-y-3">
+          {pendingNoticias.length === 0 && (
+            <p className="border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Nada na fila.
+            </p>
+          )}
+          {pendingNoticias.map((a) => (
+            <div key={a.id} className="border border-border bg-surface p-4">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                <span>{a.sourceName ?? "Fonte"}</span>
+                <span>· {formatDate(a.publishedAt.toISOString())}</span>
+                {a.sourceUrl && (
+                  <a href={a.sourceUrl} target="_blank" rel="noreferrer" className="text-green-ink hover:underline">
+                    abrir matéria →
+                  </a>
+                )}
+              </div>
+              <form action={moderateArticle} className="mt-2 space-y-2">
+                <input type="hidden" name="id" value={a.id} />
+                <input
+                  name="title"
+                  defaultValue={a.title}
+                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
+                />
+                <textarea
+                  name="excerpt"
+                  defaultValue={a.excerpt}
+                  rows={2}
+                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    name="category"
+                    defaultValue={a.category}
+                    className="border border-ink/20 bg-surface px-2 py-1.5 text-sm"
+                  >
+                    {["obra", "tecnica", "politica", "mercado", "curso", "edital"].map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    name="decision"
+                    value="publicado"
+                    className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+                  >
+                    <Check size={15} /> Publicar
+                  </button>
+                  <button
+                    type="submit"
+                    name="decision"
+                    value="recusado"
+                    className="inline-flex items-center gap-1.5 border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
+                  >
+                    <X size={15} /> Recusar
+                  </button>
+                </div>
+              </form>
+            </div>
+          ))}
         </div>
       </section>
 
