@@ -22,10 +22,14 @@ type NewsFeed = {
 
 const NEWS_FEEDS: NewsFeed[] = [
   {
-    slug: "gnews-restauro-patrimonio",
-    name: "Google Notícias — restauro do patrimônio",
+    slug: "gnews-patrimonio-restauro",
+    name: "Google Notícias — patrimônio / restauro",
     feedUrl:
-      'https://news.google.com/rss/search?q=%22restauro%20do%20patrim%C3%B4nio%22%20OR%20%22restaura%C3%A7%C3%A3o%20de%20patrim%C3%B4nio%22&hl=pt-BR&gl=BR&ceid=BR:pt-419',
+      "https://news.google.com/rss/search?q=" +
+      encodeURIComponent(
+        "(restauro OR restauração OR tombamento OR patrimônio) (igreja OR museu OR histórico OR IPHAN OR colonial OR barroco OR fachada)",
+      ) +
+      "&hl=pt-BR&gl=BR&ceid=BR:pt-419",
   },
   {
     slug: "gnews-iphan-tombamento",
@@ -157,8 +161,8 @@ export async function runIngest(): Promise<IngestResult> {
   const PNCP_DEADLINE = Date.now() + 45_000;
 
   /* ---- NOTÍCIAS: RSS ---- */
-  const NEWS_MAX_AGE_MS = 5 * 86_400_000; // só matérias dos últimos 5 dias
-  const NEWS_CAP = 25; // teto de novas notícias por execução
+  const NEWS_MAX_AGE_MS = 10 * 86_400_000; // matérias dos últimos 10 dias
+  const NEWS_CAP = 30; // teto de novas notícias por execução
   const titleSeen = new Set<string>();
   // pré-carrega títulos recentes já no banco para não repetir a mesma história
   const recent = await db
