@@ -2,50 +2,52 @@
 
 /* ================================================================ */
 /*  Patrinu — design system                                          */
-/*  Fundo branco + verde. Sem preto de plataforma.                   */
+/*  Fundo branco + vermelho (#ED1A1A). Sem preto de plataforma.      */
 /*  Preto só entra como contraste pontual em botões (tom `ink`).     */
+/*  NB: os tokens ainda se chamam `--green*` / `bg-band` por         */
+/*  compatibilidade — os valores é que passaram a ser vermelhos.     */
 /* ================================================================ */
 
 :root {
   --bg: #ffffff;
   --surface: #ffffff;
-  --sunk: #f2f6f3;
-  --sunk-2: #eaf0ec;
-  --border: #e1e8e3;
-  --border-strong: #c3cec8;
+  --sunk: #faf4f4;
+  --sunk-2: #f4e9e9;
+  --border: #ece0e0;
+  --border-strong: #d7c4c4;
 
-  /* "tinta" = carvão levemente esverdeado, nunca preto puro */
-  --ink: #1c2b24;
-  --ink-soft: #4c5a52;
-  --muted: #8a948d;
+  /* "tinta" = carvão levemente quente, nunca preto puro */
+  --ink: #241a1a;
+  --ink-soft: #574c4c;
+  --muted: #948a8a;
 
   /* cor principal da marca */
-  --brand: #004116;
-  --green: #004116;
-  --green-hover: #00591f;
-  --green-deep: #00320f;
-  --green-weak: #e6efe8;
-  --green-mid: #0f7a3a;
-  --green-ink: #005c20;
+  --brand: #ED1A1A;
+  --green: #ED1A1A;
+  --green-hover: #c81414;
+  --green-deep: #9e1010;
+  --green-weak: #fdeaea;
+  --green-mid: #f24e3c;
+  --green-ink: #c71414;
 
-  /* verde vivo do logo — apenas realces pequenos */
-  --accent: #2fae55;
+  /* vermelho claro (coral) — apenas realces pequenos e texto sobre faixa */
+  --accent: #ff6b5b;
 
-  /* faixa escura da plataforma = verde da marca (nunca preto) */
-  --band: #004116;
-  --band-2: #00320f;
+  /* faixa escura da plataforma = vermelho da marca (nunca preto) */
+  --band: #c81414;
+  --band-2: #8e0f0f;
 
   /* contraste pontual permitido em alguns botões */
-  --contrast: #14201a;
+  --contrast: #201414;
 
   --star: #f0a730;
   --ok: #1a8f57;
   --warn: #9a6a1f;
-  --crit: #c0392b;
+  --crit: #a51d1d;
 
-  --ring: #004116;
-  --shadow-card: 0 1px 2px rgba(20, 40, 30, 0.05), 0 6px 20px rgba(20, 40, 30, 0.07);
-  --shadow-pop: 0 8px 30px rgba(20, 40, 30, 0.13);
+  --ring: #ED1A1A;
+  --shadow-card: 0 1px 2px rgba(40, 22, 22, 0.05), 0 6px 20px rgba(40, 22, 22, 0.08);
+  --shadow-pop: 0 8px 30px rgba(40, 22, 22, 0.14);
 }
 
 @theme inline {

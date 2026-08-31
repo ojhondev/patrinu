@@ -145,7 +145,7 @@ export default async function ProTrackPage({
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
               href={`/comecar/${trilha}`}
-              className="inline-flex items-center gap-2 rounded-lg bg-green px-5 py-3 text-sm font-bold text-white hover:bg-green-hover"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
             >
               Começar
               <ArrowRight size={16} />

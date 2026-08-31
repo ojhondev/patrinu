@@ -16,19 +16,19 @@ import type { SpecialtyKey } from "@/lib/taxonomy";
 
 type Visual = { icon: LucideIcon; from: string; to: string };
 
-/** Cada especialidade ganha um gradiente da família do verde + um ícone.
- *  Substitui as fotos de gig por um tratamento gráfico leve e sempre verde —
+/** Cada especialidade ganha um gradiente da família do vermelho da marca +
+ *  um ícone. Substitui as fotos de gig por um tratamento gráfico leve —
  *  nada de tiles escuros/pretos. */
 const VISUALS: Record<SpecialtyKey, Visual> = {
-  bens_moveis: { icon: Frame, from: "#4a8f6a", to: "#356b4e" },
-  bens_integrados: { icon: Landmark, from: "#5e9a6b", to: "#437a4e" },
-  arquitetura: { icon: Hammer, from: "#3f8f83", to: "#2c6b61" },
-  arqueologia: { icon: Shovel, from: "#7e8f56", to: "#5e6b3d" },
-  acervo: { icon: Archive, from: "#3d8f76", to: "#2a6b58" },
-  paisagismo: { icon: Trees, from: "#54a05f", to: "#3a7a43" },
-  urbanismo: { icon: Building, from: "#5a8f80", to: "#436b5f" },
-  imaterial: { icon: Music, from: "#4a9a8c", to: "#347368" },
-  documental: { icon: BookMarked, from: "#6f8f78", to: "#516b58" },
+  bens_moveis: { icon: Frame, from: "#d13a3a", to: "#a82a2a" },
+  bens_integrados: { icon: Landmark, from: "#c8443a", to: "#9e3128" },
+  arquitetura: { icon: Hammer, from: "#b83f4a", to: "#8c2d38" },
+  arqueologia: { icon: Shovel, from: "#c25a3a", to: "#96412a" },
+  acervo: { icon: Archive, from: "#cb4340", to: "#9e302e" },
+  paisagismo: { icon: Trees, from: "#b6503f", to: "#8a3a2d" },
+  urbanismo: { icon: Building, from: "#c04a4f", to: "#93353a" },
+  imaterial: { icon: Music, from: "#d0473c", to: "#a2332a" },
+  documental: { icon: BookMarked, from: "#b34747", to: "#8a3434" },
 };
 
 export function specialtyVisual(key: SpecialtyKey): Visual {

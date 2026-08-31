@@ -72,12 +72,12 @@ export default async function HomePage() {
           preload="auto"
           aria-hidden
         />
-        {/* véu verde: deixa o vídeo aparecer, mantém a copy legível */}
+        {/* véu preto: deixa o vídeo aparecer, mantém a copy legível */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(100deg, color-mix(in oklab, var(--band) 90%, transparent) 0%, color-mix(in oklab, var(--band) 74%, transparent) 48%, color-mix(in oklab, var(--band) 60%, transparent) 100%)",
+              "linear-gradient(100deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.64) 48%, rgba(0,0,0,0.48) 100%)",
           }}
         />
         <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />
@@ -206,11 +206,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ---------------- para empresas (a única faixa verde) ---------------- */}
+      {/* ---------------- para empresas (a única faixa da marca) ---------------- */}
       <section className="bg-band text-white">
         <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-11 lg:py-20">
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-green">
+            <p className="text-xs font-bold uppercase tracking-widest text-white/70">
               Patrinu para empresas e instituições
             </p>
             <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-balance">
@@ -224,14 +224,14 @@ export default async function HomePage() {
                 "Deal flow de projetos financiáveis (Patrocinador / Vitrine)",
               ].map((item) => (
                 <li key={item} className="flex gap-2.5 text-white/85">
-                  <Check size={18} className="mt-0.5 shrink-0 text-green" />
+                  <Check size={18} className="mt-0.5 shrink-0 text-white" />
                   {item}
                 </li>
               ))}
             </ul>
             <Link
               href="/empresas"
-              className="mt-7 inline-flex items-center gap-2 rounded-lg bg-green px-5 py-3 text-sm font-bold text-white hover:bg-green-hover"
+              className="mt-7 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
             >
               Conhecer os planos
               <ArrowRight size={16} />
