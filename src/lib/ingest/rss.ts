@@ -9,18 +9,25 @@ export type RawArticle = {
 };
 
 function decode(s: string): string {
-  return s
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/\s+/g, " ")
-    .trim();
+  return (
+    s
+      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+      // 1. decodifica entidades ANTES de tirar tags (RSS costuma vir com &lt;a&gt;)
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+      // 2. agora remove todas as tags (inclusive as que estavam codificadas)
+      .replace(/<[^>]*>/g, " ")
+      // 3. tira URLs cruas e o rodapé do Google Notícias
+      .replace(/https?:\/\/\S+/gi, " ")
+      .replace(/view full coverage on google news/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+  );
 }
 
 function tag(block: string, name: string): string | null {

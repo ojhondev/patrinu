@@ -99,6 +99,9 @@ export const users = pgTable("users", {
   /** URL da foto de perfil (upload real fica para depois) */
   avatarUrl: text("avatar_url"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  /** moderação: conta banida pelo Master não loga e some do diretório */
+  bannedAt: timestamp("banned_at", { withTimezone: true }),
+  bannedReason: text("banned_reason"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

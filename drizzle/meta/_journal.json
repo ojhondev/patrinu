@@ -57,6 +57,13 @@
       "when": 1788198287153,
       "tag": "0007_striped_bushwacker",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788203479148,
+      "tag": "0008_white_iron_lad",
+      "breakpoints": true
     }
   ]
 }

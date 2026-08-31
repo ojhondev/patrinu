@@ -102,7 +102,8 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     .limit(1);
   if (!row || row.expiresAt.getTime() < Date.now()) return null;
   const [user] = await db.select().from(users).where(eq(users.id, row.userId)).limit(1);
-  return user ?? null;
+  if (!user || user.bannedAt) return null;
+  return user;
 }
 
 /* ================================================================== */

@@ -262,13 +262,17 @@ export async function runIngest(): Promise<IngestResult> {
         .limit(1);
       if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
 
+      const clean = item.summary.replace(/\s+/g, " ").trim();
+      const usable = clean.length >= 60 ? clean : "";
       await db.insert(articles).values({
         slug,
         title: item.title,
-        excerpt: item.summary.slice(0, 280),
-        body: item.summary ? [item.summary] : [],
-        category: guessCategory(`${item.title} ${item.summary}`),
-        author: item.sourceName ? `Curadoria · ${item.sourceName}` : "Curadoria Patrinu",
+        excerpt: usable
+          ? usable.slice(0, 280)
+          : "(rascunho — escreva o resumo da matéria antes de publicar)",
+        body: usable ? [usable] : [],
+        category: guessCategory(`${item.title} ${clean}`),
+        author: "Redação Patrinu",
         sourceName: item.sourceName,
         sourceUrl: item.link,
         readingMinutes: 2,

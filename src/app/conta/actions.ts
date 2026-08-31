@@ -29,6 +29,9 @@ export async function signIn(_prev: State, form: FormData): Promise<State> {
   if (!user || !verifyPassword(password, user.passwordHash)) {
     return { error: "E-mail ou senha incorretos." };
   }
+  if (user.bannedAt) {
+    return { error: "Esta conta foi suspensa. Fale com contato@patrinu.com.br." };
+  }
   await startUserSession(user.id);
   redirect(next.startsWith("/") ? next : "/painel");
 }

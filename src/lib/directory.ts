@@ -3,7 +3,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import type { Article, Course, FundingSource, Professional } from "./types";
 import type { SpecialtyKey } from "./taxonomy";
 import { db } from "@/db";
-import { articles, professionals } from "@/db/schema";
+import { articles, professionals, users } from "@/db/schema";
 import { MOCK_COURSES } from "./mock/courses";
 import { MOCK_FUNDING } from "./mock/funding";
 
@@ -47,8 +47,10 @@ export async function listProfessionals(
   const rows = await db
     .select()
     .from(professionals)
+    .innerJoin(users, eq(users.id, professionals.userId))
     .where(
       and(
+        sql`${users.bannedAt} is null`,
         verifiedOnly ? eq(professionals.verified, true) : undefined,
         uf ? eq(professionals.uf, uf) : undefined,
         specialty
@@ -60,26 +62,28 @@ export async function listProfessionals(
       ),
     )
     .orderBy(desc(professionals.score));
-  return rows.map(rowToProfessional);
+  return rows.map((r) => rowToProfessional(r.professionals));
 }
 
 export async function getProfessional(slug: string): Promise<Professional | null> {
   const [row] = await db
     .select()
     .from(professionals)
-    .where(eq(professionals.slug, slug))
+    .innerJoin(users, eq(users.id, professionals.userId))
+    .where(and(eq(professionals.slug, slug), sql`${users.bannedAt} is null`))
     .limit(1);
-  return row ? rowToProfessional(row) : null;
+  return row ? rowToProfessional(row.professionals) : null;
 }
 
 export async function featuredProfessionals(limit = 4): Promise<Professional[]> {
   const rows = await db
     .select()
     .from(professionals)
-    .where(eq(professionals.verified, true))
+    .innerJoin(users, eq(users.id, professionals.userId))
+    .where(and(eq(professionals.verified, true), sql`${users.bannedAt} is null`))
     .orderBy(desc(professionals.score))
     .limit(limit);
-  return rows.map(rowToProfessional);
+  return rows.map((r) => rowToProfessional(r.professionals));
 }
 
 /* ---------------- Notícias (banco) ---------------- */
@@ -143,8 +147,9 @@ export async function pendingArticles() {
 export async function reviewArticle(
   id: string,
   decision: "publicado" | "recusado",
-  patch?: { title?: string; excerpt?: string; category?: string },
+  patch?: { title?: string; excerpt?: string; category?: string; body?: string[] },
 ) {
+  const words = (patch?.body ?? []).join(" ").split(/\s+/).filter(Boolean).length;
   await db
     .update(articles)
     .set({
@@ -152,6 +157,7 @@ export async function reviewArticle(
       ...(patch?.title ? { title: patch.title } : {}),
       ...(patch?.excerpt ? { excerpt: patch.excerpt } : {}),
       ...(patch?.category ? { category: patch.category } : {}),
+      ...(patch?.body ? { body: patch.body, readingMinutes: Math.max(1, Math.round(words / 200)) } : {}),
     })
     .where(eq(articles.id, id));
 }

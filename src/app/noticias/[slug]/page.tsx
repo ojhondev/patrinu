@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 import { getArticle, listArticles } from "@/lib/directory";
 import { articleCategoryLabel, formatDate } from "@/lib/taxonomy";
@@ -32,10 +32,11 @@ export default async function ArticlePage({
     .filter((x) => x.slug !== a.slug && x.category === a.category)
     .slice(0, 3);
 
-  const half = Math.ceil(a.body.length / 2);
+  const body = a.body.filter((p) => p.trim().length > 0);
+  const half = Math.ceil(body.length / 2) || 1;
 
   return (
-    <div>
+    <div className="[overflow-wrap:anywhere]">
       {/* masthead editorial */}
       <div className="border-b-4 border-brand">
         <div className="mx-auto max-w-[760px] px-4 py-10 sm:px-6">
@@ -62,7 +63,7 @@ export default async function ArticlePage({
 
       <div className="mx-auto max-w-[760px] px-4 py-10 sm:px-6">
         <article className="space-y-5 text-[1.075rem] leading-relaxed text-ink-soft first-letter:float-left first-letter:mr-2 first-letter:font-display first-letter:text-6xl first-letter:font-bold first-letter:leading-[0.8] first-letter:text-ink">
-          {a.body.slice(0, half).map((para, i) => (
+          {body.slice(0, half).map((para, i) => (
             <p key={i}>{para}</p>
           ))}
         </article>
@@ -70,24 +71,17 @@ export default async function ArticlePage({
         {/* espaço de anúncio no meio da matéria */}
         <NewsBanner className="my-8" />
 
-        <article className="space-y-5 text-[1.075rem] leading-relaxed text-ink-soft">
-          {a.body.slice(half).map((para, i) => (
-            <p key={i}>{para}</p>
-          ))}
-        </article>
+        {body.length > half && (
+          <article className="space-y-5 text-[1.075rem] leading-relaxed text-ink-soft">
+            {body.slice(half).map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </article>
+        )}
 
-        {a.source && (
-          <p className="mt-8 border-l-4 border-brand bg-sunk px-4 py-3 text-sm">
-            Curadoria a partir de{" "}
-            <a
-              href={a.source.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1 font-semibold text-green-ink hover:underline"
-            >
-              {a.source.name}
-              <ExternalLink size={13} />
-            </a>
+        {a.source?.name && (
+          <p className="mt-10 text-sm text-muted">
+            Com informações de <span className="font-semibold text-ink-soft">{a.source.name}</span>.
           </p>
         )}
 

@@ -71,7 +71,14 @@ export async function moderateArticle(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim() || undefined;
   const excerpt = String(formData.get("excerpt") ?? "").trim() || undefined;
   const category = String(formData.get("category") ?? "").trim() || undefined;
-  await reviewArticle(id, decision, { title, excerpt, category });
+  const bodyRaw = String(formData.get("body") ?? "").trim();
+  const body = bodyRaw
+    ? bodyRaw.split(/\n{2,}|\r\n{2,}/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean)
+    : undefined;
+  if (decision === "publicado" && (!excerpt || excerpt.startsWith("(rascunho"))) {
+    return; // não publica sem um resumo escrito
+  }
+  await reviewArticle(id, decision, { title, excerpt, category, body });
   revalidatePath("/master");
   revalidatePath("/noticias");
   revalidatePath("/");

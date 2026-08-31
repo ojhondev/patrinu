@@ -31,7 +31,7 @@ export default async function NoticiasPage({
   const [lead, ...rest] = articles;
 
   return (
-    <div>
+    <div className="[overflow-wrap:anywhere]">
       <PageHero tone="paper" eyebrow="Jornalismo do setor" title={<>Notícias</>}>
         Uma edição por semana no seu e-mail — obras, editais e a matéria da semana.
         <span className="mt-4 block">
