@@ -6,8 +6,8 @@ const BASE = "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao";
 export const MODALIDADES = [4, 6, 8, 9];
 
 const PAGE_SIZE = 50;
-const MAX_PAGES = 6; // teto por modalidade/execução
-const DELAY_MS = 450; // PNCP retorna 429 se as chamadas forem rápidas demais
+const MAX_PAGES = 4; // teto por modalidade/execução
+const DELAY_MS = 350; // PNCP retorna 429 se as chamadas forem rápidas demais
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -51,21 +51,23 @@ async function fetchPage(
   from: string,
   to: string,
   pagina: number,
+  deadline: number,
 ): Promise<{ items: Record<string, unknown>[]; totalPaginas: number }> {
   const url = `${BASE}?dataInicial=${from}&dataFinal=${to}&codigoModalidadeContratacao=${modalidade}&pagina=${pagina}&tamanhoPagina=${PAGE_SIZE}`;
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (Date.now() > deadline) throw new Error("PNCP: sem tempo (deadline)");
     let res: Response;
     try {
       res = await fetch(url, {
         headers: { accept: "application/json" },
-        signal: AbortSignal.timeout(12_000),
+        signal: AbortSignal.timeout(8_000),
       });
     } catch {
-      await sleep(1200 * (attempt + 1));
+      await sleep(800 * (attempt + 1));
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
-      await sleep(1200 * (attempt + 1));
+      await sleep(800 * (attempt + 1));
       continue;
     }
     if (!res.ok) throw new Error(`PNCP ${res.status} (modalidade ${modalidade}, pág ${pagina})`);
@@ -124,7 +126,7 @@ export async function collectPncp(days = 3, deadline = Infinity): Promise<RawOpp
       if (Date.now() > deadline) return out;
       let page;
       try {
-        page = await fetchPage(modalidade, f, t, pagina);
+        page = await fetchPage(modalidade, f, t, pagina, deadline);
       } catch (err) {
         console.error("[pncp]", err instanceof Error ? err.message : err);
         break;

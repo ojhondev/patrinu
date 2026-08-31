@@ -159,8 +159,8 @@ export async function runIngest(): Promise<IngestResult> {
   // teto do plano Hobby = 60s. Notícias primeiro (com orçamento próprio); o
   // PNCP (instável, lento) fica com o tempo que sobrar.
   const started = Date.now();
-  const NEWS_DEADLINE = started + 28_000;
-  const PNCP_DEADLINE = started + 50_000;
+  const NEWS_DEADLINE = started + 26_000;
+  const PNCP_DEADLINE = started + 46_000;
 
   /* ---- NOTÍCIAS: RSS ---- */
   const NEWS_MAX_AGE_MS = 10 * 86_400_000; // matérias dos últimos 10 dias
