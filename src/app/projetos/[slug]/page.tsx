@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ChevronRight, MapPin, CalendarClock, Users } from "lucide-react";
+import { ArrowLeft, ChevronRight, MapPin, CalendarClock } from "lucide-react";
 
 import { getProject, listProjects } from "@/lib/projects";
 import {
@@ -14,8 +14,11 @@ import { Badge } from "@/components/badge";
 import { SpecialtyThumb } from "@/components/specialty-visual";
 import { ProjectCard } from "@/components/project-card";
 import { Locked } from "@/components/locked";
-import { UpgradeButton } from "@/components/upgrade-button";
+import { ProjectActions } from "@/components/project-actions";
 import { getPlan } from "@/lib/membership";
+import { getCurrentUser } from "@/lib/auth";
+import { getProjectRaw } from "@/lib/projects";
+import { hasInterest, hasProposal } from "@/lib/interactions";
 
 export async function generateMetadata({
   params,
@@ -41,6 +44,15 @@ export default async function ProjectPage({
   const plan = await getPlan();
   const canSeeValue = plan !== "visitante"; // valores só para membros cadastrados
   const canPropose = plan === "pro"; // enviar proposta exige Pro
+
+  const user = await getCurrentUser();
+  const raw = open ? await getProjectRaw(slug) : null;
+  const isOwner = Boolean(user && raw?.ownerId === user.id);
+  const [alreadyInterested, alreadyProposed] =
+    user && raw
+      ? await Promise.all([hasInterest(raw.id, user.id), hasProposal(raw.id, user.id)])
+      : [false, false];
+
   const all = await listProjects({});
   const related = all
     .filter((x) => x.slug !== p.slug && x.specialties.some((s) => p.specialties.includes(s)))
@@ -180,32 +192,14 @@ export default async function ProjectPage({
                     {d} dias para propor
                   </p>
                 )}
-                {canPropose ? (
-                  <button
-                    type="button"
-                    className="mt-4 w-full rounded-lg bg-green px-4 py-3 text-sm font-bold text-white hover:bg-green-hover"
-                  >
-                    {p.status === "em_captacao" ? "Manifestar interesse" : "Enviar proposta"}
-                  </button>
-                ) : (
-                  <div className="mt-4">
-                    <UpgradeButton
-                      label="Assine o Pro para enviar proposta"
-                      className="w-full justify-center"
-                    />
-                  </div>
-                )}
-                <button
-                  type="button"
-                  className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-border-strong px-4 py-2.5 text-sm font-bold hover:border-green-ink"
-                >
-                  <Users size={15} />
-                  Quero participar
-                </button>
-                <p className="mt-3 text-xs text-muted">
-                  &ldquo;Quero participar&rdquo; te coloca na lista de interessados — quem
-                  ganhar o projeto pode te chamar para a equipe. Protótipo, sem gravação.
-                </p>
+                <ProjectActions
+                  slug={p.slug}
+                  loggedIn={Boolean(user)}
+                  canPropose={canPropose}
+                  isOwner={isOwner}
+                  alreadyInterested={alreadyInterested}
+                  alreadyProposed={alreadyProposed}
+                />
               </>
             ) : (
               <p className="mt-5 border-t border-border pt-4 text-sm text-ink-soft">

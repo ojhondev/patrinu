@@ -1,14 +1,24 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { projectsByOwner, submitProject } from "@/lib/projects";
 import { projectSubmittedEmail, sendEmail } from "@/lib/email";
+import {
+  addInterest,
+  addProposal,
+  hasProposal,
+  openProjectForActions,
+} from "@/lib/interactions";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { SPECIALTIES, UFS } from "@/lib/taxonomy";
 
-type State = { error?: string } | null;
+type State = { error?: string; ok?: string } | null;
 
 const VALID_SPECIALTIES = Object.keys(SPECIALTIES);
 
@@ -81,4 +91,84 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   await sendEmail({ to: user.email, ...projectSubmittedEmail(user.name, title) });
 
   redirect("/painel?enviado=1");
+}
+
+/* ------------------------------------------------------------------ */
+/* Fase 2 — "Quero participar" e "Enviar proposta"                     */
+/* ------------------------------------------------------------------ */
+
+async function ownerEmail(ownerId: string | null): Promise<{ name: string; email: string } | null> {
+  if (!ownerId) return null;
+  const [u] = await db
+    .select({ name: users.name, email: users.email })
+    .from(users)
+    .where(eq(users.id, ownerId))
+    .limit(1);
+  return u ?? null;
+}
+
+export async function expressInterest(_prev: State, form: FormData): Promise<State> {
+  const slug = String(form.get("slug") ?? "");
+  const user = await getCurrentUser();
+  if (!user) redirect(`/entrar?next=/projetos/${slug}`);
+
+  const project = await openProjectForActions(slug);
+  if (!project || !project.isOpen) return { error: "Este projeto não está aberto." };
+  if (project.ownerId === user.id)
+    return { error: "Você é o proponente deste projeto." };
+
+  await addInterest(project.id, user.id, String(form.get("message") ?? ""));
+
+  const owner = await ownerEmail(project.ownerId);
+  if (owner) {
+    await sendEmail({
+      to: owner.email,
+      subject: `Novo interessado em "${project.title}"`,
+      text: `${user.name} quer participar do projeto "${project.title}". Veja a lista de interessados no seu painel.`,
+    });
+  }
+
+  revalidatePath(`/projetos/${slug}`);
+  revalidatePath("/painel");
+  return { ok: "Você entrou na lista de interessados." };
+}
+
+export async function submitProposal(_prev: State, form: FormData): Promise<State> {
+  const slug = String(form.get("slug") ?? "");
+  const user = await getCurrentUser();
+  if (!user) redirect(`/entrar?next=/projetos/${slug}`);
+
+  if ((await getPlan()) !== "pro") {
+    return { error: "Enviar proposta exige um plano Pro." };
+  }
+
+  const project = await openProjectForActions(slug);
+  if (!project || !project.isOpen) return { error: "Este projeto não está aberto." };
+  if (project.ownerId === user.id)
+    return { error: "Você é o proponente deste projeto." };
+
+  const message = String(form.get("message") ?? "").trim();
+  const priceRange = String(form.get("priceRange") ?? "").trim() || undefined;
+  if (message.length < 30)
+    return { error: "Escreva uma proposta com pelo menos 30 caracteres." };
+
+  if (await hasProposal(project.id, user.id))
+    return { error: "Você já enviou uma proposta para este projeto." };
+
+  await addProposal({ projectId: project.id, userId: user.id, message, priceRange });
+
+  const owner = await ownerEmail(project.ownerId);
+  if (owner) {
+    await sendEmail({
+      to: owner.email,
+      subject: `Nova proposta para "${project.title}"`,
+      text: `${user.name} enviou uma proposta para "${project.title}".${
+        priceRange ? ` Faixa: ${priceRange}.` : ""
+      }\n\n${message}\n\nResponda pelo seu painel.`,
+    });
+  }
+
+  revalidatePath(`/projetos/${slug}`);
+  revalidatePath("/painel");
+  return { ok: "Proposta enviada. O proponente foi avisado." };
 }

@@ -20,9 +20,15 @@ import {
   eligibilityForFinanciamento,
   prospectsForContratante,
 } from "@/lib/pro";
+import {
+  interestsForOwner,
+  proposalsByUser,
+  proposalsForOwner,
+} from "@/lib/interactions";
 import { formatDate, daysUntil, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { SpecialtyIcon } from "@/components/specialty-visual";
+import { ProposalThread } from "@/components/proposal-thread";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -91,10 +97,14 @@ export default async function PainelPage({
   const defaultPerfil = TRACK_TO_PERFIL[user.track ?? ""] ?? "contratante";
   const perfil = (one(sp.perfil) as Perfil) || defaultPerfil;
 
-  const [plan, myProjects] = await Promise.all([
-    getPlan(),
-    projectsByOwner(user.id),
-  ]);
+  const [plan, myProjects, myInterests, receivedProposals, sentProposals] =
+    await Promise.all([
+      getPlan(),
+      projectsByOwner(user.id),
+      interestsForOwner(user.id),
+      proposalsForOwner(user.id),
+      proposalsByUser(user.id),
+    ]);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
@@ -155,6 +165,95 @@ export default async function PainelPage({
           )}
         </div>
       </section>
+
+      {/* ---------- PROPOSTAS RECEBIDAS (real) ---------- */}
+      {receivedProposals.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-lg font-bold">
+            Propostas recebidas{" "}
+            <span className="font-mono text-sm text-muted">
+              ({receivedProposals.length})
+            </span>
+          </h2>
+          <p className="mt-1 text-sm text-ink-soft">
+            Profissionais que enviaram proposta para os seus projetos. Converse e decida.
+          </p>
+          <div className="mt-4 space-y-3">
+            {receivedProposals.map((p) => (
+              <ProposalThread
+                key={p.id}
+                proposal={p}
+                viewer="owner"
+                currentUserId={user.id}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- QUEM QUER PARTICIPAR (real) ---------- */}
+      {myInterests.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-lg font-bold">
+            Quem quer participar{" "}
+            <span className="font-mono text-sm text-muted">({myInterests.length})</span>
+          </h2>
+          <p className="mt-1 text-sm text-ink-soft">
+            Pessoas na lista de interessados dos seus projetos — você pode chamá-las para a
+            equipe.
+          </p>
+          <div className="mt-4 space-y-2">
+            {myInterests.map((i) => (
+              <div
+                key={`${i.projectId}-${i.userId}`}
+                className="rounded-[var(--radius-card)] border border-border bg-surface p-4"
+              >
+                <div className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="font-semibold text-ink">{i.userName}</span>
+                  <span className="text-xs text-muted">{i.userEmail}</span>
+                  <span className="text-xs text-muted">
+                    · {formatDate(i.createdAt.toISOString())}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-sm text-ink-soft">
+                  em{" "}
+                  <Link
+                    href={`/projetos/${i.projectSlug}`}
+                    className="font-semibold text-green-ink hover:underline"
+                  >
+                    {i.projectTitle}
+                  </Link>
+                </p>
+                {i.message && (
+                  <p className="mt-1.5 rounded-md bg-sunk px-3 py-2 text-sm text-ink-soft">
+                    {i.message}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ---------- MINHAS PROPOSTAS (real) ---------- */}
+      {sentProposals.length > 0 && (
+        <section className="mb-12">
+          <h2 className="text-lg font-bold">
+            Minhas propostas{" "}
+            <span className="font-mono text-sm text-muted">({sentProposals.length})</span>
+          </h2>
+          <div className="mt-4 space-y-3">
+            {sentProposals.map((p) => (
+              <ProposalThread
+                key={p.id}
+                proposal={p}
+                viewer="proponent"
+                currentUserId={user.id}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ---------- DEMONSTRAÇÃO ---------- */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-t border-border pt-8">

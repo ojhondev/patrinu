@@ -473,6 +473,23 @@ export const proposals = pgTable(
   (t) => [uniqueIndex("proposal_project_user_idx").on(t.projectId, t.userId)],
 );
 
+/** Thread simples de mensagens de uma proposta (dono do projeto ↔ proponente). */
+export const proposalMessages = pgTable(
+  "proposal_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    proposalId: uuid("proposal_id")
+      .notNull()
+      .references(() => proposals.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    body: text("body").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("proposal_messages_proposal_idx").on(t.proposalId, t.createdAt)],
+);
+
 /* ------------------------------------------------------------------ */
 /* Tipos auxiliares (jsonb)                                            */
 /* ------------------------------------------------------------------ */
