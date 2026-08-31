@@ -148,7 +148,7 @@ export default async function HomePage() {
         >
           Restauros abertos para propostas de profissionais ou buscando patrocínio.
         </SectionHead>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {oportunidades.slice(0, 4).map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}
@@ -161,7 +161,7 @@ export default async function HomePage() {
           <SectionHead n="02" title="Projetos" href="/projetos" cta="Ver o acervo">
             Obras já restauradas, publicadas por quem as executou.
           </SectionHead>
-          <div className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {showcase.slice(0, 3).map((p) => (
               <ProjectTile key={p.id} project={p} />
             ))}
@@ -179,7 +179,7 @@ export default async function HomePage() {
         >
           Restauradores, ateliês e escritórios verificados.
         </SectionHead>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {pros.map((pro) => (
             <ProfessionalCard key={pro.slug} pro={pro} />
           ))}
@@ -197,7 +197,7 @@ export default async function HomePage() {
           Licitações e chamamentos de patrimônio, com checklist de habilitação.
         </SectionHead>
         {isPro ? (
-          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {editais.map((op) => (
               <OpportunityCard key={op.id} op={op} />
             ))}
@@ -210,7 +210,7 @@ export default async function HomePage() {
               cta="Conhecer os planos de membro"
               href="/pro"
             >
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {editais.map((op) => (
                   <OpportunityCard key={op.id} op={op} />
                 ))}

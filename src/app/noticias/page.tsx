@@ -89,7 +89,7 @@ export default async function NoticiasPage({
                 <p className="mt-3 max-w-2xl text-ink-soft">{lead.excerpt}</p>
               </Link>
             )}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((a) => (
                 <ArticleCard key={a.slug} article={a} />
               ))}

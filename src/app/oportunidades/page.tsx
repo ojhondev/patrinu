@@ -94,7 +94,7 @@ export default async function OportunidadesPage({
             Nenhuma oportunidade com esses filtros.
           </div>
         ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {items.map((p) => (
               <ProjectCard key={p.id} project={p} />
             ))}

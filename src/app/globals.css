@@ -104,6 +104,13 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* rede de segurança contra estouro horizontal no mobile */
+  overflow-x: clip;
+}
+
+img,
+video {
+  max-width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
