@@ -25,13 +25,26 @@ import {
 
 const BANNER_SLOTS = ["news", "projects"] as const;
 
+/** aceita caminho interno (/algo.jpg) ou URL http(s) que aponte para uma imagem. */
+function normalizeImage(raw: string): string | null {
+  const v = raw.trim();
+  if (!v) return null;
+  if (v.startsWith("/")) return v;
+  // ibb.co/CODE é a PÁGINA, não a imagem — converte para o link direto
+  const ibb = v.match(/^https?:\/\/ibb\.co\/([A-Za-z0-9]+)/);
+  if (ibb) return null; // não dá pra resolver aqui — melhor recusar do que salvar quebrado
+  if (/^https?:\/\/.+\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(v)) return v;
+  if (/^https?:\/\/[^ ]*(i\.ibb\.co|blob\.vercel-storage\.com|imgur\.com|cloudinary\.com)/i.test(v))
+    return v;
+  return null;
+}
+
 export async function saveBanner(formData: FormData) {
   if (!(await isMasterSession())) redirect("/master/entrar");
   const slot = String(formData.get("slot") ?? "");
   if (!(BANNER_SLOTS as readonly string[]).includes(slot)) return;
-  const image = String(formData.get("image") ?? "").trim();
   const link = String(formData.get("link") ?? "").trim();
-  await setSetting(`${slot}_banner_image`, /^https?:\/\//.test(image) ? image : null);
+  await setSetting(`${slot}_banner_image`, normalizeImage(String(formData.get("image") ?? "")));
   await setSetting(`${slot}_banner_link`, /^https?:\/\//.test(link) ? link : null);
   revalidatePath(slot === "news" ? "/noticias" : "/projetos");
   revalidatePath("/master");

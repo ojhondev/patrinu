@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 
 import {
   createUser,
+  endMasterSession,
   endUserSession,
   getCurrentUser,
   getUserByEmail,
@@ -53,7 +54,9 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
 }
 
 export async function signOut(): Promise<void> {
+  // limpa as duas sessões — "Sair" no header deve deslogar de tudo
   await endUserSession();
+  await endMasterSession();
   revalidatePath("/", "layout");
   redirect("/");
 }

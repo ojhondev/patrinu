@@ -38,6 +38,9 @@ const BANNERS = [
   },
 ];
 
+const IMG_HINT =
+  "Cole o LINK DIRETO da imagem (termina em .jpg / .png). No ImgBB: abra a imagem, botão direito → Copiar endereço da imagem (i.ibb.co/…), não o link da página (ibb.co/…).";
+
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
 
@@ -102,12 +105,13 @@ export default async function MasterPage() {
           <div key={b.slot} className="border border-border bg-surface p-5">
             <h2 className="text-base font-bold">{b.title}</h2>
             <p className="mt-1 text-sm text-ink-soft">{b.hint}</p>
+            <p className="mt-1 text-xs text-muted">{IMG_HINT}</p>
             <form action={saveBanner} className="mt-4 space-y-3">
               <input type="hidden" name="slot" value={b.slot} />
               <input
                 name="image"
                 defaultValue={b.image ?? ""}
-                placeholder="https://…/banner.jpg"
+                placeholder="https://i.ibb.co/…/banner.png"
                 className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
               />
               <input

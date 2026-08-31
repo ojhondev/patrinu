@@ -140,6 +140,13 @@ export async function startMasterSession(): Promise<void> {
 
 export async function endMasterSession(): Promise<void> {
   const store = await cookies();
+  store.set(MASTER_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
   store.delete(MASTER_COOKIE);
 }
 
