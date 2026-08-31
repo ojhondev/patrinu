@@ -31,10 +31,6 @@ const NAV = [
 export function SiteHeader({ account }: { account: HeaderAccount }) {
   const pathname = usePathname();
   const firstName = account?.name.trim().split(/\s+/)[0] ?? "";
-  const proArea =
-    pathname.startsWith("/profissionais") ||
-    pathname === "/pro" ||
-    pathname.startsWith("/pro/");
   const onHome = pathname === "/";
   const [scrolled, setScrolled] = useState(!onHome);
   const [open, setOpen] = useState(false);
@@ -61,7 +57,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
     >
       <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-4 px-4 sm:px-6 lg:h-[68px] lg:px-11">
         <Link href="/" aria-label="Patrinu — início" className="shrink-0">
-          <Logo className="h-7" variant={proArea ? "pro" : "default"} />
+          <Logo className="h-7" />
         </Link>
 
         {/* search collapses into the bar once scrolled past the hero (xl+) */}

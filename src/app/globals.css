@@ -2,7 +2,7 @@
 
 /* ================================================================ */
 /*  Patrinu — design system                                          */
-/*  Fundo branco + vermelho (#C6090E). Sem preto de plataforma.      */
+/*  Fundo branco + vermelho (#DE2F17). Sem preto de plataforma.      */
 /*  Preto só entra como contraste pontual em botões (tom `ink`).     */
 /*  NB: os tokens ainda se chamam `--green*` / `bg-band` por         */
 /*  compatibilidade — os valores é que passaram a ser vermelhos.     */
@@ -11,44 +11,44 @@
 :root {
   --bg: #ffffff;
   --surface: #ffffff;
-  --sunk: #faf4f4;
-  --sunk-2: #f4e9e9;
-  --border: #ece0e0;
-  --border-strong: #d7c4c4;
+  --sunk: #faf4f2;
+  --sunk-2: #f4e9e5;
+  --border: #ece0dc;
+  --border-strong: #d8c6c0;
 
   /* "tinta" = carvão levemente quente, nunca preto puro */
-  --ink: #241a1a;
-  --ink-soft: #574c4c;
-  --muted: #948a8a;
+  --ink: #241a17;
+  --ink-soft: #574c48;
+  --muted: #958a86;
 
-  /* cor principal da marca */
-  --brand: #C6090E;
-  --green: #C6090E;
-  --green-hover: #a3070b;
-  --green-deep: #7d0509;
-  --green-weak: #fbe6e6;
-  --green-mid: #de3a34;
-  --green-ink: #bd0a0e;
+  /* cor principal da marca — vermelho-vermelhão #DE2F17 */
+  --brand: #DE2F17;
+  --green: #DE2F17;
+  --green-hover: #c1260f;
+  --green-deep: #96200d;
+  --green-weak: #fdeae5;
+  --green-mid: #e9614a;
+  --green-ink: #c92a13;
 
-  /* vermelho claro (coral) — apenas realces pequenos e texto sobre faixa */
-  --accent: #ff6a58;
+  /* coral claro — apenas realces pequenos e texto sobre faixa */
+  --accent: #ff7a5c;
 
-  /* faixa escura da plataforma = vinho profundo da marca (nunca preto).
-     O vermelho vivo #C6090E fica reservado a botões/realces. */
-  --band: #470f11;
-  --band-2: #290809;
+  /* faixa escura da plataforma = terracota profundo da marca (nunca preto).
+     O vermelho vivo #DE2F17 fica reservado a botões/realces. */
+  --band: #4a140c;
+  --band-2: #2b0a06;
 
   /* contraste pontual permitido em alguns botões */
-  --contrast: #1f1313;
+  --contrast: #1f1512;
 
   --star: #f0a730;
   --ok: #1a8f57;
   --warn: #9a6a1f;
   --crit: #9c1c1c;
 
-  --ring: #C6090E;
-  --shadow-card: 0 1px 2px rgba(40, 22, 22, 0.05), 0 6px 20px rgba(40, 22, 22, 0.08);
-  --shadow-pop: 0 8px 30px rgba(40, 22, 22, 0.14);
+  --ring: #DE2F17;
+  --shadow-card: 0 1px 2px rgba(45, 22, 18, 0.05), 0 6px 20px rgba(45, 22, 18, 0.08);
+  --shadow-pop: 0 8px 30px rgba(45, 22, 18, 0.14);
 }
 
 @theme inline {
@@ -148,7 +148,7 @@ video {
 .band {
   background-color: var(--band);
   background-image:
-    radial-gradient(120% 140% at 12% 0%, color-mix(in oklab, var(--band) 60%, #7a1f1f) 0%, transparent 55%),
+    radial-gradient(120% 140% at 12% 0%, color-mix(in oklab, var(--band) 55%, #8a2a18) 0%, transparent 55%),
     linear-gradient(180deg, var(--band-2) 0%, var(--band) 55%, var(--band-2) 100%);
   color: #fff;
 }

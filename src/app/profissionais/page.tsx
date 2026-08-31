@@ -43,12 +43,9 @@ export default async function ProfissionaisPage({
 
   return (
     <div>
-      {/* cabeçalho — exclusividade patrinupro */}
       <header className="band band-hairlines">
         <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11 lg:py-16">
-          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
-            patrinupro · diretório curado
-          </p>
+          <p className="kicker text-accent">Diretório curado</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.03] tracking-tight text-white sm:text-5xl">
             {q ? (
               <>

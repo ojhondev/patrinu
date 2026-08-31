@@ -20,15 +20,15 @@ type Visual = { icon: LucideIcon; from: string; to: string };
  *  um ícone. Substitui as fotos de gig por um tratamento gráfico leve —
  *  nada de tiles escuros/pretos. */
 const VISUALS: Record<SpecialtyKey, Visual> = {
-  bens_moveis: { icon: Frame, from: "#d13a3a", to: "#a82a2a" },
-  bens_integrados: { icon: Landmark, from: "#c8443a", to: "#9e3128" },
-  arquitetura: { icon: Hammer, from: "#b83f4a", to: "#8c2d38" },
-  arqueologia: { icon: Shovel, from: "#c25a3a", to: "#96412a" },
-  acervo: { icon: Archive, from: "#cb4340", to: "#9e302e" },
-  paisagismo: { icon: Trees, from: "#b6503f", to: "#8a3a2d" },
-  urbanismo: { icon: Building, from: "#c04a4f", to: "#93353a" },
-  imaterial: { icon: Music, from: "#d0473c", to: "#a2332a" },
-  documental: { icon: BookMarked, from: "#b34747", to: "#8a3434" },
+  bens_moveis: { icon: Frame, from: "#e04a2c", to: "#a83318" },
+  bens_integrados: { icon: Landmark, from: "#d84a2a", to: "#9e3118" },
+  arquitetura: { icon: Hammer, from: "#cf4436", to: "#992e28" },
+  arqueologia: { icon: Shovel, from: "#d85c30", to: "#9c4020" },
+  acervo: { icon: Archive, from: "#dd4b30", to: "#a13320" },
+  paisagismo: { icon: Trees, from: "#cc5636", to: "#964024" },
+  urbanismo: { icon: Building, from: "#d24d3c", to: "#993830" },
+  imaterial: { icon: Music, from: "#e14e33", to: "#a2361f" },
+  documental: { icon: BookMarked, from: "#c74e3e", to: "#8f3a2e" },
 };
 
 export function specialtyVisual(key: SpecialtyKey): Visual {
