@@ -156,24 +156,32 @@ export async function runIngest(): Promise<IngestResult> {
     ranAt: new Date().toISOString(),
   };
 
-  // teto do plano Hobby = 60s. Notícias rodam primeiro (rápidas); o PNCP
-  // (instável, lento) fica com o tempo que sobrar até ~45s.
-  const PNCP_DEADLINE = Date.now() + 45_000;
+  // teto do plano Hobby = 60s. Notícias primeiro (com orçamento próprio); o
+  // PNCP (instável, lento) fica com o tempo que sobrar.
+  const started = Date.now();
+  const NEWS_DEADLINE = started + 28_000;
+  const PNCP_DEADLINE = started + 50_000;
 
   /* ---- NOTÍCIAS: RSS ---- */
   const NEWS_MAX_AGE_MS = 10 * 86_400_000; // matérias dos últimos 10 dias
   const NEWS_CAP = 30; // teto de novas notícias por execução
   const titleSeen = new Set<string>();
-  // pré-carrega títulos recentes já no banco para não repetir a mesma história
+  const urlSeen = new Set<string>();
+  const slugSeen = new Set<string>();
+  // pré-carrega o que já está no banco (1 query) para evitar ida e volta por item
   const recent = await db
-    .select({ title: articles.title })
+    .select({ title: articles.title, slug: articles.slug, sourceUrl: articles.sourceUrl })
     .from(articles)
     .orderBy(desc(articles.publishedAt))
-    .limit(400);
-  for (const r of recent) titleSeen.add(dedupeKey(r.title));
+    .limit(1000);
+  for (const r of recent) {
+    titleSeen.add(dedupeKey(r.title));
+    slugSeen.add(r.slug);
+    if (r.sourceUrl) urlSeen.add(r.sourceUrl);
+  }
 
   for (const feed of NEWS_FEEDS) {
-    if (result.noticias.inserted >= NEWS_CAP) break;
+    if (result.noticias.inserted >= NEWS_CAP || Date.now() > NEWS_DEADLINE) break;
     const src = await ensureSource({
       slug: feed.slug,
       name: feed.name,
@@ -189,7 +197,7 @@ export async function runIngest(): Promise<IngestResult> {
     result.noticias.checked += raw.length;
 
     for (const item of raw) {
-      if (result.noticias.inserted >= NEWS_CAP) break;
+      if (result.noticias.inserted >= NEWS_CAP || Date.now() > NEWS_DEADLINE) break;
 
       // recência
       if (item.publishedAt) {
@@ -199,26 +207,17 @@ export async function runIngest(): Promise<IngestResult> {
       // dedupe por título normalizado (mesma história em vários veículos)
       const key = dedupeKey(item.title);
       if (titleSeen.has(key)) continue;
+      if (urlSeen.has(item.link)) continue;
 
       const tri = triage(item.title, item.summary);
       if (!tri.relevant) continue;
       result.noticias.matched++;
       titleSeen.add(key);
-
-      const [dup] = await db
-        .select({ id: articles.id })
-        .from(articles)
-        .where(eq(articles.sourceUrl, item.link))
-        .limit(1);
-      if (dup) continue;
+      urlSeen.add(item.link);
 
       let slug = slugify(item.title) || `noticia-${Date.now()}`;
-      const [clash] = await db
-        .select({ id: articles.id })
-        .from(articles)
-        .where(eq(articles.slug, slug))
-        .limit(1);
-      if (clash) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+      if (slugSeen.has(slug)) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+      slugSeen.add(slug);
 
       const clean = item.summary.replace(/\s+/g, " ").trim();
       const paras = item.paragraphs
