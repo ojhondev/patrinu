@@ -36,7 +36,7 @@ export function OpportunityCard({ op }: { op: Opportunity }) {
   return (
     <Link
       href={`/editais/${op.id}`}
-      className="group flex flex-col overflow-hidden border border-ink/12 bg-surface transition-colors hover:border-ink"
+      className="group flex flex-col overflow-hidden border border-ink/12 bg-surface transition-colors hover:border-green-ink"
     >
       <SpecialtyThumb
         specialty={op.specialties[0] ?? "arquitetura"}

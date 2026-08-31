@@ -13,7 +13,7 @@ export function ArticleCard({
   return (
     <Link
       href={`/noticias/${a.slug}`}
-      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-green-ink"
     >
       <div className="flex items-center gap-2 text-xs text-ink-soft">
         <span className="kicker text-green-ink">{articleCategoryLabel(a.category)}</span>

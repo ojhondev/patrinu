@@ -10,7 +10,7 @@ export function CourseCard({ course: c }: { course: Course }) {
       href={c.url}
       target="_blank"
       rel="noreferrer"
-      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-green-ink"
     >
       <div className="flex flex-wrap items-center gap-1.5 text-xs">
         <Badge tone="green">{courseLevelLabel(c.level)}</Badge>

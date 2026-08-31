@@ -9,7 +9,7 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
   return (
     <Link
       href={`/profissionais/${pro.slug}`}
-      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-ink"
+      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors hover:border-green-ink"
     >
       <div className="flex items-start gap-3">
         <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink">

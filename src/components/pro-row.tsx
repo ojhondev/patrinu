@@ -75,12 +75,12 @@ export function ProRow({ pro }: { pro: Professional }) {
         <div className="hidden shrink-0 flex-col items-end justify-between sm:flex">
           {pro.plan === "pro" && (
             <span className="bg-band px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
-              Pro
+              Membro
             </span>
           )}
           <Link
             href={`/profissionais/${pro.slug}`}
-            className="mt-auto whitespace-nowrap rounded-lg border border-ink px-4 py-2 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-white"
+            className="mt-auto whitespace-nowrap border border-ink px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-green-ink hover:bg-green-ink hover:text-white"
           >
             Ver perfil
           </Link>

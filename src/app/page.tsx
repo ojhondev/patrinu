@@ -81,12 +81,12 @@ export default async function HomePage() {
           preload="auto"
           aria-hidden
         />
-        {/* véu preto: deixa o vídeo aparecer, mantém a copy legível */}
+        {/* véu: escurece só o suficiente para a copy — o vídeo aparece bem */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(100deg, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.64) 48%, rgba(0,0,0,0.48) 100%)",
+              "linear-gradient(100deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.40) 45%, rgba(0,0,0,0.24) 100%)",
           }}
         />
         <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />

@@ -58,8 +58,8 @@ export function FilterBar({
               className={cn(
                 "shrink-0 whitespace-nowrap border px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
                 activeSeg === s.key
-                  ? "border-ink bg-ink text-white"
-                  : "border-ink/20 text-ink-soft hover:border-ink",
+                  ? "border-green bg-green text-white"
+                  : "border-ink/20 text-ink-soft hover:border-green-ink",
               )}
             >
               {s.label}

@@ -24,7 +24,7 @@ export function PopularSearches({ dark = false }: { dark?: boolean }) {
           className={
             dark
               ? "inline-flex items-center gap-1.5 border border-white/30 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-ink"
-              : "inline-flex items-center gap-1.5 border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-ink"
+              : "inline-flex items-center gap-1.5 border border-ink/20 px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:border-green-ink"
           }
         >
           {item.label}

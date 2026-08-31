@@ -178,7 +178,7 @@ body {
   text-wrap: balance;
 }
 
-/* botão "museu": contorno que preenche no hover */
+/* botão "museu": contorno que preenche no hover (com o vermelho da marca) */
 .btn-museum {
   display: inline-flex;
   align-items: center;
@@ -188,10 +188,11 @@ body {
   font-weight: 700;
   font-size: 0.875rem;
   color: var(--ink);
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
 }
 .btn-museum:hover {
-  background: var(--ink);
+  background: var(--green);
+  border-color: var(--green);
   color: #fff;
 }
 
