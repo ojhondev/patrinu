@@ -4,6 +4,7 @@ import { Hanken_Grotesk, Fraunces } from "next/font/google";
 
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { SignupPopup } from "@/components/signup-popup";
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import "./globals.css";
 
@@ -32,9 +33,9 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const [user, master] = await Promise.all([getCurrentUser(), isMasterSession()]);
   const account = master
-    ? { name: "Master", plan: "pro" as const, master: true }
+    ? { name: "Master", plan: "pro" as const, master: true, avatarUrl: null }
     : user
-      ? { name: user.name, plan: user.plan, master: false }
+      ? { name: user.name, plan: user.plan, master: false, avatarUrl: user.avatarUrl }
       : null;
 
   return (
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <SiteHeader account={account} />
         <div className="flex-1">{children}</div>
         <SiteFooter />
+        {!account && <SignupPopup />}
       </body>
     </html>
   );

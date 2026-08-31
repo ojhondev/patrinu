@@ -6,6 +6,9 @@ import { ShieldCheck, Clock, Check, X } from "lucide-react";
 import { isMasterSession } from "@/lib/auth";
 import { logoutMaster, moderateProject } from "./actions";
 import { pendingProjects } from "@/lib/projects";
+import { db } from "@/db";
+import { financingRequests } from "@/db/schema";
+import { desc } from "drizzle-orm";
 import { Badge } from "@/components/badge";
 import { formatDate, specialtyLabel } from "@/lib/taxonomy";
 
@@ -14,7 +17,10 @@ export const metadata: Metadata = { title: "Master", robots: { index: false } };
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
 
-  const pending = await pendingProjects();
+  const [pending, financing] = await Promise.all([
+    pendingProjects(),
+    db.select().from(financingRequests).orderBy(desc(financingRequests.createdAt)),
+  ]);
 
   return (
     <div className="mx-auto max-w-[1100px] px-4 py-8 sm:px-6 lg:px-11">
@@ -139,6 +145,71 @@ export default async function MasterPage() {
               </div>
             );
           })}
+        </div>
+      </section>
+
+      <section className="mt-12">
+        <h2 className="text-lg font-bold">
+          Pedidos de financiamento{" "}
+          <span className="font-mono text-sm text-muted">({financing.length})</span>
+        </h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Enviados pela trilha &ldquo;Quero financiamento de obra&rdquo; do Patrinu Pro.
+        </p>
+
+        <div className="mt-4 space-y-3">
+          {financing.length === 0 && (
+            <p className="rounded-[var(--radius-card)] border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Nenhum pedido ainda.
+            </p>
+          )}
+          {financing.map((f) => (
+            <div
+              key={f.id}
+              className="rounded-[var(--radius-card)] border border-border bg-surface p-4"
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge tone="neutral">{f.status}</Badge>
+                <span className="inline-flex items-center gap-1 text-xs text-muted">
+                  <Clock size={12} />
+                  {formatDate(f.createdAt.toISOString())}
+                </span>
+              </div>
+              <p className="mt-1 font-semibold text-ink">
+                {f.assetName} — {f.organization}
+              </p>
+              <p className="text-sm text-ink-soft">
+                {f.contactName} · {f.contactEmail}
+                {f.city ? ` · ${f.city}` : ""}
+                {f.uf ? `/${f.uf}` : ""}
+              </p>
+              <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm text-ink-soft sm:grid-cols-2">
+                {f.projectStage && (
+                  <div>
+                    <dt className="inline text-muted">Estágio: </dt>
+                    <dd className="inline">{f.projectStage}</dd>
+                  </div>
+                )}
+                {f.fundingGoal && (
+                  <div>
+                    <dt className="inline text-muted">Meta: </dt>
+                    <dd className="inline">{f.fundingGoal}</dd>
+                  </div>
+                )}
+                {f.mechanism && (
+                  <div>
+                    <dt className="inline text-muted">Mecanismo: </dt>
+                    <dd className="inline">{f.mechanism}</dd>
+                  </div>
+                )}
+              </dl>
+              {f.summary && (
+                <p className="mt-2 rounded-md bg-sunk px-3 py-2 text-sm text-ink-soft">
+                  {f.summary}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </section>
     </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 import { radarStats, featuredOpportunities } from "@/lib/opportunities";
 import { featuredProjects } from "@/lib/projects";
@@ -61,7 +61,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ---------------- hero ---------------- */}
-      <section className="relative overflow-hidden bg-band text-white">
+      <section className="band relative overflow-hidden text-white">
         <video
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           src="/hero.mp4"
@@ -200,60 +200,6 @@ export default async function HomePage() {
             <div className="mt-5 space-y-3">
               {courses.map((c) => (
                 <CourseCard key={c.slug} course={c} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------------- para empresas (a única faixa da marca) ---------------- */}
-      <section className="bg-band text-white">
-        <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:px-11 lg:py-20">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-widest text-white/70">
-              Patrinu para empresas e instituições
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-tight text-balance">
-              Assinatura, nunca comissão.
-            </h2>
-            <ul className="mt-6 space-y-3">
-              {[
-                "Publique projetos e vagas e encontre especialistas do setor",
-                "Radar de editais de todo o país, filtrado pelo que você executa",
-                "Gestão de fornecedores, acervos e relatórios (Institucional)",
-                "Deal flow de projetos financiáveis (Patrocinador / Vitrine)",
-              ].map((item) => (
-                <li key={item} className="flex gap-2.5 text-white/85">
-                  <Check size={18} className="mt-0.5 shrink-0 text-white" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-            <Link
-              href="/empresas"
-              className="mt-7 inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
-            >
-              Conhecer os planos
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-          <div className="rounded-2xl border border-white/15 bg-white/5 p-6 sm:p-8">
-            <p className="text-sm text-white/60">A partir de</p>
-            <p className="mt-1 font-display text-4xl font-extrabold">
-              R$ 300
-              <span className="text-lg font-semibold text-white/60"> /assento/mês</span>
-            </p>
-            <div className="mt-6 space-y-4 border-t border-white/15 pt-6 text-sm">
-              {[
-                ["Restauradores e estudantes", "Free / Pro"],
-                ["Ateliês e escritórios", "Empresa"],
-                ["Museus, órgãos e dioceses", "Institucional"],
-                ["Bancos e institutos", "Patrocinador"],
-              ].map(([who, plan]) => (
-                <div key={plan} className="flex items-center justify-between gap-4">
-                  <span className="text-white/70">{who}</span>
-                  <span className="font-bold">{plan}</span>
-                </div>
               ))}
             </div>
           </div>

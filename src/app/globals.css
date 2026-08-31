@@ -33,9 +33,10 @@
   /* vermelho claro (coral) — apenas realces pequenos e texto sobre faixa */
   --accent: #ff6b5b;
 
-  /* faixa escura da plataforma = vermelho da marca (nunca preto) */
-  --band: #c81414;
-  --band-2: #8e0f0f;
+  /* faixa escura da plataforma = vinho profundo da marca (nunca preto).
+     O vermelho vivo #ED1A1A fica reservado a botões/realces. */
+  --band: #4a1213;
+  --band-2: #2b0a0b;
 
   /* contraste pontual permitido em alguns botões */
   --contrast: #201414;
@@ -133,6 +134,19 @@ body {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
   border-radius: 3px;
+}
+
+/* Faixa da marca — vinho profundo com textura sutil, some do "vermelhão chapado" */
+.band {
+  background-color: var(--band);
+  background-image:
+    radial-gradient(120% 140% at 12% 0%, color-mix(in oklab, var(--band) 60%, #7a1f1f) 0%, transparent 55%),
+    linear-gradient(180deg, var(--band-2) 0%, var(--band) 55%, var(--band-2) 100%);
+  color: #fff;
+}
+.band-hairlines {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 96px);
 }
 
 /* Emphasis word — italic-serif accent */

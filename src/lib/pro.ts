@@ -11,6 +11,9 @@ export const TRACKS: Record<
     who: string;
     promise: string;
     perfil: "contratante" | "profissional" | "financiamento";
+    /** preço mensal em centavos; null = trilha sem assinatura (vai por análise) */
+    priceCents: number | null;
+    priceLabel: string;
   }
 > = {
   contratar: {
@@ -19,6 +22,8 @@ export const TRACKS: Record<
     who: "Instituições, empresas, órgãos e dioceses com patrimônio para restaurar",
     promise: "Encontre quem executa. Publique seu projeto.",
     perfil: "contratante",
+    priceCents: 6990,
+    priceLabel: "R$ 69,90/mês",
   },
   oferecer: {
     slug: "oferecer",
@@ -26,6 +31,8 @@ export const TRACKS: Record<
     who: "Restauradores, conservadores, ateliês e escritórios",
     promise: "Seu portfólio, sua reputação e o trabalho do setor num lugar.",
     perfil: "profissional",
+    priceCents: 7990,
+    priceLabel: "R$ 79,90/mês",
   },
   financiamento: {
     slug: "financiamento",
@@ -33,6 +40,8 @@ export const TRACKS: Record<
     who: "Detentores do bem com projeto aprovado ou em elaboração",
     promise: "Conecte o projeto ao recurso. Dossiê pronto, elegibilidade sinalizada.",
     perfil: "financiamento",
+    priceCents: null,
+    priceLabel: "Sob análise",
   },
 };
 

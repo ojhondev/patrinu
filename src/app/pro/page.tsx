@@ -29,7 +29,7 @@ const HELP: Record<ProTrack, string> = {
 export default function ProPage() {
   return (
     <>
-      <section className="bg-band text-white">
+      <section className="band band-hairlines text-white">
         <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-11 lg:py-20">
           <p className="text-xs font-bold uppercase tracking-widest text-accent">
             Patrinu Pro
@@ -62,8 +62,21 @@ export default function ProPage() {
                 </h2>
                 <p className="mt-1 text-sm font-semibold text-ink-soft">{t.who}</p>
                 <p className="mt-3 flex-1 text-sm text-ink-soft">{HELP[key]}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-green-ink">
-                  Ver a trilha
+                <p className="mt-4 font-display text-2xl font-extrabold tracking-tight">
+                  {t.priceCents != null ? (
+                    <>
+                      {t.priceLabel.split("/")[0]}
+                      <span className="text-sm font-semibold text-muted">
+                        {" "}
+                        /mês
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-lg">Sob análise</span>
+                  )}
+                </p>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-green-ink">
+                  {t.priceCents != null ? "Ver a trilha e assinar" : "Enviar meu projeto"}
                   <ArrowRight size={15} />
                 </span>
               </Link>

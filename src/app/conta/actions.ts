@@ -1,14 +1,19 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
 
 import {
   createUser,
   endUserSession,
+  getCurrentUser,
   getUserByEmail,
   startUserSession,
   verifyPassword,
 } from "@/lib/auth";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 
 type State = { error?: string } | null;
 
@@ -50,4 +55,14 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
 export async function signOut(): Promise<void> {
   await endUserSession();
   redirect("/");
+}
+
+export async function updateAvatar(formData: FormData): Promise<void> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/painel");
+  const raw = String(formData.get("avatarUrl") ?? "").trim();
+  const value = /^https?:\/\/.+/i.test(raw) ? raw : null;
+  await db.update(users).set({ avatarUrl: value }).where(eq(users.id, user.id));
+  revalidatePath("/painel");
+  revalidatePath("/", "layout");
 }

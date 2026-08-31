@@ -96,7 +96,27 @@ export const users = pgTable("users", {
   role: userRole("role").notNull().default("user"),
   /** trilha Pro escolhida no cadastro: contratar | oferecer | financiamento */
   track: text("track"),
+  /** URL da foto de perfil (upload real fica para depois) */
+  avatarUrl: text("avatar_url"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Pedidos de "Quero financiamento de obra" — vão para a fila do Master. */
+export const financingRequests = pgTable("financing_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  contactName: text("contact_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  organization: text("organization").notNull(),
+  assetName: text("asset_name").notNull(),
+  uf: text("uf"),
+  city: text("city"),
+  projectStage: text("project_stage"),
+  fundingGoal: text("funding_goal"),
+  mechanism: text("mechanism"),
+  summary: text("summary"),
+  status: text("status").notNull().default("novo"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

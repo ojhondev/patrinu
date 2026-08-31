@@ -1,15 +1,23 @@
 import { cn } from "@/lib/cn";
 
-/** Logo Patrinu (lockup). Arquivo em /public/logo-patrinu.png (1219×293).
- *  PNG estático de ~12 KB — `<img>` puro é adequado, sem otimização do next/image. */
-export function Logo({ className }: { className?: string }) {
+/** Logo Patrinu (lockup). Arquivos em /public/logo-patrinu*.png.
+ *  PNG estático leve — `<img>` puro é adequado, sem otimização do next/image.
+ *  `variant="pro"` mostra o lockup "patrinupro." (usado na área de profissionais). */
+export function Logo({
+  className,
+  variant = "default",
+}: {
+  className?: string;
+  variant?: "default" | "pro";
+}) {
+  const pro = variant === "pro";
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo-patrinu.png"
-      alt="Patrinu"
-      width={1219}
-      height={293}
+      src={pro ? "/logo-patrinupro.png" : "/logo-patrinu.png"}
+      alt={pro ? "Patrinu Pro" : "Patrinu"}
+      width={pro ? 1262 : 1219}
+      height={pro ? 227 : 293}
       className={cn("w-auto", className)}
     />
   );

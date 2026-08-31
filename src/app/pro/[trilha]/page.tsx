@@ -129,7 +129,7 @@ export default async function ProTrackPage({
 
   return (
     <>
-      <section className="bg-band text-white">
+      <section className="band band-hairlines text-white">
         <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-11 lg:py-20">
           <nav className="flex items-center gap-1.5 text-sm text-white/60">
             <Link href="/pro" className="hover:text-white">
@@ -142,12 +142,34 @@ export default async function ProTrackPage({
             {c.headline} <span className="accent text-accent">{c.accent}</span>
           </h1>
           <p className="mt-4 max-w-xl text-lg text-white/75">{c.sub}</p>
+
+          <div className="mt-6 flex items-baseline gap-2">
+            {track.priceCents != null ? (
+              <>
+                <span className="font-display text-4xl font-extrabold tracking-tight">
+                  {track.priceLabel.split("/")[0]}
+                </span>
+                <span className="text-white/70">/mês · cancele quando quiser</span>
+              </>
+            ) : (
+              <span className="font-display text-2xl font-bold">
+                Análise gratuita do seu projeto
+              </span>
+            )}
+          </div>
+
           <div className="mt-7 flex flex-wrap gap-3">
             <Link
-              href={`/comecar/${trilha}`}
+              href={
+                trilha === "financiamento"
+                  ? "/comecar/financiamento"
+                  : `/comecar/${trilha}`
+              }
               className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
             >
-              Começar
+              {track.priceCents != null
+                ? `Assinar — ${track.priceLabel.split("/")[0]}/mês`
+                : "Responder o questionário"}
               <ArrowRight size={16} />
             </Link>
             <Link
@@ -157,6 +179,12 @@ export default async function ProTrackPage({
               Ver um painel de exemplo
             </Link>
           </div>
+          {track.priceCents != null && (
+            <p className="mt-2 text-xs text-white/55">
+              O pagamento entra em breve — por ora você já cria a conta e usa o período de
+              apresentação.
+            </p>
+          )}
         </div>
       </section>
 

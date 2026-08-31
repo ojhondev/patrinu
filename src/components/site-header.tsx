@@ -7,6 +7,7 @@ import { Search, Menu } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { Logo } from "@/components/logo";
+import { Avatar } from "@/components/avatar";
 import { HeaderSearch } from "@/components/header-search";
 import { signOut } from "@/app/conta/actions";
 
@@ -14,6 +15,7 @@ export type HeaderAccount = {
   name: string;
   plan: "visitante" | "cadastrado" | "pro";
   master: boolean;
+  avatarUrl?: string | null;
 } | null;
 
 const NAV = [
@@ -28,6 +30,10 @@ const NAV = [
 export function SiteHeader({ account }: { account: HeaderAccount }) {
   const pathname = usePathname();
   const firstName = account?.name.trim().split(/\s+/)[0] ?? "";
+  const proArea =
+    pathname.startsWith("/profissionais") ||
+    pathname === "/pro" ||
+    pathname.startsWith("/pro/");
   const onHome = pathname === "/";
   const [scrolled, setScrolled] = useState(!onHome);
   const [open, setOpen] = useState(false);
@@ -54,7 +60,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
     >
       <div className="mx-auto flex h-16 max-w-[1400px] items-center gap-4 px-4 sm:px-6 lg:h-[68px] lg:px-11">
         <Link href="/" aria-label="Patrinu — início" className="shrink-0">
-          <Logo className="h-7" />
+          <Logo className="h-7" variant={proArea ? "pro" : "default"} />
         </Link>
 
         {/* search collapses into the bar once scrolled past the hero (xl+) */}
@@ -89,13 +95,14 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
               <Link
                 href={account.master ? "/master" : "/painel"}
                 className={cn(
-                  "rounded-md px-2.5 py-2 text-sm font-semibold",
+                  "inline-flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-semibold",
                   pathname.startsWith("/painel") || pathname.startsWith("/master")
                     ? "text-green-ink"
                     : "text-ink-soft hover:text-ink",
                 )}
               >
-                {account.master ? "Painel Master" : `Olá, ${firstName}`}
+                <Avatar name={account.name} src={account.avatarUrl} size={26} />
+                {account.master ? "Painel Master" : firstName}
               </Link>
               {!account.master && account.plan !== "pro" && (
                 <Link

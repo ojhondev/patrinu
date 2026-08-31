@@ -71,8 +71,10 @@ export function LockedPanel({
       <div aria-hidden className="pointer-events-none select-none blur-[6px]">
         {children}
       </div>
-      <div className="absolute inset-0 z-10 grid place-items-center bg-bg/40 p-4">
-        <div className="max-w-sm rounded-[var(--radius-card)] border border-green/40 bg-surface p-6 text-center shadow-[var(--shadow-pop)]">
+      {/* overlay: no desktop fica centrado; no mobile o card gruda no topo e
+          acompanha a rolagem até o fim da seção (position: sticky). */}
+      <div className="absolute inset-0 z-10 flex justify-center bg-bg/40 p-4">
+        <div className="sticky top-20 h-max max-w-sm self-start rounded-[var(--radius-card)] border border-green/40 bg-surface p-6 text-center shadow-[var(--shadow-pop)] lg:static lg:self-center">
           <span className="mx-auto grid h-10 w-10 place-items-center rounded-full bg-green-weak text-green-ink">
             <Lock size={18} />
           </span>

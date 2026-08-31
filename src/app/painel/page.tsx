@@ -27,8 +27,10 @@ import {
 } from "@/lib/interactions";
 import { formatDate, daysUntil, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
+import { Avatar } from "@/components/avatar";
 import { SpecialtyIcon } from "@/components/specialty-visual";
 import { ProposalThread } from "@/components/proposal-thread";
+import { updateAvatar } from "@/app/conta/actions";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = { title: "Painel" };
@@ -109,24 +111,56 @@ export default async function PainelPage({
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight">
-            Olá, {user.name.split(/\s+/)[0]}
-          </h1>
-          <p className="mt-1 text-sm text-ink-soft">
-            Plano{" "}
-            <strong className="text-ink">
-              {plan === "pro" ? "Pro" : plan === "cadastrado" ? "Cadastrado (grátis)" : "Visitante"}
-            </strong>
-            {plan !== "pro" && (
-              <>
-                {" · "}
-                <Link href="/pro" className="font-semibold text-green-ink hover:underline">
-                  assinar Pro
-                </Link>
-              </>
-            )}
-          </p>
+        <div className="flex items-center gap-4">
+          <details className="group relative">
+            <summary className="cursor-pointer list-none">
+              <Avatar name={user.name} src={user.avatarUrl} size={56} />
+            </summary>
+            <form
+              action={updateAvatar}
+              className="absolute left-0 top-full z-20 mt-2 w-72 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-pop)]"
+            >
+              <label className="mb-1 block text-xs font-semibold text-ink">
+                URL da sua foto
+              </label>
+              <input
+                name="avatarUrl"
+                defaultValue={user.avatarUrl ?? ""}
+                placeholder="https://…"
+                className="w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+              />
+              <button
+                type="submit"
+                className="mt-2 w-full rounded-md bg-green px-3 py-1.5 text-sm font-bold text-white hover:bg-green-hover"
+              >
+                Salvar foto
+              </button>
+              <p className="mt-1 text-[11px] text-muted">Upload de arquivo em breve.</p>
+            </form>
+          </details>
+          <div>
+            <h1 className="font-display text-3xl font-bold tracking-tight">
+              Olá, {user.name.split(/\s+/)[0]}
+            </h1>
+            <p className="mt-1 text-sm text-ink-soft">
+              Plano{" "}
+              <strong className="text-ink">
+                {plan === "pro"
+                  ? "Pro"
+                  : plan === "cadastrado"
+                    ? "Cadastrado (grátis)"
+                    : "Visitante"}
+              </strong>
+              {plan !== "pro" && (
+                <>
+                  {" · "}
+                  <Link href="/pro" className="font-semibold text-green-ink hover:underline">
+                    assinar Pro
+                  </Link>
+                </>
+              )}
+            </p>
+          </div>
         </div>
         <Link
           href="/projetos/novo"
