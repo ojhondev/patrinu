@@ -149,7 +149,7 @@ export async function runIngest(): Promise<IngestResult> {
     feedUrl: "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
   });
 
-  const rawOpps = await collectPncp(3).catch((e) => {
+  const rawOpps = await collectPncp(2).catch((e) => {
     console.error("[ingest] PNCP falhou:", e);
     return [];
   });

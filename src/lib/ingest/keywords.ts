@@ -116,6 +116,16 @@ export const NEGATIVE = [
   "fotovoltaica",
   "fotovoltaico",
   "iluminacao publica",
+  "fornecimento de agua",
+  "coleta de esgoto",
+  "coleta de residuos",
+  "manutencao predial",
+  "ar condicionado",
+  "manutencao de veiculos",
+  "locacao de veiculos",
+  "material de expediente",
+  "material de limpeza",
+  "vigilancia armada",
 ];
 
 const KW = KEYWORDS.map((k) => ({ label: k, re: makeMatcher(k) }));
@@ -133,15 +143,14 @@ const STRONG = new Set([
   "bem tombado",
   "bens tombados",
   "tombamento",
-  "iphan",
-  "iepha",
-  "condephaat",
   "patrimonio mundial",
   "projeto de restauracao",
   "projeto executivo de restauro",
   "restauro de fachada",
   "conservacao de acervo",
 ]);
+// "iphan"/"iepha" sozinhos são fracos (o órgão compra água, luz, veículo) →
+// exigem um 2º termo. "restauracao" passa sozinha; os NEGATIVE cortam o que não é.
 
 export type Triage = {
   relevant: boolean;

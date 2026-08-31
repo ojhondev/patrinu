@@ -23,6 +23,7 @@ import { Badge } from "@/components/badge";
 import { formatBRL, formatDate, specialtyLabel } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Master", robots: { index: false } };
+export const maxDuration = 60; // "Rodar ingestão agora" pode demorar
 
 const BANNERS = [
   {
@@ -261,38 +262,39 @@ export default async function MasterPage() {
               <p className="mt-1 text-xs text-muted">
                 casou: {(o.matchedTerms ?? []).join(", ") || "—"}
               </p>
-              <form action={moderateOpportunity} className="mt-2 space-y-2">
-                <input type="hidden" name="id" value={o.id} />
-                <input
-                  name="title"
-                  defaultValue={o.title}
-                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
-                />
-                <textarea
-                  name="summary"
-                  defaultValue={o.summary ?? o.object ?? ""}
-                  rows={3}
-                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
-                />
-                <div className="flex gap-2">
+              <div className="mt-2 space-y-2">
+                <form action={moderateOpportunity} className="space-y-2">
+                  <input type="hidden" name="id" value={o.id} />
+                  <input type="hidden" name="decision" value="aprovado" />
+                  <input
+                    name="title"
+                    defaultValue={o.title}
+                    className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
+                  />
+                  <textarea
+                    name="summary"
+                    defaultValue={o.summary ?? o.object ?? ""}
+                    rows={3}
+                    className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+                  />
                   <button
                     type="submit"
-                    name="decision"
-                    value="aprovado"
                     className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
                   >
-                    <Check size={15} /> Aprovar
+                    <Check size={15} /> Aprovar e publicar
                   </button>
+                </form>
+                <form action={moderateOpportunity}>
+                  <input type="hidden" name="id" value={o.id} />
+                  <input type="hidden" name="decision" value="recusado" />
                   <button
                     type="submit"
-                    name="decision"
-                    value="recusado"
-                    className="inline-flex items-center gap-1.5 border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-soft hover:text-crit"
                   >
-                    <X size={15} /> Recusar
+                    <X size={13} /> Recusar
                   </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           ))}
         </div>
@@ -325,49 +327,54 @@ export default async function MasterPage() {
                   </a>
                 )}
               </div>
-              <form action={moderateArticle} className="mt-2 space-y-2">
-                <input type="hidden" name="id" value={a.id} />
-                <input
-                  name="title"
-                  defaultValue={a.title}
-                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
-                />
-                <textarea
-                  name="excerpt"
-                  defaultValue={a.excerpt}
-                  rows={2}
-                  className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
-                />
-                <div className="flex flex-wrap items-center gap-2">
-                  <select
-                    name="category"
-                    defaultValue={a.category}
-                    className="border border-ink/20 bg-surface px-2 py-1.5 text-sm"
-                  >
-                    {["obra", "tecnica", "politica", "mercado", "curso", "edital"].map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+              <div className="mt-2 space-y-2">
+                <form action={moderateArticle} className="space-y-2">
+                  <input type="hidden" name="id" value={a.id} />
+                  <input type="hidden" name="decision" value="publicado" />
+                  <input
+                    name="title"
+                    defaultValue={a.title}
+                    className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm font-semibold outline-none focus:border-green-ink"
+                  />
+                  <textarea
+                    name="excerpt"
+                    defaultValue={a.excerpt}
+                    rows={2}
+                    className="w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+                  />
+                  <div className="flex flex-wrap items-center gap-2">
+                    <select
+                      name="category"
+                      defaultValue={a.category}
+                      className="border border-ink/20 bg-surface px-2 py-1.5 text-sm"
+                    >
+                      {["obra", "tecnica", "politica", "mercado", "curso", "edital"].map(
+                        (c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ),
+                      )}
+                    </select>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+                    >
+                      <Check size={15} /> Publicar
+                    </button>
+                  </div>
+                </form>
+                <form action={moderateArticle}>
+                  <input type="hidden" name="id" value={a.id} />
+                  <input type="hidden" name="decision" value="recusado" />
                   <button
                     type="submit"
-                    name="decision"
-                    value="publicado"
-                    className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-soft hover:text-crit"
                   >
-                    <Check size={15} /> Publicar
+                    <X size={13} /> Recusar
                   </button>
-                  <button
-                    type="submit"
-                    name="decision"
-                    value="recusado"
-                    className="inline-flex items-center gap-1.5 border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
-                  >
-                    <X size={15} /> Recusar
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           ))}
         </div>

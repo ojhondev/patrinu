@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { runIngest } from "@/lib/ingest/run";
 
-export const maxDuration = 300; // segundos (plano Hobby permite até 300 em rota)
+export const maxDuration = 60; // teto do plano Hobby
 export const dynamic = "force-dynamic";
 
 function authorized(req: Request): boolean {

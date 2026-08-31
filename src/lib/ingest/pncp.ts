@@ -6,8 +6,8 @@ const BASE = "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao";
 export const MODALIDADES = [4, 6, 8, 9];
 
 const PAGE_SIZE = 50;
-const MAX_PAGES = 10; // teto por modalidade/execução
-const DELAY_MS = 700; // PNCP retorna 429 se as chamadas forem rápidas demais
+const MAX_PAGES = 6; // teto por modalidade/execução
+const DELAY_MS = 450; // PNCP retorna 429 se as chamadas forem rápidas demais
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 

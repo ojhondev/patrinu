@@ -47,6 +47,7 @@ export async function moderateOpportunity(formData: FormData) {
   await reviewOpportunity(id, decision, { title, summary });
   revalidatePath("/master");
   revalidatePath("/editais");
+  revalidatePath("/");
 }
 
 export async function moderateArticle(formData: FormData) {
@@ -60,6 +61,7 @@ export async function moderateArticle(formData: FormData) {
   await reviewArticle(id, decision, { title, excerpt, category });
   revalidatePath("/master");
   revalidatePath("/noticias");
+  revalidatePath("/");
 }
 
 export async function triggerIngest() {
