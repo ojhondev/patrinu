@@ -4,7 +4,8 @@ import { Suspense } from "react";
 
 import { listProjects } from "@/lib/projects";
 import { ProjectTile } from "@/components/project-tile";
-import { CategoryRail } from "@/components/category-rail";
+import { FilterBar } from "@/components/filter-bar";
+import { AmbassadorsRail } from "@/components/ambassadors-rail";
 import { HeaderSearch } from "@/components/header-search";
 
 export const metadata: Metadata = {
@@ -63,17 +64,9 @@ export default async function ProjetosPage({
           </Suspense>
         </div>
 
-        <div className="rule flex flex-wrap items-center justify-between gap-4 pb-3">
-          <p className="kicker text-muted">Vitrine</p>
-          <p className="text-sm text-ink-soft">
-            <strong className="font-bold text-ink tabular-nums">{projects.length}</strong>{" "}
-            {projects.length === 1 ? "projeto" : "projetos"}
-          </p>
-        </div>
+        <FilterBar total={projects.length} unit={["projeto", "projetos"]} />
 
-        <div className="my-5">
-          <CategoryRail base="/projetos" />
-        </div>
+        <AmbassadorsRail variant="inline" />
 
         {projects.length === 0 ? (
           <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">

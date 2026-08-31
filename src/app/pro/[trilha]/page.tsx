@@ -19,7 +19,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { trilha } = await params;
   const t = TRACKS[trilha as ProTrack];
-  return { title: t ? `Patrinu Pro — ${t.label}` : "Patrinu Pro" };
+  return { title: t ? `Membro Patrinu — ${t.label}` : "Membro Patrinu" };
 }
 
 type Content = {
@@ -133,7 +133,7 @@ export default async function ProTrackPage({
         <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-11 lg:py-20">
           <nav className="flex items-center gap-1.5 text-sm text-white/60">
             <Link href="/pro" className="hover:text-white">
-              Patrinu Pro
+              Membro Patrinu
             </Link>
             <ChevronRight size={13} />
             <span className="text-white/80">{track.label}</span>
@@ -168,7 +168,7 @@ export default async function ProTrackPage({
               className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
             >
               {track.priceCents != null
-                ? `Assinar — ${track.priceLabel.split("/")[0]}/mês`
+                ? `Tornar-se membro — ${track.priceLabel.split("/")[0]}/mês`
                 : "Responder o questionário"}
               <ArrowRight size={16} />
             </Link>

@@ -4,8 +4,9 @@ import { redirect } from "next/navigation";
 import { ShieldCheck, Clock, Check, X } from "lucide-react";
 
 import { isMasterSession } from "@/lib/auth";
-import { logoutMaster, moderateProject } from "./actions";
+import { logoutMaster, moderateProject, saveNewsBanner } from "./actions";
 import { pendingProjects } from "@/lib/projects";
+import { getSetting } from "@/lib/settings";
 import { db } from "@/db";
 import { financingRequests } from "@/db/schema";
 import { desc } from "drizzle-orm";
@@ -17,9 +18,11 @@ export const metadata: Metadata = { title: "Master", robots: { index: false } };
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
 
-  const [pending, financing] = await Promise.all([
+  const [pending, financing, bannerImage, bannerLink] = await Promise.all([
     pendingProjects(),
     db.select().from(financingRequests).orderBy(desc(financingRequests.createdAt)),
+    getSetting("news_banner_image"),
+    getSetting("news_banner_link"),
   ]);
 
   return (
@@ -62,6 +65,38 @@ export default async function MasterPage() {
           </Link>
         ))}
       </div>
+
+      <section className="mb-10 border border-border bg-surface p-5">
+        <h2 className="text-lg font-bold">Banner de anúncio das notícias</h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Aparece dentro de cada matéria e no topo da lista de notícias. Cole a URL da
+          imagem (e um link de destino, opcional).
+        </p>
+        <form action={saveNewsBanner} className="mt-4 grid gap-3 sm:grid-cols-2">
+          <input
+            name="image"
+            defaultValue={bannerImage ?? ""}
+            placeholder="https://…/banner.jpg"
+            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          />
+          <input
+            name="link"
+            defaultValue={bannerLink ?? ""}
+            placeholder="https://… (destino do clique, opcional)"
+            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          />
+          <button
+            type="submit"
+            className="w-max bg-green px-4 py-2 text-xs font-bold uppercase tracking-[0.13em] text-white hover:bg-green-hover"
+          >
+            Salvar banner
+          </button>
+        </form>
+        {bannerImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bannerImage} alt="Banner atual" className="mt-4 max-h-32 border border-ink/15" />
+        )}
+      </section>
 
       <section>
         <h2 className="text-lg font-bold">
@@ -154,7 +189,7 @@ export default async function MasterPage() {
           <span className="font-mono text-sm text-muted">({financing.length})</span>
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
-          Enviados pela trilha &ldquo;Quero financiamento de obra&rdquo; do Patrinu Pro.
+          Enviados pela trilha &ldquo;Quero financiamento de obra&rdquo; para membros do Patrinu.
         </p>
 
         <div className="mt-4 space-y-3">

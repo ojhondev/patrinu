@@ -15,6 +15,7 @@ import { ArticleCard } from "@/components/article-card";
 import { CourseCard } from "@/components/course-card";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { FacadeMotif } from "@/components/facade-motif";
+import { AmbassadorsRail } from "@/components/ambassadors-rail";
 import { LockedPanel } from "@/components/locked";
 import { has } from "@/lib/membership";
 
@@ -134,6 +135,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ---------------- embaixadores ---------------- */}
+      <AmbassadorsRail />
+
       {/* ---------------- oportunidades ---------------- */}
       <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
         <SectionHead
@@ -201,9 +205,9 @@ export default async function HomePage() {
         ) : (
           <div className="mt-8">
             <LockedPanel
-              title="O Radar de Editais é do Patrinu Pro"
-              body="Feed completo, alertas por perfil e checklist de habilitação. Assinantes Pro veem tudo."
-              cta="Conhecer o Patrinu Pro"
+              title="O Radar de Editais é para membros"
+              body="Feed completo, alertas por perfil e checklist de habilitação. Membros veem tudo."
+              cta="Conhecer os planos de membro"
               href="/pro"
             >
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

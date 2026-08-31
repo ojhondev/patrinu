@@ -32,6 +32,8 @@ function rowToProject(r: Row): Project {
     specialties: r.specialties as Project["specialties"],
     techniques: r.techniques,
     materials: r.materials.length ? r.materials : undefined,
+    images: r.images?.length ? r.images : undefined,
+    videoUrl: r.videoUrl ?? undefined,
     credits: (r.credits ?? []) as Project["credits"],
     fromOpportunityId: r.fromOpportunityId ?? undefined,
     budgetRange: r.budgetRange ?? undefined,
@@ -151,6 +153,7 @@ export type NewProjectInput = {
   specialties: string[];
   budgetRange?: string;
   images?: string[];
+  videoUrl?: string | null;
 };
 
 /** Cria um projeto do usuário em status `em_analise` (fila do Master). */
@@ -181,6 +184,7 @@ export async function submitProject(input: NewProjectInput): Promise<Project> {
       year: input.year ?? null,
       specialties: input.specialties,
       images: input.images ?? [],
+      videoUrl: input.videoUrl ?? null,
       credits: [{ role: "Proponente", name: input.ownerName }],
       budgetRange: input.budgetRange ?? null,
       // guarda o modo pretendido para o Master aplicar na aprovação

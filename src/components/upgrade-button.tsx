@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 /** Demo: "assina" o Pro setando o cookie de plano. Sem cobrança real —
  *  a cobrança entra com a autenticação e o checkout. */
 export function UpgradeButton({
-  label = "Assinar o Patrinu Pro",
+  label = "Torne-se membro",
   className,
   variant = "solid",
 }: {

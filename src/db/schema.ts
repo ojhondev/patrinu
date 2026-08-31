@@ -102,6 +102,13 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+/** Configurações editáveis pelo Master (chave/valor). */
+export const settings = pgTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 /** Pedidos de "Quero financiamento de obra" — vão para a fila do Master. */
 export const financingRequests = pgTable("financing_requests", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -425,6 +432,7 @@ export const projects = pgTable(
     techniques: text("techniques").array().notNull().default(sql`'{}'::text[]`),
     materials: text("materials").array().notNull().default(sql`'{}'::text[]`),
     images: text("images").array().notNull().default(sql`'{}'::text[]`),
+    videoUrl: text("video_url"),
 
     /** créditos: [{ role, name, slug? }] */
     credits: jsonb("credits").$type<{ role: string; name: string; slug?: string }[]>()

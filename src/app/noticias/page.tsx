@@ -5,6 +5,7 @@ import { listArticles } from "@/lib/directory";
 import { articleCategoryLabel } from "@/lib/taxonomy";
 import { ArticleCard } from "@/components/article-card";
 import { NewsletterSignup } from "@/components/newsletter-signup";
+import { NewsBanner } from "@/components/news-banner";
 import { PageHero } from "@/components/page-hero";
 import { cn } from "@/lib/cn";
 
@@ -39,6 +40,7 @@ export default async function NoticiasPage({
       </PageHero>
 
       <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
+        <NewsBanner className="mb-8" />
         <div className="rule mb-6 flex flex-wrap gap-5 pb-3">
           <Link
             href="/noticias"

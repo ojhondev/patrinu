@@ -11,17 +11,29 @@ const OPEN = new Set(["aberto", "em_captacao"]);
 
 export async function ProjectCard({ project: p }: { project: Project }) {
   const open = OPEN.has(p.status);
-  const canSeeValue = (await getPlan()) !== "visitante";
+  const plan = await getPlan();
+  const canSeeValue = plan !== "visitante"; // valor: precisa de conta
+  const isMember = plan === "pro"; // contratante: precisa ser membro
   return (
     <Link
       href={`/projetos/${p.slug}`}
       className="group flex flex-col overflow-hidden border border-ink/12 bg-surface transition-colors hover:border-ink"
     >
-      <SpecialtyThumb
-        specialty={p.specialties[0] ?? "arquitetura"}
-        label={projectStatusLabel(p.status)}
-        className="aspect-[16/10] w-full"
-      />
+      {p.images?.[0] ? (
+        <div className="relative aspect-[16/10] w-full overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={p.images[0]} alt={p.title} className="h-full w-full object-cover" />
+          <span className="absolute left-0 top-0 bg-band px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
+            {projectStatusLabel(p.status)}
+          </span>
+        </div>
+      ) : (
+        <SpecialtyThumb
+          specialty={p.specialties[0] ?? "arquitetura"}
+          label={projectStatusLabel(p.status)}
+          className="aspect-[16/10] w-full"
+        />
+      )}
       <div className="flex flex-1 flex-col p-4">
         <p className="kicker text-muted">
           {p.specialties.slice(0, 2).map((s) => specialtyLabel(s)).join(" · ")}
@@ -42,7 +54,13 @@ export async function ProjectCard({ project: p }: { project: Project }) {
         <div className="mt-3 flex items-end justify-between border-t border-ink/12 pt-3 text-xs">
           <span className="inline-flex items-center gap-1 text-ink-soft">
             <Users size={13} />
-            {p.credits[0]?.name}
+            {open ? (
+              <Locked locked={!isMember} cta="Membros" asLabel>
+                <span>{p.credits[0]?.name ?? "—"}</span>
+              </Locked>
+            ) : (
+              (p.credits[0]?.name ?? "—")
+            )}
           </span>
           {open && p.budgetRange ? (
             <Locked locked={!canSeeValue} cta="Cadastre-se" asLabel>

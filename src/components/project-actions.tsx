@@ -57,7 +57,7 @@ export function ProjectActions({
         </p>
       ) : !canPropose ? (
         <UpgradeButton
-          label="Assine o Pro para enviar proposta"
+          label="Seja membro para enviar proposta"
           className="w-full justify-center"
         />
       ) : !showProposal ? (

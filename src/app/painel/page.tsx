@@ -143,19 +143,18 @@ export default async function PainelPage({
               Olá, {user.name.split(/\s+/)[0]}
             </h1>
             <p className="mt-1 text-sm text-ink-soft">
-              Plano{" "}
               <strong className="text-ink">
                 {plan === "pro"
-                  ? "Pro"
+                  ? "Membro"
                   : plan === "cadastrado"
-                    ? "Cadastrado (grátis)"
+                    ? "Conta gratuita"
                     : "Visitante"}
               </strong>
               {plan !== "pro" && (
                 <>
                   {" · "}
                   <Link href="/pro" className="font-semibold text-green-ink hover:underline">
-                    assinar Pro
+                    torne-se membro
                   </Link>
                 </>
               )}

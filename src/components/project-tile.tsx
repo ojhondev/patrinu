@@ -16,10 +16,19 @@ export async function ProjectTile({ project: p }: { project: Project }) {
   return (
     <Link href={`/projetos/${p.slug}`} className="group block">
       <div className="relative aspect-[4/3] overflow-hidden">
-        <SpecialtyThumb
-          specialty={p.specialties[0] ?? "arquitetura"}
-          className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]"
-        />
+        {p.images?.[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={p.images[0]}
+            alt={p.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        ) : (
+          <SpecialtyThumb
+            specialty={p.specialties[0] ?? "arquitetura"}
+            className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]"
+          />
+        )}
         {/* etiqueta de estado — canto, tipografia dura */}
         <span className="absolute left-0 top-0 bg-band px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
           {projectStatusLabel(p.status)}

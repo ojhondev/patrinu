@@ -13,11 +13,22 @@ import { db } from "@/db";
 import { projects, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { approveProject, rejectProject } from "@/lib/projects";
+import { setSetting } from "@/lib/settings";
 import {
   projectApprovedEmail,
   projectRejectedEmail,
   sendEmail,
 } from "@/lib/email";
+
+export async function saveNewsBanner(formData: FormData) {
+  if (!(await isMasterSession())) redirect("/master/entrar");
+  const image = String(formData.get("image") ?? "").trim();
+  const link = String(formData.get("link") ?? "").trim();
+  await setSetting("news_banner_image", /^https?:\/\//.test(image) ? image : null);
+  await setSetting("news_banner_link", /^https?:\/\//.test(link) ? link : null);
+  revalidatePath("/noticias");
+  revalidatePath("/master");
+}
 
 export async function loginMaster(_prev: unknown, formData: FormData) {
   const email = String(formData.get("email") ?? "");

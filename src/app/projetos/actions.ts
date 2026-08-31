@@ -38,10 +38,6 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     .getAll("specialties")
     .map((s) => String(s))
     .filter((s) => VALID_SPECIALTIES.includes(s));
-  const images = String(form.get("images") ?? "")
-    .split(/[\n,]/)
-    .map((u) => u.trim())
-    .filter((u) => /^https?:\/\//.test(u));
 
   if (title.length < 6) return { error: "Dê um título com pelo menos 6 caracteres." };
   if (summary.length < 40)
@@ -73,6 +69,16 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     }
   }
 
+  // URLs geradas pelo upload client-side (Vercel Blob)
+  const BLOB_HOST = ".public.blob.vercel-storage.com";
+  const images = form
+    .getAll("mediaImages")
+    .map((u) => String(u))
+    .filter((u) => u.includes(BLOB_HOST))
+    .slice(0, 8);
+  const videoRaw = String(form.get("mediaVideo") ?? "");
+  const videoUrl = videoRaw.includes(BLOB_HOST) ? videoRaw : null;
+
   await submitProject({
     ownerId: user.id,
     ownerName: user.name,
@@ -86,6 +92,7 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     specialties,
     budgetRange,
     images,
+    videoUrl,
   });
 
   await sendEmail({ to: user.email, ...projectSubmittedEmail(user.name, title) });

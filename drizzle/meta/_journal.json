@@ -36,6 +36,20 @@
       "when": 1788183471542,
       "tag": "0004_lumpy_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788188609002,
+      "tag": "0005_slim_winter_soldier",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788189125246,
+      "tag": "0006_familiar_fat_cobra",
+      "breakpoints": true
     }
   ]
 }

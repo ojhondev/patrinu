@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 
 import { createProject } from "@/app/projetos/actions";
+import { MediaUpload } from "@/components/media-upload";
 import { SPECIALTIES, UFS } from "@/lib/taxonomy";
 
 type State = { error?: string } | null;
@@ -94,15 +95,7 @@ export function NewProjectForm() {
         </div>
       </fieldset>
 
-      <label className="block">
-        <span className="mb-1 block text-sm font-semibold text-ink">
-          Imagens (opcional) — uma URL por linha
-        </span>
-        <textarea name="images" rows={2} className={field} placeholder="https://…" />
-        <span className="mt-1 block text-xs text-muted">
-          Upload de arquivos entra em breve. Por ora, cole links de imagens.
-        </span>
-      </label>
+      <MediaUpload />
 
       {state?.error ? (
         <p className="rounded-lg bg-crit/10 px-3 py-2 text-sm font-semibold text-crit">

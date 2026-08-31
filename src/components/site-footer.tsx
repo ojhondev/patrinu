@@ -26,7 +26,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     ],
   },
   {
-    title: "Patrinu Pro",
+    title: "Membro Patrinu",
     links: [
       { label: "Quero contratar", href: "/pro/contratar" },
       { label: "Quero oferecer serviços", href: "/pro/oferecer" },
@@ -43,7 +43,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
         href: "mailto:contato@patrinu.com.br?subject=Divulgar%20curso%20na%20Patrinu",
       },
       { label: "Entrar", href: "/entrar" },
-      { label: "Patrinu Pro", href: "/pro" },
+      { label: "Seja membro", href: "/pro" },
     ],
   },
 ];
@@ -55,6 +55,14 @@ export function SiteFooter() {
         <p className="display max-w-3xl text-2xl text-ink sm:text-4xl">
           O radar do <span className="accent text-green-ink">patrimônio</span> e do restauro
           do Brasil
+        </p>
+        <p className="mt-4 max-w-2xl text-sm text-ink-soft">
+          Plataforma independente que reúne num só lugar conservação e restauro do
+          patrimônio no Brasil — mantida pela assinatura dos seus membros.{" "}
+          <Link href="/pro" className="font-semibold text-green-ink hover:underline">
+            Torne-se membro
+          </Link>
+          .
         </p>
 
         <div className="mt-12 grid grid-cols-2 gap-8 border-t border-ink/12 pt-10 sm:grid-cols-3 lg:grid-cols-4">

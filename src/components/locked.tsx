@@ -10,8 +10,8 @@ import { cn } from "@/lib/cn";
 export function Locked({
   locked,
   children,
-  cta = "Assine para ver",
-  href = "/empresas",
+  cta = "Seja membro para ver",
+  href = "/pro",
   block = false,
   asLabel = false,
   className,
@@ -57,8 +57,8 @@ export function LockedPanel({
   children,
   title,
   body,
-  href = "/empresas",
-  cta = "Assinar o Patrinu Pro",
+  href = "/pro",
+  cta = "Torne-se membro",
 }: {
   children: ReactNode;
   title: string;

@@ -110,7 +110,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
                   href="/pro"
                   className="bg-green px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white transition-colors hover:bg-green-hover"
                 >
-                  Assinar Pro
+                  Seja membro
                 </Link>
               )}
               <form action={signOut}>
@@ -134,7 +134,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
                 href="/pro"
                 className="bg-green px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white transition-colors hover:bg-green-hover"
               >
-                Patrinu Pro
+                Seja membro
               </Link>
             </>
           )}
@@ -201,7 +201,7 @@ export function SiteHeader({ account }: { account: HeaderAccount }) {
                   href="/pro"
                   className="flex-1 bg-green px-3 py-2 text-center text-xs font-bold uppercase tracking-[0.13em] text-white"
                 >
-                  Patrinu Pro
+                  Seja membro
                 </Link>
               </>
             )}

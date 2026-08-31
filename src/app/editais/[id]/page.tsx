@@ -64,11 +64,11 @@ export default async function OpportunityPage({
           {op.title}
         </h1>
         <p className="mt-3 text-ink-soft">
-          O detalhe do edital, o checklist de habilitação e o fluxo de resposta são do{" "}
-          <strong className="text-ink">Patrinu Pro</strong>.
+          O detalhe do edital, o checklist de habilitação e o fluxo de resposta são{" "}
+          <strong className="text-ink">para membros</strong>.
         </p>
         <div className="mt-6 flex justify-center">
-          <UpgradeButton label="Assinar o Patrinu Pro" />
+          <UpgradeButton label="Torne-se membro" />
         </div>
       </div>
     );
@@ -87,16 +87,13 @@ export default async function OpportunityPage({
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-11">
       {/* breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-ink-soft">
+      <nav className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-ink-soft">
         <Link href="/editais" className="inline-flex items-center gap-1 hover:text-ink">
-          <ArrowLeft size={14} />
+          <ArrowLeft size={13} />
           Editais
         </Link>
-        <ChevronRight size={13} className="text-muted" />
-        <Link
-          href={`/editais?specialty=${op.specialties[0]}`}
-          className="hover:text-ink"
-        >
+        <ChevronRight size={12} className="text-muted" />
+        <Link href={`/editais?specialty=${op.specialties[0]}`} className="hover:text-ink">
           {specialtyLabel(op.specialties[0] ?? "arquitetura")}
         </Link>
       </nav>
@@ -104,18 +101,13 @@ export default async function OpportunityPage({
       <div className="mt-4 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
         {/* ---------------- main ---------------- */}
         <article className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="green">{kindLabel(op.kind)}</Badge>
-            {op.specialties.map((s) => (
-              <Badge key={s} tone="neutral">
-                {specialtyLabel(s)}
-              </Badge>
-            ))}
-          </div>
+          <p className="kicker text-green-ink">
+            {kindLabel(op.kind)}
+            {" · "}
+            {op.specialties.map((s) => specialtyLabel(s)).join(" · ")}
+          </p>
 
-          <h1 className="mt-3 font-display text-2xl font-bold leading-snug tracking-tight text-balance sm:text-[32px]">
-            {op.title}
-          </h1>
+          <h1 className="display mt-3 text-3xl text-ink sm:text-5xl">{op.title}</h1>
 
           {/* órgão "seller" row */}
           <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 border-y border-border py-3 text-sm">

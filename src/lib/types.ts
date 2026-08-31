@@ -92,6 +92,8 @@ export type Project = {
   specialties: SpecialtyKey[];
   techniques: string[];
   materials?: string[];
+  images?: string[];
+  videoUrl?: string;
 
   credits: ProjectCredit[];
   fromOpportunityId?: string;

@@ -200,6 +200,15 @@ body {
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Utility: hide scrollbar on horizontal rails */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

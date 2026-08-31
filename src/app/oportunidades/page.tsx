@@ -4,9 +4,9 @@ import { Suspense } from "react";
 
 import { listProjects } from "@/lib/projects";
 import { ProjectCard } from "@/components/project-card";
-import { CategoryRail } from "@/components/category-rail";
+import { FilterBar } from "@/components/filter-bar";
+import { AmbassadorsRail } from "@/components/ambassadors-rail";
 import { HeaderSearch } from "@/components/header-search";
-import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
   title: "Oportunidades",
@@ -42,14 +42,6 @@ export default async function OportunidadesPage({
       : mode === "captacao"
         ? all.filter((p) => p.status === "em_captacao")
         : all;
-
-  const qs = (next: Partial<Record<string, string>>) => {
-    const p = new URLSearchParams();
-    const merged = { mode, q, specialty, uf, ...next };
-    for (const [k, v] of Object.entries(merged)) if (v && v !== "todas") p.set(k, v);
-    const s = p.toString();
-    return s ? `/oportunidades?${s}` : "/oportunidades";
-  };
 
   return (
     <div>
@@ -88,32 +80,15 @@ export default async function OportunidadesPage({
           </Suspense>
         </div>
 
-        <div className="rule flex flex-wrap items-center justify-between gap-4 pb-3">
-          <div className="flex flex-wrap gap-5">
-            {MODES.map((m) => (
-              <Link
-                key={m.key}
-                href={qs({ mode: m.key })}
-                className={cn(
-                  "text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
-                  mode === m.key
-                    ? "text-ink underline decoration-2 underline-offset-[6px]"
-                    : "text-muted hover:text-ink",
-                )}
-              >
-                {m.label}
-              </Link>
-            ))}
-          </div>
-          <p className="text-sm text-ink-soft">
-            <strong className="font-bold text-ink tabular-nums">{items.length}</strong>{" "}
-            {items.length === 1 ? "oportunidade" : "oportunidades"}
-          </p>
-        </div>
+        <FilterBar
+          segments={MODES.map((m) => ({ key: m.key, label: m.label }))}
+          segmentParam="mode"
+          segmentDefault="todas"
+          total={items.length}
+          unit={["oportunidade", "oportunidades"]}
+        />
 
-        <div className="my-5">
-          <CategoryRail base="/oportunidades" />
-        </div>
+        <AmbassadorsRail variant="inline" />
 
         {items.length === 0 ? (
           <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">

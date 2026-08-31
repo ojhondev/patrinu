@@ -112,9 +112,9 @@ export default async function RadarPage({
         grid
       ) : (
         <LockedPanel
-          title="O Radar de Editais é do Patrinu Pro"
-          body="Feed completo, alertas por perfil, checklist de habilitação e histórico de desfecho. Assinantes Pro veem tudo."
-          cta="Assinar o Patrinu Pro"
+          title="O Radar de Editais é para membros"
+          body="Feed completo, alertas por perfil, checklist de habilitação e histórico de desfecho. Membros veem tudo."
+          cta="Torne-se membro"
         >
           {grid}
         </LockedPanel>
