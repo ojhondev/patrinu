@@ -1,47 +1,48 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-const NAMES = [
-  "Renata Pereira B.",
-  "Rodrigo Ferrarezi",
-  "Helena Braga",
-  "Marcos Tavares",
-  "Ana Lúcia Prado",
-  "Cauê Nogueira",
-  "Beatriz Salles",
-  "Otávio Rennó",
-  "Clara Antunes",
-  "Vinícius Palma",
-  "Juliana Rocha",
-  "Ferdinando Alves",
-  "Lívia Camargo",
-  "Thiago Mendonça",
+const AMBASSADORS: { name: string; area: string; img: string }[] = [
+  { name: "Renata Pereira B.", area: "Bens integrados", img: pic(1) },
+  { name: "Rodrigo Ferrarezi", area: "Pintura e policromia", img: pic(11) },
+  { name: "Helena Braga", area: "Talha e douramento", img: pic(5) },
+  { name: "Marcos Tavares", area: "Arquitetura e edificações", img: pic(12) },
+  { name: "Ana Lúcia Prado", area: "Conservação de acervos", img: pic(9) },
+  { name: "Cauê Nogueira", area: "Arqueologia", img: pic(15) },
+  { name: "Beatriz Salles", area: "Documental e bibliográfico", img: pic(16) },
+  { name: "Otávio Rennó", area: "Cantaria e consolidação", img: pic(3) },
+  { name: "Clara Antunes", area: "Vitrais e caixilharia", img: pic(20) },
+  { name: "Vinícius Palma", area: "Paisagismo histórico", img: pic(33) },
+  { name: "Juliana Rocha", area: "Bens móveis", img: pic(25) },
+  { name: "Ferdinando Alves", area: "Sítios urbanos", img: pic(52) },
 ];
 
-type Person = { name: string; img: string };
+function pic(n: number) {
+  return `https://i.pravatar.cc/240?img=${n}`;
+}
 
-const POOL: Person[] = NAMES.map((name, i) => ({
-  name,
-  // retratos de placeholder — trocar por fotos reais dos embaixadores
-  img: `https://i.pravatar.cc/480?img=${((i * 5) % 70) + 1}`,
-}));
-
-const VISIBLE = 5;
-const INTERVAL = 3800;
-
-export function AmbassadorsRail({ variant = "section" }: { variant?: "section" | "inline" }) {
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    const t = setInterval(() => setOffset((o) => (o + 1) % POOL.length), INTERVAL);
-    return () => clearInterval(t);
-  }, []);
-
-  const shown = useMemo(
-    () => Array.from({ length: VISIBLE }, (_, i) => POOL[(offset + i) % POOL.length]),
-    [offset],
+function Card({ a }: { a: (typeof AMBASSADORS)[number] }) {
+  return (
+    <figure className="w-[132px] shrink-0 sm:w-[150px]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={a.img}
+        alt={a.name}
+        loading="lazy"
+        className="aspect-[4/5] w-full border-b-2 border-brand bg-sunk object-cover"
+      />
+      <figcaption className="mt-2">
+        <p className="truncate text-sm font-bold text-ink">{a.name}</p>
+        <p className="truncate text-xs text-ink-soft">{a.area}</p>
+      </figcaption>
+    </figure>
   );
+}
+
+export function AmbassadorsRail({
+  variant = "section",
+}: {
+  variant?: "section" | "inline";
+}) {
+  const strip = [...AMBASSADORS, ...AMBASSADORS];
 
   const body = (
     <>
@@ -51,23 +52,12 @@ export function AmbassadorsRail({ variant = "section" }: { variant?: "section" |
         Profissionais e instituições que sustentam e divulgam o acervo.
       </p>
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {shown.map((p, i) => (
-          <div
-            key={`${p.name}-${i}`}
-            className="bg-brand p-2 text-white"
-            style={{ animation: "fadeIn .5s ease" }}
-          >
-            <p className="truncate px-1 py-1 text-sm font-semibold">{p.name}</p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={p.img}
-              alt={p.name}
-              loading="lazy"
-              className="aspect-[4/5] w-full bg-white object-cover"
-            />
-          </div>
-        ))}
+      <div className="marquee mt-6 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="marquee-track gap-6">
+          {strip.map((a, i) => (
+            <Card key={`${a.name}-${i}`} a={a} />
+          ))}
+        </div>
       </div>
     </>
   );
@@ -75,7 +65,7 @@ export function AmbassadorsRail({ variant = "section" }: { variant?: "section" |
   if (variant === "inline") return <div className="my-10">{body}</div>;
 
   return (
-    <section className="border-y border-ink/12 bg-sunk">
+    <section className="border-y border-ink/12 bg-surface">
       <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11">{body}</div>
     </section>
   );

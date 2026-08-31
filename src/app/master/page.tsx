@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { ShieldCheck, Clock, Check, X } from "lucide-react";
 
 import { isMasterSession } from "@/lib/auth";
-import { logoutMaster, moderateProject, saveNewsBanner } from "./actions";
+import { logoutMaster, moderateProject, saveBanner } from "./actions";
 import { pendingProjects } from "@/lib/projects";
 import { getSetting } from "@/lib/settings";
 import { db } from "@/db";
@@ -15,14 +15,32 @@ import { formatDate, specialtyLabel } from "@/lib/taxonomy";
 
 export const metadata: Metadata = { title: "Master", robots: { index: false } };
 
+const BANNERS = [
+  {
+    slot: "news" as const,
+    title: "Banner das notícias",
+    hint: "Aparece dentro de cada matéria e no topo da lista de notícias.",
+  },
+  {
+    slot: "projects" as const,
+    title: "Banner de Projetos (1920 × 500)",
+    hint: "Faixa abaixo dos filtros na página Projetos. Use uma imagem 1920×500.",
+  },
+];
+
 export default async function MasterPage() {
   if (!(await isMasterSession())) redirect("/master/entrar");
 
-  const [pending, financing, bannerImage, bannerLink] = await Promise.all([
+  const [pending, financing, banners] = await Promise.all([
     pendingProjects(),
     db.select().from(financingRequests).orderBy(desc(financingRequests.createdAt)),
-    getSetting("news_banner_image"),
-    getSetting("news_banner_link"),
+    Promise.all(
+      BANNERS.map(async (b) => ({
+        ...b,
+        image: await getSetting(`${b.slot}_banner_image`),
+        link: await getSetting(`${b.slot}_banner_link`),
+      })),
+    ),
   ]);
 
   return (
@@ -66,36 +84,42 @@ export default async function MasterPage() {
         ))}
       </div>
 
-      <section className="mb-10 border border-border bg-surface p-5">
-        <h2 className="text-lg font-bold">Banner de anúncio das notícias</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Aparece dentro de cada matéria e no topo da lista de notícias. Cole a URL da
-          imagem (e um link de destino, opcional).
-        </p>
-        <form action={saveNewsBanner} className="mt-4 grid gap-3 sm:grid-cols-2">
-          <input
-            name="image"
-            defaultValue={bannerImage ?? ""}
-            placeholder="https://…/banner.jpg"
-            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
-          />
-          <input
-            name="link"
-            defaultValue={bannerLink ?? ""}
-            placeholder="https://… (destino do clique, opcional)"
-            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
-          />
-          <button
-            type="submit"
-            className="w-max bg-green px-4 py-2 text-xs font-bold uppercase tracking-[0.13em] text-white hover:bg-green-hover"
-          >
-            Salvar banner
-          </button>
-        </form>
-        {bannerImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={bannerImage} alt="Banner atual" className="mt-4 max-h-32 border border-ink/15" />
-        )}
+      <section className="mb-10 grid gap-5 sm:grid-cols-2">
+        {banners.map((b) => (
+          <div key={b.slot} className="border border-border bg-surface p-5">
+            <h2 className="text-base font-bold">{b.title}</h2>
+            <p className="mt-1 text-sm text-ink-soft">{b.hint}</p>
+            <form action={saveBanner} className="mt-4 space-y-3">
+              <input type="hidden" name="slot" value={b.slot} />
+              <input
+                name="image"
+                defaultValue={b.image ?? ""}
+                placeholder="https://…/banner.jpg"
+                className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+              />
+              <input
+                name="link"
+                defaultValue={b.link ?? ""}
+                placeholder="https://… (destino do clique, opcional)"
+                className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+              />
+              <button
+                type="submit"
+                className="bg-green px-4 py-2 text-xs font-bold uppercase tracking-[0.13em] text-white hover:bg-green-hover"
+              >
+                Salvar
+              </button>
+            </form>
+            {b.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={b.image}
+                alt="Banner atual"
+                className="mt-4 max-h-28 border border-ink/15"
+              />
+            )}
+          </div>
+        ))}
       </section>
 
       <section>

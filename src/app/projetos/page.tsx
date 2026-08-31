@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { listProjects } from "@/lib/projects";
 import { ProjectTile } from "@/components/project-tile";
 import { FilterBar } from "@/components/filter-bar";
-import { AmbassadorsRail } from "@/components/ambassadors-rail";
+import { AdBanner } from "@/components/ad-banner";
 import { HeaderSearch } from "@/components/header-search";
 
 export const metadata: Metadata = {
@@ -66,7 +66,7 @@ export default async function ProjetosPage({
 
         <FilterBar total={projects.length} unit={["projeto", "projetos"]} />
 
-        <AmbassadorsRail variant="inline" />
+        <AdBanner slot="projects" ratio="1920/500" className="my-8" />
 
         {projects.length === 0 ? (
           <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">

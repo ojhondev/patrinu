@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { listProjects } from "@/lib/projects";
 import { ProjectCard } from "@/components/project-card";
 import { FilterBar } from "@/components/filter-bar";
-import { AmbassadorsRail } from "@/components/ambassadors-rail";
 import { HeaderSearch } from "@/components/header-search";
 
 export const metadata: Metadata = {
@@ -88,7 +87,7 @@ export default async function OportunidadesPage({
           unit={["oportunidade", "oportunidades"]}
         />
 
-        <AmbassadorsRail variant="inline" />
+        <div className="mt-6" />
 
         {items.length === 0 ? (
           <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">

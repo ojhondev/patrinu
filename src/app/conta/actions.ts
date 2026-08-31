@@ -54,6 +54,7 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
 
 export async function signOut(): Promise<void> {
   await endUserSession();
+  revalidatePath("/", "layout");
   redirect("/");
 }
 

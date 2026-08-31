@@ -20,13 +20,17 @@ import {
   sendEmail,
 } from "@/lib/email";
 
-export async function saveNewsBanner(formData: FormData) {
+const BANNER_SLOTS = ["news", "projects"] as const;
+
+export async function saveBanner(formData: FormData) {
   if (!(await isMasterSession())) redirect("/master/entrar");
+  const slot = String(formData.get("slot") ?? "");
+  if (!(BANNER_SLOTS as readonly string[]).includes(slot)) return;
   const image = String(formData.get("image") ?? "").trim();
   const link = String(formData.get("link") ?? "").trim();
-  await setSetting("news_banner_image", /^https?:\/\//.test(image) ? image : null);
-  await setSetting("news_banner_link", /^https?:\/\//.test(link) ? link : null);
-  revalidatePath("/noticias");
+  await setSetting(`${slot}_banner_image`, /^https?:\/\//.test(image) ? image : null);
+  await setSetting(`${slot}_banner_link`, /^https?:\/\//.test(link) ? link : null);
+  revalidatePath(slot === "news" ? "/noticias" : "/projetos");
   revalidatePath("/master");
 }
 

@@ -80,6 +80,14 @@ export async function endUserSession(): Promise<void> {
   if (id) {
     await db.delete(sessions).where(eq(sessions.id, id)).catch(() => {});
   }
+  // sobrescreve com cookie expirado (mesmas opções do set) — mais confiável que delete()
+  store.set(USER_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
   store.delete(USER_COOKIE);
 }
 
