@@ -53,19 +53,19 @@ async function fetchPage(
   pagina: number,
 ): Promise<{ items: Record<string, unknown>[]; totalPaginas: number }> {
   const url = `${BASE}?dataInicial=${from}&dataFinal=${to}&codigoModalidadeContratacao=${modalidade}&pagina=${pagina}&tamanhoPagina=${PAGE_SIZE}`;
-  for (let attempt = 0; attempt < 4; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     let res: Response;
     try {
       res = await fetch(url, {
         headers: { accept: "application/json" },
-        signal: AbortSignal.timeout(30_000),
+        signal: AbortSignal.timeout(12_000),
       });
     } catch {
-      await sleep(2500 * (attempt + 1));
+      await sleep(1200 * (attempt + 1));
       continue;
     }
     if (res.status === 429 || res.status >= 500) {
-      await sleep(2500 * (attempt + 1));
+      await sleep(1200 * (attempt + 1));
       continue;
     }
     if (!res.ok) throw new Error(`PNCP ${res.status} (modalidade ${modalidade}, pág ${pagina})`);
@@ -104,8 +104,11 @@ function map(item: Record<string, unknown>): RawOpportunity {
   };
 }
 
-/** Busca as contratações publicadas nos últimos `days` dias, em todas as modalidades. */
-export async function collectPncp(days = 3): Promise<RawOpportunity[]> {
+/**
+ * Busca as contratações publicadas nos últimos `days` dias, em todas as modalidades.
+ * `deadline` (epoch ms) corta a coleta para caber no teto de 60s do plano Hobby.
+ */
+export async function collectPncp(days = 3, deadline = Infinity): Promise<RawOpportunity[]> {
   const to = new Date();
   const from = new Date(to.getTime() - days * 86_400_000);
   const f = ymd(from);
@@ -115,8 +118,10 @@ export async function collectPncp(days = 3): Promise<RawOpportunity[]> {
   const seen = new Set<string>();
 
   for (const modalidade of MODALIDADES) {
+    if (Date.now() > deadline) break;
     let totalPaginas = 1;
     for (let pagina = 1; pagina <= Math.min(totalPaginas, MAX_PAGES); pagina++) {
+      if (Date.now() > deadline) return out;
       let page;
       try {
         page = await fetchPage(modalidade, f, t, pagina);

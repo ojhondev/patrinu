@@ -152,67 +152,9 @@ export async function runIngest(): Promise<IngestResult> {
     ranAt: new Date().toISOString(),
   };
 
-  /* ---- EDITAIS: PNCP ---- */
-  const pncpSource = await ensureSource({
-    slug: "pncp",
-    name: "PNCP — Portal Nacional de Contratações Públicas",
-    kind: "edital",
-    access: "api",
-    feedUrl: "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
-  });
-
-  const rawOpps = await collectPncp(2).catch((e) => {
-    console.error("[ingest] PNCP falhou:", e);
-    return [];
-  });
-  result.editais.checked = rawOpps.length;
-
-  for (const op of rawOpps) {
-    const tri = triage(op.title, op.object);
-    if (!tri.relevant) continue;
-    result.editais.matched++;
-
-    const [dup] = await db
-      .select({ id: opportunities.id })
-      .from(opportunities)
-      .where(
-        and(
-          eq(opportunities.sourceId, pncpSource.id),
-          eq(opportunities.externalId, op.externalId),
-        ),
-      )
-      .limit(1);
-    if (dup) continue;
-
-    const deadline = op.deadlineAt ? new Date(op.deadlineAt) : null;
-    await db.insert(opportunities).values({
-      sourceId: pncpSource.id,
-      externalId: op.externalId,
-      url: op.url,
-      kind: "licitacao",
-      status: deadline && deadline.getTime() < Date.now() ? "encerrada" : "aberta",
-      title: op.title,
-      summary: op.object.slice(0, 400),
-      object: op.object,
-      organ: op.organ || "—",
-      organScope: op.organScope,
-      uf: op.uf,
-      city: op.city,
-      estimatedValue: op.estimatedValue != null ? String(op.estimatedValue) : null,
-      specialties: guessSpecialties(tri.matched),
-      publishedAt: op.publishedAt ? new Date(op.publishedAt) : null,
-      deadlineAt: deadline,
-      relevanceScore: tri.score,
-      reviewStatus: "pendente",
-      matchedTerms: tri.matched,
-      raw: op.raw,
-    });
-    result.editais.inserted++;
-  }
-  await db
-    .update(sources)
-    .set({ lastIngestedAt: new Date() })
-    .where(eq(sources.id, pncpSource.id));
+  // teto do plano Hobby = 60s. Notícias rodam primeiro (rápidas); o PNCP
+  // (instável, lento) fica com o tempo que sobrar até ~45s.
+  const PNCP_DEADLINE = Date.now() + 45_000;
 
   /* ---- NOTÍCIAS: RSS ---- */
   const NEWS_MAX_AGE_MS = 5 * 86_400_000; // só matérias dos últimos 5 dias
@@ -313,6 +255,68 @@ export async function runIngest(): Promise<IngestResult> {
     }
     await db.update(sources).set({ lastIngestedAt: new Date() }).where(eq(sources.id, src.id));
   }
+
+  /* ---- EDITAIS: PNCP (com o tempo que sobrou) ---- */
+  const pncpSource = await ensureSource({
+    slug: "pncp",
+    name: "PNCP — Portal Nacional de Contratações Públicas",
+    kind: "edital",
+    access: "api",
+    feedUrl: "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
+  });
+
+  const rawOpps = await collectPncp(2, PNCP_DEADLINE).catch((e) => {
+    console.error("[ingest] PNCP falhou:", e);
+    return [];
+  });
+  result.editais.checked = rawOpps.length;
+
+  for (const op of rawOpps) {
+    const tri = triage(op.title, op.object);
+    if (!tri.relevant) continue;
+    result.editais.matched++;
+
+    const [dup] = await db
+      .select({ id: opportunities.id })
+      .from(opportunities)
+      .where(
+        and(
+          eq(opportunities.sourceId, pncpSource.id),
+          eq(opportunities.externalId, op.externalId),
+        ),
+      )
+      .limit(1);
+    if (dup) continue;
+
+    const deadline = op.deadlineAt ? new Date(op.deadlineAt) : null;
+    await db.insert(opportunities).values({
+      sourceId: pncpSource.id,
+      externalId: op.externalId,
+      url: op.url,
+      kind: "licitacao",
+      status: deadline && deadline.getTime() < Date.now() ? "encerrada" : "aberta",
+      title: op.title,
+      summary: op.object.slice(0, 400),
+      object: op.object,
+      organ: op.organ || "—",
+      organScope: op.organScope,
+      uf: op.uf,
+      city: op.city,
+      estimatedValue: op.estimatedValue != null ? String(op.estimatedValue) : null,
+      specialties: guessSpecialties(tri.matched),
+      publishedAt: op.publishedAt ? new Date(op.publishedAt) : null,
+      deadlineAt: deadline,
+      relevanceScore: tri.score,
+      reviewStatus: "pendente",
+      matchedTerms: tri.matched,
+      raw: op.raw,
+    });
+    result.editais.inserted++;
+  }
+  await db
+    .update(sources)
+    .set({ lastIngestedAt: new Date() })
+    .where(eq(sources.id, pncpSource.id));
 
   return result;
 }
