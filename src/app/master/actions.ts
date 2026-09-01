@@ -17,6 +17,7 @@ import { reviewOpportunity } from "@/lib/opportunities";
 import { reviewArticle } from "@/lib/directory";
 import { runIngest } from "@/lib/ingest/run";
 import { setSetting } from "@/lib/settings";
+import { SITE_URL } from "@/lib/site";
 import {
   projectApprovedEmail,
   projectRejectedEmail,
@@ -120,7 +121,7 @@ export async function moderateProject(formData: FormData) {
   const owner = proj.ownerId
     ? (await db.select().from(users).where(eq(users.id, proj.ownerId)).limit(1))[0]
     : null;
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://patrinu.vercel.app";
+  const base = SITE_URL;
 
   if (decision === "approve") {
     await approveProject(id);

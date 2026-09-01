@@ -68,7 +68,7 @@ function fieldRaw(block: string, name: string): string | null {
 
 export async function collectRss(feedUrl: string): Promise<RawArticle[]> {
   const res = await fetch(feedUrl, {
-    headers: { "user-agent": "PatrinuBot/1.0 (+https://patrinu.vercel.app)" },
+    headers: { "user-agent": "PatrinuBot/1.0 (+https://patrinu.com)" },
     signal: AbortSignal.timeout(12_000),
   });
   if (!res.ok) throw new Error(`RSS ${res.status} — ${feedUrl}`);

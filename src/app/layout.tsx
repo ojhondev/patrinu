@@ -8,6 +8,7 @@ import { SignupPopup } from "@/components/signup-popup";
 import { AnnouncementBar } from "@/components/announcement-bar";
 import { CookieConsent } from "@/components/cookie-consent";
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const hanken = Hanken_Grotesk({
@@ -24,12 +25,20 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Patrinu — o Radar do Patrimônio e Restauro do Brasil",
     template: "%s · Patrinu",
   },
   description:
     "Projetos, profissionais, notícias, cursos, editais e financiamento do restauro brasileiro, num só lugar. A rede profissional e o marketplace do patrimônio.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    siteName: "Patrinu",
+    locale: "pt_BR",
+    url: SITE_URL,
+  },
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
