@@ -16,6 +16,7 @@ import {
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { applyPendingGrant } from "@/lib/billing";
+import { sendEmail, welcomeEmail } from "@/lib/email";
 
 type State = { error?: string } | null;
 
@@ -55,6 +56,7 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
 
   const user = await createUser({ name, email, password, track });
   await applyPendingGrant(user.id, user.email).catch(() => {});
+  await sendEmail({ to: user.email, ...welcomeEmail(user.name) }).catch(() => {});
   await startUserSession(user.id);
   redirect(next.startsWith("/") ? next : "/painel");
 }

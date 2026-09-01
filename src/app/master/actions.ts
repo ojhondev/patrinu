@@ -18,11 +18,7 @@ import { reviewArticle } from "@/lib/directory";
 import { runIngest } from "@/lib/ingest/run";
 import { setSetting } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
-import {
-  projectApprovedEmail,
-  projectRejectedEmail,
-  sendEmail,
-} from "@/lib/email";
+import { projectApprovedEmail, sendEmail } from "@/lib/email";
 
 const BANNER_SLOTS = ["news", "projects"] as const;
 
@@ -157,12 +153,7 @@ export async function moderateProject(formData: FormData) {
   } else if (decision === "reject") {
     const reason = String(formData.get("reason") ?? "") || "Não atende aos critérios de publicação.";
     await rejectProject(id, reason);
-    if (owner) {
-      await sendEmail({
-        to: owner.email,
-        ...projectRejectedEmail(owner.name, proj.title, reason),
-      });
-    }
+    // sem e-mail na recusa — o motivo aparece no painel do usuário.
   }
   revalidatePath("/master");
   revalidatePath("/projetos");

@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
-import { sendEmail } from "@/lib/email";
 import { db } from "@/db";
 import { financingRequests } from "@/db/schema";
 
@@ -41,11 +40,6 @@ export async function submitFinancingRequest(
     summary: get("summary") || null,
   });
 
-  await sendEmail({
-    to: process.env.MASTER_EMAIL ?? "contato@patrinu.com",
-    subject: `Novo pedido de financiamento — ${organization}`,
-    text: `${contactName} (${contactEmail}) enviou um pedido de financiamento para "${assetName}", ${organization}.\n\nEstágio: ${get("projectStage") || "—"}\nMeta: ${get("fundingGoal") || "—"}\nMecanismo: ${get("mechanism") || "—"}\n\n${get("summary") || ""}\n\nVeja na fila do Master.`,
-  });
-
+  // sem e-mail: o pedido já aparece na fila do Master (/master/financiamento).
   redirect("/comecar/financiamento/enviado");
 }

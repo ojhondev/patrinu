@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { projectsByOwner, submitProject } from "@/lib/projects";
-import { projectSubmittedEmail, sendEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
 import {
   addInterest,
   addProposal,
@@ -142,11 +142,7 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     salaryConfidential,
   });
 
-  await sendEmail({
-    to: user.email,
-    ...projectSubmittedEmail(user.name, isVaga ? vagaRole : title),
-  });
-
+  // sem e-mail de "em análise" — o status aparece no painel do usuário.
   redirect("/painel?enviado=1");
 }
 
@@ -222,17 +218,6 @@ export async function submitProposal(_prev: State, form: FormData): Promise<Stat
     return { error: "Você já enviou uma proposta para este projeto." };
 
   await addProposal({ projectId: project.id, userId: user.id, message, priceRange });
-
-  const owner = await ownerEmail(project.ownerId);
-  if (owner) {
-    await sendEmail({
-      to: owner.email,
-      subject: `Nova proposta para "${project.title}"`,
-      text: `${user.name} enviou uma proposta para "${project.title}".${
-        priceRange ? ` Faixa: ${priceRange}.` : ""
-      }\n\n${message}\n\nResponda pelo seu painel.`,
-    });
-  }
 
   revalidatePath(`/projetos/${slug}`);
   revalidatePath("/painel");

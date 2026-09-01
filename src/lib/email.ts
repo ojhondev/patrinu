@@ -106,12 +106,13 @@ export async function sendEmail(input: SendInput): Promise<{ ok: boolean; skippe
   }
 }
 
-/* ---- mensagens da plataforma ---- */
+/* ---- mensagens da plataforma (só as 4 ações essenciais têm e-mail) ---- */
 
-export function projectSubmittedEmail(name: string, title: string) {
+export function welcomeEmail(name: string) {
+  const first = name.trim().split(/\s+/)[0] || name;
   return {
-    subject: "Recebemos sua publicação — em análise",
-    text: `Olá, ${name}.\n\nRecebemos "${title}". Nosso time revisa todo conteúdo antes de publicar — normalmente em até 1 dia útil. Avisamos assim que estiver no ar.\n\nEquipe Patrinu`,
+    subject: "Bem-vindo ao Patrinu",
+    text: `Olá, ${first}.\n\nSua conta no Patrinu está pronta. A partir daqui você pode publicar projetos e vagas, candidatar-se a vagas, acompanhar editais e receber avisos das oportunidades certas.\n\nComece pelo seu painel: ${SITE_URL}/painel\n\nEquipe Patrinu`,
   };
 }
 
@@ -119,12 +120,5 @@ export function projectApprovedEmail(name: string, title: string, url: string) {
   return {
     subject: "Sua publicação está no ar",
     text: `Olá, ${name}.\n\n"${title}" foi aprovada e já está publicada:\n${url}\n\nEquipe Patrinu`,
-  };
-}
-
-export function projectRejectedEmail(name: string, title: string, reason: string) {
-  return {
-    subject: "Sua publicação precisa de ajustes",
-    text: `Olá, ${name}.\n\n"${title}" ainda não pôde ser publicada.\nMotivo: ${reason}\n\nVocê pode ajustar e enviar de novo pelo painel: ${SITE_URL}/painel\n\nEquipe Patrinu`,
   };
 }
