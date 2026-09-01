@@ -13,7 +13,7 @@ jobs:
         run: |
           code=$(curl -sS -o /tmp/out.json -w "%{http_code}" --max-time 300 \
             -H "Authorization: Bearer ${{ secrets.INGEST_SECRET }}" \
-            "https://patrinu.vercel.app/api/ingest")
+            "https://patrinu.com/api/ingest")
           echo "HTTP $code"
           cat /tmp/out.json
           echo

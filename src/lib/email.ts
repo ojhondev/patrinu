@@ -20,8 +20,8 @@ type SendInput = {
 
 const FROM = process.env.EMAIL_FROM ?? "Patrinu <avisos@patrinu.com>";
 const REPLY_TO = process.env.EMAIL_REPLY_TO ?? "contato@patrinu.com";
-/** base para imagens do e-mail — precisa resolver sempre (alias permanente). */
-const ASSET = (process.env.EMAIL_ASSET_URL ?? "https://patrinu.vercel.app").replace(/\/$/, "");
+/** base para imagens do e-mail. */
+const ASSET = (process.env.EMAIL_ASSET_URL ?? SITE_URL).replace(/\/$/, "");
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
