@@ -102,6 +102,35 @@ export const users = pgTable("users", {
   /** moderação: conta banida pelo Master não loga e some do diretório */
   bannedAt: timestamp("banned_at", { withTimezone: true }),
   bannedReason: text("banned_reason"),
+  /** origem do plano Pro: paid (Mercado Pago) | comp (cortesia do Master) */
+  planSource: text("plan_source").notNull().default("paid"),
+  proGrantedAt: timestamp("pro_granted_at", { withTimezone: true }),
+  proNote: text("pro_note"),
+  /** id do pagamento/assinatura no Mercado Pago que liberou o Pro atual */
+  mpRef: text("mp_ref"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Log de notificações do Mercado Pago (webhook) — auditoria + idempotência. */
+export const mpEvents = pgTable("mp_events", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  mpId: text("mp_id").notNull(),
+  topic: text("topic").notNull(), // payment | subscription_preapproval | subscription_authorized_payment
+  action: text("action"),
+  status: text("status"),
+  payerEmail: text("payer_email"),
+  amount: numeric("amount", { precision: 12, scale: 2 }),
+  grantedUserId: uuid("granted_user_id").references(() => users.id, { onDelete: "set null" }),
+  payload: jsonb("payload"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+/** Pro pago no Mercado Pago cujo e-mail ainda não tem conta — aplica no 1º login. */
+export const pendingProGrants = pgTable("pending_pro_grants", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: text("email").notNull().unique(),
+  track: text("track"),
+  mpRef: text("mp_ref"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

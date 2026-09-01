@@ -8,12 +8,16 @@ import {
   banUser,
   deleteProfessional,
   deleteUser,
+  grantPro,
+  revokePro,
   setUserPlan,
   setVerification,
   unbanUser,
   VERIF_LEVELS,
   type VerifLevel,
 } from "@/lib/master";
+
+const TRACKS_OK = ["contratar", "oferecer", "financiamento"];
 
 async function guard() {
   if (!(await isMasterSession())) redirect("/master/entrar");
@@ -72,5 +76,25 @@ export async function actSetPlan(formData: FormData) {
   const plan = String(formData.get("plan") ?? "");
   if (!userId || (plan !== "cadastrado" && plan !== "pro")) return;
   await setUserPlan(userId, plan);
+  refresh();
+}
+
+/** Presentear Patrinu Pro (cortesia) */
+export async function actGrantPro(formData: FormData) {
+  await guard();
+  const userId = String(formData.get("userId") ?? "");
+  const trackRaw = String(formData.get("track") ?? "");
+  const track = TRACKS_OK.includes(trackRaw) ? trackRaw : null;
+  const note = String(formData.get("note") ?? "");
+  if (!userId) return;
+  await grantPro(userId, track, note);
+  refresh();
+}
+
+export async function actRevokePro(formData: FormData) {
+  await guard();
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) return;
+  await revokePro(userId);
   refresh();
 }

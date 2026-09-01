@@ -228,15 +228,28 @@ export default async function HomePage() {
 
       {/* ---------------- notícias + cursos ---------------- */}
       <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
-        <div className="grid gap-12 lg:grid-cols-2">
-          <div>
-            <SectionHead eyebrow="Editorial" title="Notícias" href="/noticias" cta="Todas as notícias" />
-            <div className="mt-6 space-y-3">
-              {articles.map((a) => (
-                <ArticleCard key={a.slug} article={a} compact />
-              ))}
+        <div
+          className={
+            articles.length > 0
+              ? "grid gap-12 lg:grid-cols-2"
+              : "grid gap-12"
+          }
+        >
+          {articles.length > 0 && (
+            <div>
+              <SectionHead
+                eyebrow="Editorial"
+                title="Notícias"
+                href="/noticias"
+                cta="Todas as notícias"
+              />
+              <div className="mt-6 space-y-3">
+                {articles.map((a) => (
+                  <ArticleCard key={a.slug} article={a} compact />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <div>
             <SectionHead eyebrow="Formação" title="Cursos" href="/cursos" cta="Ver diretório" />
             <div className="mt-6 space-y-3">

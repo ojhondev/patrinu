@@ -226,10 +226,9 @@ export async function runIngest(): Promise<IngestResult> {
       const bodyText = paras.join(" ");
       const hasBody = paras.length >= 2 && bodyText.length >= 300;
 
-      // publica sozinho só quando: feed de licença aberta + tem corpo de verdade
-      // + casamento forte (termo STRONG e ao menos 2 termos no total)
-      const canAuto =
-        Boolean(feed.openLicense) && hasBody && tri.hasStrong && tri.matched.length >= 2;
+      // publica sozinho quando: feed de licença aberta (CC-BY, curado) + corpo
+      // de verdade + passou na triagem de relevância.
+      const canAuto = Boolean(feed.openLicense) && hasBody && tri.relevant;
 
       const excerpt = hasBody
         ? paras[0].slice(0, 280)

@@ -71,6 +71,13 @@
       "when": 1788270156087,
       "tag": "0009_vagas",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1788279092960,
+      "tag": "0010_mp_billing",
+      "breakpoints": true
     }
   ]
 }

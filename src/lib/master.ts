@@ -22,11 +22,14 @@ const N = sql<number>`count(*)::int`;
 /** contas de demonstração não contam em métricas reais */
 const REAL = sql`${users.email} not like '%@seed.patrinu.local'`;
 const MEMBER = and(eq(users.plan, "pro"), REAL);
+/** membros pagantes (exclui cortesias do Master) — base do MRR */
+const PAYING = and(eq(users.plan, "pro"), sql`${users.planSource} <> 'comp'`, REAL);
 
 export async function masterOverview() {
   const [
     totalUsers,
     members,
+    comped,
     prosTotal,
     prosVerified,
     projPublished,
@@ -38,6 +41,12 @@ export async function masterOverview() {
   ] = await Promise.all([
     count(db.select({ n: N }).from(users).where(REAL)),
     count(db.select({ n: N }).from(users).where(MEMBER)),
+    count(
+      db
+        .select({ n: N })
+        .from(users)
+        .where(and(eq(users.plan, "pro"), eq(users.planSource, "comp"), REAL)),
+    ),
     count(db.select({ n: N }).from(professionals)),
     count(db.select({ n: N }).from(professionals).where(eq(professionals.verified, true))),
     count(
@@ -58,6 +67,7 @@ export async function masterOverview() {
   return {
     totalUsers,
     members,
+    comped,
     prosTotal,
     prosVerified,
     projPublished,
@@ -85,7 +95,7 @@ export async function mrr() {
   const rows = await db
     .select({ track: users.track, n: N })
     .from(users)
-    .where(MEMBER)
+    .where(PAYING)
     .groupBy(users.track);
 
   let mrrCents = 0;
@@ -109,6 +119,8 @@ export type MemberRow = {
   email: string;
   track: string | null;
   priceCents: number;
+  comp: boolean;
+  note: string | null;
   since: Date;
 };
 
@@ -119,12 +131,26 @@ export async function listMembers(): Promise<MemberRow[]> {
       name: users.name,
       email: users.email,
       track: users.track,
+      planSource: users.planSource,
+      note: users.proNote,
       since: users.createdAt,
     })
     .from(users)
     .where(MEMBER)
     .orderBy(desc(users.createdAt));
-  return rows.map((r) => ({ ...r, priceCents: priceCentsFor(r.track) }));
+  return rows.map((r) => {
+    const comp = r.planSource === "comp";
+    return {
+      id: r.id,
+      name: r.name,
+      email: r.email,
+      track: r.track,
+      note: r.note,
+      comp,
+      priceCents: comp ? 0 : priceCentsFor(r.track),
+      since: r.since,
+    };
+  });
 }
 
 /* ---------------- contas ---------------- */
@@ -135,6 +161,8 @@ export type AccountRow = {
   email: string;
   plan: "visitante" | "cadastrado" | "pro";
   track: string | null;
+  planSource: string;
+  proNote: string | null;
   proSlug: string | null;
   bannedAt: Date | null;
   createdAt: Date;
@@ -149,6 +177,8 @@ export async function listAccounts(q?: string): Promise<AccountRow[]> {
       email: users.email,
       plan: users.plan,
       track: users.track,
+      planSource: users.planSource,
+      proNote: users.proNote,
       proSlug: professionals.slug,
       bannedAt: users.bannedAt,
       createdAt: users.createdAt,
@@ -258,4 +288,27 @@ export async function deleteUser(userId: string) {
 
 export async function setUserPlan(userId: string, plan: "cadastrado" | "pro") {
   await db.update(users).set({ plan }).where(eq(users.id, userId));
+}
+
+/** Presentear Pro (cortesia do Master) — não entra no MRR. */
+export async function grantPro(userId: string, track: string | null, note: string) {
+  await db
+    .update(users)
+    .set({
+      plan: "pro",
+      planSource: "comp",
+      proGrantedAt: new Date(),
+      proNote: note.trim() || "Cortesia concedida pelo Master",
+      mpRef: null,
+      ...(track ? { track } : {}),
+    })
+    .where(eq(users.id, userId));
+}
+
+/** Remover o Pro de um usuário (cortesia ou pago). */
+export async function revokePro(userId: string) {
+  await db
+    .update(users)
+    .set({ plan: "cadastrado", planSource: "paid", proGrantedAt: null, proNote: null, mpRef: null })
+    .where(eq(users.id, userId));
 }

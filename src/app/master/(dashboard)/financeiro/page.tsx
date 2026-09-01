@@ -82,12 +82,19 @@ export default async function FinanceiroPage() {
                 <tr key={m.id} className="border-b border-ink/8">
                   <td className="py-2 pr-3">
                     <span className="font-semibold text-ink">{m.name}</span>
+                    {m.comp && (
+                      <span className="ml-2 rounded-pill bg-sunk px-1.5 py-0.5 text-[10px] font-bold text-ink-soft">
+                        cortesia
+                      </span>
+                    )}
                     <span className="block text-xs text-muted">{m.email}</span>
                   </td>
                   <td className="py-2 pr-3 text-ink-soft">
                     {TRACKS[m.track as ProTrack]?.label ?? "—"}
                   </td>
-                  <td className="py-2 pr-3 tabular-nums">{formatBRL(m.priceCents / 100)}</td>
+                  <td className="py-2 pr-3 tabular-nums">
+                    {m.comp ? "—" : formatBRL(m.priceCents / 100)}
+                  </td>
                   <td className="py-2 text-xs text-ink-soft">
                     {formatDate(m.since.toISOString())}
                   </td>

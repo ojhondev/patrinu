@@ -15,6 +15,7 @@ import {
 } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { applyPendingGrant } from "@/lib/billing";
 
 type State = { error?: string } | null;
 
@@ -32,6 +33,7 @@ export async function signIn(_prev: State, form: FormData): Promise<State> {
   if (user.bannedAt) {
     return { error: "Esta conta foi suspensa. Fale com contato@patrinu.com.br." };
   }
+  await applyPendingGrant(user.id, user.email).catch(() => {});
   await startUserSession(user.id);
   redirect(next.startsWith("/") ? next : "/painel");
 }
@@ -52,6 +54,7 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
   }
 
   const user = await createUser({ name, email, password, track });
+  await applyPendingGrant(user.id, user.email).catch(() => {});
   await startUserSession(user.id);
   redirect(next.startsWith("/") ? next : "/painel");
 }

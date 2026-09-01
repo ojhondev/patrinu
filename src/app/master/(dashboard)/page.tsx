@@ -59,7 +59,11 @@ export default async function MasterHome() {
         <Stat
           label="Membros"
           value={String(ov.members)}
-          sub={`MRR estimado ${formatBRL(ov.mrrCents / 100)}`}
+          sub={
+            ov.comped > 0
+              ? `MRR ${formatBRL(ov.mrrCents / 100)} · ${ov.comped} cortesia${ov.comped === 1 ? "" : "s"}`
+              : `MRR estimado ${formatBRL(ov.mrrCents / 100)}`
+          }
           icon={Wallet}
         />
         <Stat
@@ -76,7 +80,7 @@ export default async function MasterHome() {
       <div className="card p-5">
         <p className="kicker text-muted">Receita recorrente estimada</p>
         <p className="mt-1 text-xs text-ink-soft">
-          Sem gateway de pagamento ainda — projeção pelo plano de cada trilha.
+          Projeção pelo preço de cada trilha. Contas de cortesia não entram no cálculo.
         </p>
         <table className="mt-4 w-full text-sm">
           <thead>
