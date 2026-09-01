@@ -336,14 +336,17 @@ video {
   }
 }
 
-/* carrossel contínuo (embaixadores) */
+/* carrossel contínuo de logos — sempre rotativo, sem barra de rolagem */
 .marquee {
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
 }
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 46s linear infinite;
+  animation: marquee 55s linear infinite;
+  will-change: transform;
 }
 .marquee:hover .marquee-track {
   animation-play-state: paused;
@@ -357,11 +360,9 @@ video {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  /* segue girando (é decorativo), só bem devagar — nunca vira barra de rolagem */
   .marquee-track {
-    animation: none;
-  }
-  .marquee {
-    overflow-x: auto;
+    animation-duration: 120s !important;
   }
 }
 

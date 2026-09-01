@@ -1,7 +1,7 @@
 /**
- * Faixa rotativa de marcas / escritórios no Patrinu Pro.
- * Placeholder por ora — troque por <img src="/brands/<slug>.svg"> quando o
- * usuário enviar os logos.
+ * Faixa de marcas / escritórios no Patrinu Pro — carrossel automático contínuo.
+ * Placeholder por ora — troque cada <span> por <img src="/brands/<slug>.svg">
+ * quando o usuário enviar os logos.
  */
 
 const BRANDS = [
@@ -13,6 +13,10 @@ const BRANDS = [
   "Ateliê Douração",
   "Vitral Paulista",
   "Casa Colonial",
+  "Oficina do Barroco",
+  "Conservare",
+  "Pátina Estúdio",
+  "Cal & Pedra",
 ];
 
 function Logo({ name }: { name: string }) {
@@ -24,6 +28,7 @@ function Logo({ name }: { name: string }) {
 }
 
 export function ProBrandsRail() {
+  // duas cópias = loop contínuo perfeito (a animação anda exatamente 50%)
   const strip = [...BRANDS, ...BRANDS];
   return (
     <section className="border-b border-border bg-surface">
