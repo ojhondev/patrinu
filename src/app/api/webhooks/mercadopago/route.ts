@@ -25,9 +25,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const ACTIVE = new Set(["approved", "authorized", "accredited"]);
 const DEAD = new Set(["cancelled", "refunded", "charged_back", "paused", "rejected"]);
 
-/** MP às vezes valida a URL com um GET. */
+/** MP às vezes valida a URL com um GET. Serve também de diagnóstico. */
 export async function GET() {
-  return NextResponse.json({ ok: true, configured: mpConfigured() });
+  return NextResponse.json({
+    ok: true,
+    configured: mpConfigured(),
+    hasAccessToken: Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN),
+    hasWebhookSecret: Boolean(process.env.MERCADOPAGO_WEBHOOK_SECRET),
+  });
 }
 
 export async function POST(req: Request) {
@@ -55,7 +60,13 @@ export async function POST(req: Request) {
   const action = (body.action as string) ?? null;
 
   if (!verifyWebhookSignature(req.headers, dataId)) {
-    return NextResponse.json({ error: "assinatura inválida" }, { status: 401 });
+    const reason = !process.env.MERCADOPAGO_WEBHOOK_SECRET
+      ? "MERCADOPAGO_WEBHOOK_SECRET não configurado nas variáveis de ambiente"
+      : !req.headers.get("x-signature")
+        ? "requisição sem header x-signature"
+        : "assinatura x-signature não confere com a chave secreta";
+    console.warn("[mp webhook] 401:", reason);
+    return NextResponse.json({ error: "assinatura inválida", reason }, { status: 401 });
   }
 
   const log = async (extra: {
