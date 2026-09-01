@@ -33,12 +33,12 @@ export function PageHero({
   }
 
   return (
-    <section className="border-t-4 border-brand bg-surface">
-      <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11 lg:py-16">
-        {eyebrow ? <p className="kicker text-green-ink">{eyebrow}</p> : null}
-        <h1 className="display mt-3 max-w-4xl text-4xl text-ink sm:text-5xl">{title}</h1>
+    <section className="border-b border-border bg-sunk">
+      <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11 lg:py-14">
+        {eyebrow ? <p className="kicker text-muted">{eyebrow}</p> : null}
+        <h1 className="display mt-2 max-w-4xl text-3xl text-ink sm:text-5xl">{title}</h1>
         {children ? (
-          <div className="mt-4 max-w-2xl text-lg text-ink-soft">{children}</div>
+          <div className="mt-3 max-w-2xl text-lg text-ink-soft">{children}</div>
         ) : null}
       </div>
     </section>

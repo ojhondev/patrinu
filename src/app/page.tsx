@@ -15,38 +15,36 @@ import { ArticleCard } from "@/components/article-card";
 import { CourseCard } from "@/components/course-card";
 import { NewsletterSignup } from "@/components/newsletter-signup";
 import { FacadeMotif } from "@/components/facade-motif";
-import { AmbassadorsRail } from "@/components/ambassadors-rail";
+import { ProBrandsRail } from "@/components/pro-brands-rail";
 import { LockedPanel } from "@/components/locked";
 import { has } from "@/lib/membership";
 
 function SectionHead({
-  n,
+  eyebrow,
   title,
   href,
   cta,
   children,
 }: {
-  n: string;
+  eyebrow: string;
   title: React.ReactNode;
   href: string;
   cta: string;
   children?: React.ReactNode;
 }) {
   return (
-    <div className="border-b border-ink/15 pb-4">
+    <div>
       <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="kicker text-muted">
-            {n} <span className="mx-1 text-ink/25">/</span>
-          </p>
-          <h2 className="display mt-2 text-3xl text-ink sm:text-[34px]">{title}</h2>
+          <p className="kicker text-muted">{eyebrow}</p>
+          <h2 className="display mt-2 text-2xl text-ink sm:text-[32px]">{title}</h2>
         </div>
         <Link
           href={href}
-          className="hidden shrink-0 items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-green-ink hover:text-ink sm:inline-flex"
+          className="hidden shrink-0 items-center gap-1.5 text-sm font-semibold text-green-ink hover:text-ink sm:inline-flex"
         >
           {cta}
-          <ArrowRight size={14} />
+          <ArrowRight size={15} />
         </Link>
       </div>
       {children ? <p className="mt-2 max-w-2xl text-ink-soft">{children}</p> : null}
@@ -55,22 +53,22 @@ function SectionHead({
 }
 
 export default async function HomePage() {
-  const [stats, oportunidades, showcase, pros, editais, articles, courses, isPro] =
-    await Promise.all([
-      radarStats(),
-      listProjects({ mode: "abertos" }),
-      listProjects({ mode: "vitrine" }),
-      featuredProfessionals(4),
-      featuredOpportunities(4),
-      latestArticles(3),
-      featuredCourses(3),
-      has("pro"),
-    ]);
+  const [stats, vagas, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
+    radarStats(),
+    listProjects({ mode: "abertos" }),
+    listProjects({ mode: "vitrine" }),
+    featuredProfessionals(4),
+    featuredOpportunities(4),
+    latestArticles(3),
+    featuredCourses(3),
+    has("pro"),
+  ]);
+  void stats;
 
   return (
     <>
       {/* ---------------- hero ---------------- */}
-      <section className="band relative overflow-hidden text-white">
+      <section className="relative overflow-hidden bg-[#2b1712] text-white">
         <video
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           src="/hero.mp4"
@@ -81,85 +79,85 @@ export default async function HomePage() {
           preload="auto"
           aria-hidden
         />
-        {/* véu: escurece só o suficiente para a copy — o vídeo aparece bem */}
+        {/* véu leve — o vídeo aparece bem, a copy fica legível no canto */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              "linear-gradient(100deg, rgba(0,0,0,0.58) 0%, rgba(0,0,0,0.40) 45%, rgba(0,0,0,0.24) 100%)",
+              "linear-gradient(105deg, rgba(20,10,8,0.82) 0%, rgba(20,10,8,0.42) 50%, rgba(20,10,8,0.15) 100%)",
           }}
         />
         <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />
-        <div className="relative mx-auto max-w-[1400px] px-4 py-16 sm:px-6 sm:py-20 lg:px-11 lg:py-28">
+        <div className="relative mx-auto max-w-[1400px] px-4 py-16 sm:px-6 sm:py-20 lg:px-11 lg:py-24">
           <div className="max-w-3xl">
-            <p className="kicker text-accent">O radar do patrimônio brasileiro</p>
-            <h1 className="display mt-4 text-4xl text-white sm:text-6xl lg:text-[68px]">
+            <p className="accent text-lg text-[#ffb59e]">O radar do patrimônio e restauro do Brasil</p>
+            <h1 className="display mt-3 text-4xl text-white sm:text-6xl lg:text-[64px]">
               Tudo sobre patrimônio e restauro do Brasil,{" "}
-              <span className="accent text-accent">num só lugar</span>.
+              <span className="accent font-medium text-white">num só lugar</span>.
             </h1>
-            <p className="mt-6 max-w-xl text-lg text-white/75">
-              Projetos, profissionais, notícias, cursos, editais e financiamento. A rede
-              profissional e o marketplace do restauro brasileiro.
+            <p className="mt-5 max-w-xl text-lg text-white/80">
+              Profissionais verificados, vagas em escritórios de restauro, editais abertos e o
+              noticiário do setor.
             </p>
 
-            <div className="mt-8 max-w-xl">
+            <div className="mt-8 max-w-2xl">
               <HeaderSearch />
             </div>
             <div className="mt-4">
               <PopularSearches dark />
             </div>
           </div>
-
-          <dl className="mt-14 grid max-w-3xl grid-cols-2 gap-x-8 gap-y-5 border-t border-white/15 pt-7 sm:grid-cols-4">
-            {[
-              ["Projetos na vitrine", "100+"],
-              ["Profissionais", `${pros.length * 40}+`],
-              ["Editais abertos", String(stats.abertas)],
-              ["Cursos no diretório", `${courses.length * 8}+`],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt className="kicker text-white/50">{label}</dt>
-                <dd className="mt-1.5 font-display text-3xl font-extrabold tabular-nums text-white">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
-      {/* ---------------- category rail ---------------- */}
-      <section className="border-b border-ink/12">
-        <div className="mx-auto max-w-[1400px] px-2 py-5 sm:px-6 lg:px-11">
-          <CategoryRail />
+      {/* ---------------- escritórios pro ---------------- */}
+      <ProBrandsRail />
+
+      {/* ---------------- explore por categoria ---------------- */}
+      <section className="bg-sunk">
+        <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11">
+          <p className="kicker text-muted">Explore por categoria</p>
+          <h2 className="display mt-2 text-2xl text-ink sm:text-[30px]">
+            As áreas da conservação e do restauro
+          </h2>
+          <p className="mt-2 max-w-xl text-ink-soft">
+            Dos bens móveis à arquitetura, da arqueologia aos acervos — navegue pelos grupos de
+            especialidade.
+          </p>
+          <div className="mt-8">
+            <CategoryRail base="/profissionais" />
+          </div>
         </div>
       </section>
 
-      {/* ---------------- embaixadores ---------------- */}
-      <AmbassadorsRail />
-
-      {/* ---------------- oportunidades ---------------- */}
+      {/* ---------------- vagas ---------------- */}
       <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
         <SectionHead
-          n="01"
-          title="Oportunidades"
-          href="/oportunidades"
-          cta="Ver todas as oportunidades"
+          eyebrow="Contratação"
+          title="Vagas em escritórios de restauro"
+          href="/vagas"
+          cta="Ver todas as vagas"
         >
-          Restauros abertos para propostas de profissionais ou buscando patrocínio.
+          Escritórios, ateliês, museus e órgãos publicam vagas com a função, as áreas de atuação e
+          a faixa salarial.
         </SectionHead>
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {oportunidades.slice(0, 4).map((p) => (
+          {vagas.slice(0, 4).map((p) => (
             <ProjectCard key={p.id} project={p} />
           ))}
         </div>
       </section>
 
       {/* ---------------- projetos (vitrine) ---------------- */}
-      <section className="border-y border-ink/12 bg-sunk">
+      <section className="border-y border-border bg-sunk">
         <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
-          <SectionHead n="02" title="Projetos" href="/projetos" cta="Ver o acervo">
-            Obras já restauradas, publicadas por quem as executou.
+          <SectionHead
+            eyebrow="Vitrine"
+            title="Restauros concluídos"
+            href="/projetos"
+            cta="Ver a vitrine"
+          >
+            Obras já restauradas, contadas por quem as executou.
           </SectionHead>
           <div className="mt-8 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {showcase.slice(0, 3).map((p) => (
@@ -172,12 +170,12 @@ export default async function HomePage() {
       {/* ---------------- profissionais ---------------- */}
       <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
         <SectionHead
-          n="03"
-          title="Profissionais"
+          eyebrow="Diretório"
+          title="Profissionais verificados"
           href="/profissionais"
           cta="Ver o diretório"
         >
-          Restauradores, ateliês e escritórios verificados.
+          Restauradores, ateliês e escritórios com reputação verificada.
         </SectionHead>
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {pros.map((pro) => (
@@ -187,44 +185,46 @@ export default async function HomePage() {
       </section>
 
       {/* ---------------- editais ---------------- */}
-      <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
-        <SectionHead
-          n="04"
-          title="Editais abertos"
-          href="/editais"
-          cta="Abrir o Radar de editais"
-        >
-          Licitações e chamamentos de patrimônio, com checklist de habilitação.
-        </SectionHead>
-        {isPro ? (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {editais.map((op) => (
-              <OpportunityCard key={op.id} op={op} />
-            ))}
-          </div>
-        ) : (
-          <div className="mt-8">
-            <LockedPanel
-              title="O Radar de Editais é para membros"
-              body="Feed completo, alertas por perfil e checklist de habilitação. Membros veem tudo."
-              cta="Conhecer os planos de membro"
-              href="/pro"
-            >
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {editais.map((op) => (
-                  <OpportunityCard key={op.id} op={op} />
-                ))}
-              </div>
-            </LockedPanel>
-          </div>
-        )}
+      <section className="border-t border-border bg-sunk">
+        <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
+          <SectionHead
+            eyebrow="Radar"
+            title="Editais abertos"
+            href="/editais"
+            cta="Abrir o Radar de editais"
+          >
+            Licitações e chamamentos de patrimônio, com checklist de habilitação.
+          </SectionHead>
+          {isPro ? (
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {editais.map((op) => (
+                <OpportunityCard key={op.id} op={op} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8">
+              <LockedPanel
+                title="O Radar de Editais é para membros"
+                body="Feed completo, alertas por perfil e checklist de habilitação. Membros veem tudo."
+                cta="Conhecer os planos de membro"
+                href="/pro"
+              >
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {editais.map((op) => (
+                    <OpportunityCard key={op.id} op={op} />
+                  ))}
+                </div>
+              </LockedPanel>
+            </div>
+          )}
+        </div>
       </section>
 
       {/* ---------------- notícias + cursos ---------------- */}
-      <section className="border-y border-ink/12 bg-sunk">
-        <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-14 sm:px-6 lg:grid-cols-2 lg:px-11">
+      <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
+        <div className="grid gap-12 lg:grid-cols-2">
           <div>
-            <SectionHead n="05" title="Notícias" href="/noticias" cta="Todas as notícias" />
+            <SectionHead eyebrow="Editorial" title="Notícias" href="/noticias" cta="Todas as notícias" />
             <div className="mt-6 space-y-3">
               {articles.map((a) => (
                 <ArticleCard key={a.slug} article={a} compact />
@@ -232,7 +232,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div>
-            <SectionHead n="06" title="Cursos" href="/cursos" cta="Ver diretório" />
+            <SectionHead eyebrow="Formação" title="Cursos" href="/cursos" cta="Ver diretório" />
             <div className="mt-6 space-y-3">
               {courses.map((c) => (
                 <CourseCard key={c.slug} course={c} />

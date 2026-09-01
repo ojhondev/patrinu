@@ -46,21 +46,19 @@ export function FilterBar({
     [...params.keys()].filter((k) => k !== "q" && k !== segmentParam).length > 0 ||
     (segments && activeSeg !== (segmentDefault ?? segments[0]?.key));
 
+  const selectCls =
+    "h-9 rounded-pill border border-border-strong bg-surface pl-3.5 pr-8 text-[13px] text-ink-soft outline-none transition-colors focus:border-brand";
+
   return (
-    <div className="rule pb-4">
+    <div className="border-b border-border pb-4">
       {segments && (
-        <div className="no-scrollbar -mx-1 flex gap-1 overflow-x-auto px-1">
+        <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
           {segments.map((s) => (
             <button
               key={s.key}
               type="button"
               onClick={() => setParam(segmentParam, s.key === (segmentDefault ?? segments[0].key) ? "" : s.key)}
-              className={cn(
-                "shrink-0 whitespace-nowrap border px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
-                activeSeg === s.key
-                  ? "border-green bg-green text-white"
-                  : "border-ink/20 text-ink-soft hover:border-green-ink",
-              )}
+              className={cn("chip shrink-0", activeSeg === s.key && "is-active")}
             >
               {s.label}
             </button>
@@ -68,12 +66,12 @@ export function FilterBar({
         </div>
       )}
 
-      <div className="mt-3 flex flex-wrap items-center gap-3">
+      <div className="mt-3 flex flex-wrap items-center gap-2.5">
         {showSpecialty && (
           <select
             value={current("specialty")}
             onChange={(e) => setParam("specialty", e.target.value)}
-            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+            className={selectCls}
           >
             <option value="">Todas as especialidades</option>
             {Object.entries(SPECIALTIES).map(([k, label]) => (
@@ -89,7 +87,7 @@ export function FilterBar({
             key={sel.param}
             value={current(sel.param)}
             onChange={(e) => setParam(sel.param, e.target.value)}
-            className="border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+            className={selectCls}
           >
             <option value="">{sel.label}</option>
             {sel.options.map((o) => (
@@ -104,7 +102,7 @@ export function FilterBar({
           <button
             type="button"
             onClick={() => router.push(pathname)}
-            className="text-[11px] font-bold uppercase tracking-[0.13em] text-crit hover:underline"
+            className="text-[13px] font-semibold text-crit hover:underline"
           >
             Limpar
           </button>

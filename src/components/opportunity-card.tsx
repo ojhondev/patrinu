@@ -36,7 +36,7 @@ export function OpportunityCard({ op }: { op: Opportunity }) {
   return (
     <Link
       href={`/editais/${op.id}`}
-      className="group flex flex-col overflow-hidden border border-ink/12 bg-surface transition-colors hover:border-green-ink"
+      className="card card-hover group flex flex-col overflow-hidden"
     >
       <SpecialtyThumb
         specialty={op.specialties[0] ?? "arquitetura"}
@@ -68,7 +68,7 @@ export function OpportunityCard({ op }: { op: Opportunity }) {
           <MatchScore score={op.relevanceScore} showLabel={false} />
         </div>
 
-        <div className="mt-3 flex items-end justify-between border-t border-ink/12 pt-3">
+        <div className="mt-3 flex items-end justify-between border-t border-border pt-3">
           <Deadline op={op} />
           <div className="text-right">
             <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted">

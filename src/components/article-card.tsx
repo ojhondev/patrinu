@@ -13,10 +13,12 @@ export function ArticleCard({
   return (
     <Link
       href={`/noticias/${a.slug}`}
-      className="group flex flex-col border border-ink/12 bg-surface p-5 transition-colors [overflow-wrap:anywhere] hover:border-green-ink"
+      className="card card-hover group flex flex-col p-5 [overflow-wrap:anywhere]"
     >
       <div className="flex items-center gap-2 text-xs text-ink-soft">
-        <span className="kicker text-green-ink">{articleCategoryLabel(a.category)}</span>
+        <span className="font-semibold uppercase tracking-[0.08em] text-green-ink">
+          {articleCategoryLabel(a.category)}
+        </span>
         <span>{formatDate(a.publishedAt)}</span>
         <span>· {a.readingMinutes} min</span>
       </div>

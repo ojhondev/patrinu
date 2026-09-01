@@ -6,7 +6,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: "Explorar",
     links: [
-      { label: "Oportunidades", href: "/oportunidades" },
+      { label: "Vagas", href: "/vagas" },
       { label: "Projetos", href: "/projetos" },
       { label: "Profissionais", href: "/profissionais" },
       { label: "Editais e licitações", href: "/editais" },
@@ -50,7 +50,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t-4 border-brand bg-surface">
+    <footer className="border-t border-border bg-surface">
       <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-11">
         <p className="display max-w-3xl text-2xl text-ink sm:text-4xl">
           O radar do <span className="accent text-green-ink">patrimônio</span> e do restauro
@@ -65,7 +65,7 @@ export function SiteFooter() {
           .
         </p>
 
-        <div className="mt-12 grid grid-cols-2 gap-8 border-t border-ink/12 pt-10 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-8 border-t border-border pt-10 sm:grid-cols-3 lg:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
               <h3 className="kicker text-muted">{col.title}</h3>
@@ -85,15 +85,12 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col gap-4 border-t border-ink/12 pt-7 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-4 border-t border-border pt-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <Logo className="h-6" />
             <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
           </div>
-          <Link
-            href="/master/entrar"
-            className="text-[11px] font-bold uppercase tracking-[0.13em] text-muted hover:text-green-ink"
-          >
+          <Link href="/master/entrar" className="text-xs font-medium text-muted hover:text-green-ink">
             Acesso Master
           </Link>
         </div>

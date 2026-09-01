@@ -47,8 +47,14 @@
   --crit: #9c1c1c;
 
   --ring: #DE2F17;
-  --shadow-card: 0 1px 2px rgba(45, 22, 18, 0.05), 0 6px 20px rgba(45, 22, 18, 0.08);
-  --shadow-pop: 0 8px 30px rgba(45, 22, 18, 0.14);
+  --shadow-card: 0 1px 2px rgba(45, 22, 18, 0.04), 0 2px 8px rgba(45, 22, 18, 0.05);
+  --shadow-hover: 0 8px 18px rgba(45, 22, 18, 0.1), 0 18px 44px rgba(45, 22, 18, 0.1);
+  --shadow-pop: 0 12px 44px rgba(45, 22, 18, 0.16);
+
+  /* cantos — plataforma moderna, não mais "recorte de ofício" */
+  --radius-btn: 8px;
+  --radius-card: 12px;
+  --radius-pill: 9999px;
 }
 
 @theme inline {
@@ -77,12 +83,17 @@
   --color-warn: var(--warn);
   --color-crit: var(--crit);
 
+  --shadow-card: var(--shadow-card);
+  --shadow-hover: var(--shadow-hover);
+
   --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
-  /* recorte arquitetônico — cantos discretos, nada de "pílula" */
-  --radius-card: 3px;
+  /* cantos suaves de plataforma → rounded-btn / rounded-card / rounded-pill */
+  --radius-btn: var(--radius-btn);
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
 }
 
 @layer base {
@@ -165,45 +176,153 @@ video {
   letter-spacing: -0.01em;
 }
 
-/* ---- linguagem editorial (pass de arte MASP) ---- */
+/* ---- linguagem de plataforma ---- */
 
-/* rótulo/eyebrow em caixa-alta espaçada */
+/* rótulo/eyebrow — caixa-alta discreta, só para olho de seção */
 .kicker {
   font-size: 0.6875rem;
   font-weight: 700;
   line-height: 1.2;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
 }
 
 /* título grande de página */
 .display {
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.03;
+  font-weight: 800;
+  letter-spacing: -0.022em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 
-/* botão "museu": contorno que preenche no hover (com o vermelho da marca) */
-.btn-museum {
+@layer components {
+
+/* ---- cartão ---- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.18s, transform 0.18s, border-color 0.18s;
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+}
+
+/* ---- chip (filtro / categoria) ---- */
+.chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  border: 1px solid var(--ink);
-  padding: 0.6rem 1.15rem;
-  font-weight: 700;
+  gap: 0.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  padding: 0.44rem 0.9rem;
   font-size: 0.875rem;
-  color: var(--ink);
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  font-weight: 500;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  transition: border-color 0.13s, color 0.13s, background-color 0.13s;
 }
-.btn-museum:hover {
-  background: var(--green);
-  border-color: var(--green);
+.chip:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.chip[aria-pressed="true"],
+.chip.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
   color: #fff;
 }
 
-/* régua fina editorial */
+/* ---- botões ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-btn);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1;
+  padding: 0 1.1rem;
+  height: 2.75rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+.btn-sm {
+  height: 2.25rem;
+  font-size: 0.875rem;
+  padding: 0 0.85rem;
+}
+.btn-lg {
+  height: 3.125rem;
+  font-size: 1rem;
+  padding: 0 1.5rem;
+}
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--green-hover);
+  color: #fff;
+}
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover {
+  border-color: var(--ink);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+}
+.btn-ghost:hover {
+  background: var(--sunk);
+  color: var(--ink);
+}
+.btn-danger {
+  background: var(--surface);
+  color: var(--crit);
+  border-color: color-mix(in oklab, var(--crit) 32%, var(--border));
+}
+.btn-danger:hover {
+  background: color-mix(in oklab, var(--crit) 8%, var(--surface));
+}
+
+/* compat: o antigo contorno "museu" agora é o botão secundário */
+.btn-museum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-strong);
+  padding: 0 1.1rem;
+  height: 2.75rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--surface);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+.btn-museum:hover {
+  border-color: var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+} /* @layer components */
+
+/* régua fina */
 .rule {
   border-bottom: 1px solid color-mix(in oklab, var(--ink) 14%, transparent);
 }
