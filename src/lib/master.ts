@@ -78,7 +78,7 @@ export async function masterOverview() {
 
 function priceCentsFor(track: string | null): number {
   const t = TRACKS[track as ProTrack];
-  return t?.priceCents ?? 6990; // fallback: plano base
+  return t?.priceCents ?? 3990; // fallback: plano base
 }
 
 export async function mrr() {

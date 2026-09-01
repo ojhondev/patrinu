@@ -5,6 +5,8 @@ import { Hanken_Grotesk, Fraunces } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { SignupPopup } from "@/components/signup-popup";
+import { AnnouncementBar } from "@/components/announcement-bar";
+import { CookieConsent } from "@/components/cookie-consent";
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import "./globals.css";
 
@@ -44,10 +46,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       className={`${hanken.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
+        <AnnouncementBar />
         <SiteHeader account={account} />
         <div className="flex-1">{children}</div>
         <SiteFooter />
         {!account && <SignupPopup />}
+        <CookieConsent />
       </body>
     </html>
   );

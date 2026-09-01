@@ -86,9 +86,20 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col gap-4 border-t border-border pt-7 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <Logo className="h-6" />
-            <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <div className="flex items-center gap-3">
+              <Logo className="h-6" />
+              <span className="text-sm text-muted">© {new Date().getFullYear()} Patrinu</span>
+            </div>
+            <Link href="/privacidade" className="text-xs font-medium text-muted hover:text-green-ink">
+              Privacidade
+            </Link>
+            <Link href="/termos" className="text-xs font-medium text-muted hover:text-green-ink">
+              Termos de uso
+            </Link>
+            <Link href="/cookies" className="text-xs font-medium text-muted hover:text-green-ink">
+              Cookies
+            </Link>
           </div>
           <Link href="/master/entrar" className="text-xs font-medium text-muted hover:text-green-ink">
             Acesso Master

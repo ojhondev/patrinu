@@ -24,8 +24,8 @@ export const TRACKS: Record<
     who: "Instituições, empresas, órgãos e dioceses com patrimônio para restaurar",
     promise: "Encontre quem executa. Publique seu projeto.",
     perfil: "contratante",
-    priceCents: 6990,
-    priceLabel: "R$ 69,90/mês",
+    priceCents: 3990,
+    priceLabel: "R$ 39,90/mês",
     checkoutUrl: "https://mpago.la/1sLtHDi",
   },
   oferecer: {
@@ -34,8 +34,8 @@ export const TRACKS: Record<
     who: "Restauradores, conservadores, ateliês e escritórios",
     promise: "Seu portfólio, sua reputação e o trabalho do setor num lugar.",
     perfil: "profissional",
-    priceCents: 7990,
-    priceLabel: "R$ 79,90/mês",
+    priceCents: 2990,
+    priceLabel: "R$ 29,90/mês",
     checkoutUrl: "https://mpago.la/211MW6s",
   },
   financiamento: {
