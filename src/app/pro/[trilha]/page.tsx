@@ -165,7 +165,7 @@ export default async function ProTrackPage({
                   ? "/comecar/financiamento"
                   : `/comecar/${trilha}`
               }
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-bold text-band hover:bg-white/90"
+              className="btn bg-white text-band hover:bg-white/90"
             >
               {track.priceCents != null
                 ? `Tornar-se membro — ${track.priceLabel.split("/")[0]}/mês`
@@ -174,7 +174,7 @@ export default async function ProTrackPage({
             </Link>
             <Link
               href={`/painel?perfil=${track.perfil}`}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-5 py-3 text-sm font-bold text-white hover:bg-white hover:text-band"
+              className="btn border border-white/40 text-white hover:bg-white hover:text-band"
             >
               Ver um painel de exemplo
             </Link>
@@ -193,16 +193,14 @@ export default async function ProTrackPage({
         <div className="mt-6 grid gap-6 sm:grid-cols-3">
           {c.steps.map((step, i) => (
             <div key={step.title}>
-              <span className="font-mono text-sm font-bold text-green-ink">
-                0{i + 1}
-              </span>
+              <span className="text-sm font-bold text-green-ink">0{i + 1}</span>
               <h3 className="mt-2 text-lg font-bold">{step.title}</h3>
               <p className="mt-1.5 text-sm text-ink-soft">{step.body}</p>
             </div>
           ))}
         </div>
 
-        <div className="mt-12 rounded-2xl border border-border bg-green-weak p-6 sm:p-8">
+        <div className="mt-12 rounded-card border border-border bg-green-weak p-6 sm:p-8">
           <h2 className="font-display text-xl font-bold tracking-tight text-ink">
             {c.painel.title}
           </h2>
@@ -214,10 +212,7 @@ export default async function ProTrackPage({
               </li>
             ))}
           </ul>
-          <Link
-            href={`/comecar/${trilha}`}
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-green px-5 py-3 text-sm font-bold text-white hover:bg-green-hover"
-          >
+          <Link href={`/comecar/${trilha}`} className="btn btn-primary mt-6">
             Criar minha conta {track.label.toLowerCase()}
             <ArrowRight size={16} />
           </Link>

@@ -29,13 +29,13 @@ const HELP: Record<ProTrack, string> = {
 export default function ProPage() {
   return (
     <>
-      <section className="band band-hairlines text-white">
-        <div className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-11 lg:py-24">
-          <p className="kicker text-accent">Plataforma independente</p>
-          <h1 className="display mt-4 max-w-3xl text-4xl text-white sm:text-6xl">
-            Torne-se membro do <span className="accent text-accent">Patrinu</span>
+      <section className="border-b border-border bg-sunk">
+        <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11 lg:py-16">
+          <p className="kicker text-muted">Plataforma independente</p>
+          <h1 className="display mt-2 max-w-3xl text-3xl text-ink sm:text-5xl">
+            Torne-se membro do <span className="accent font-medium text-green-ink">Patrinu</span>
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-white/75">
+          <p className="mt-4 max-w-2xl text-lg text-ink-soft">
             O Patrinu reúne num só lugar tudo sobre conservação e restauro do patrimônio no
             Brasil — projetos, profissionais, editais, notícias e cursos. É uma plataforma
             independente: o que a mantém no ar é a assinatura de quem usa.
@@ -53,9 +53,9 @@ export default function ProPage() {
               <Link
                 key={key}
                 href={`/pro/${key}`}
-                className="group flex flex-col border border-ink/12 bg-surface p-6 transition-colors hover:border-ink"
+                className="card card-hover group flex flex-col p-6"
               >
-                <span className="grid h-12 w-12 place-items-center bg-green-weak text-green-ink">
+                <span className="grid h-12 w-12 place-items-center rounded-[10px] bg-green-weak text-green-ink">
                   <Icon size={24} />
                 </span>
                 <h2 className="mt-4 font-display text-xl font-bold group-hover:text-green-ink">
@@ -73,7 +73,7 @@ export default function ProPage() {
                     <span className="text-lg">Sob análise</span>
                   )}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.13em] text-green-ink">
+                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-green-ink">
                   {t.priceCents != null ? "Ver e tornar-se membro" : "Enviar meu projeto"}
                   <ArrowRight size={14} />
                 </span>
@@ -82,7 +82,7 @@ export default function ProPage() {
           })}
         </div>
 
-        <div className="mt-12 border-l-4 border-brand py-2 pl-6">
+        <div className="mt-12 rounded-card border border-border bg-sunk p-6">
           <p className="kicker text-green-ink">Por que assinar</p>
           <p className="mt-2 max-w-2xl text-ink-soft">
             Sem anúncios que atrapalham, sem comissão sobre o seu trabalho e sem depender de

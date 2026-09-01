@@ -14,11 +14,11 @@ const VERIF_LABEL: Record<Professional["verificationLevel"], string> = {
 
 export function ProRow({ pro }: { pro: Professional }) {
   return (
-    <article className="border-b border-ink/12 py-6 first:pt-0">
+    <article className="border-b border-border py-6 first:pt-0">
       <div className="flex gap-4 sm:gap-5">
         <Link
           href={`/profissionais/${pro.slug}`}
-          className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink sm:h-20 sm:w-20"
+          className="grid h-16 w-16 shrink-0 place-items-center rounded-pill bg-green-weak text-green-ink sm:h-20 sm:w-20"
         >
           <SpecialtyIcon specialty={pro.specialties[0] ?? "arquitetura"} size={30} />
         </Link>
@@ -32,7 +32,7 @@ export function ProRow({ pro }: { pro: Professional }) {
               {pro.displayName}
             </Link>
             {pro.verified && (
-              <span className="inline-flex items-center gap-1 rounded-sm bg-green-weak px-1.5 py-0.5 text-[11px] font-bold text-green-ink">
+              <span className="inline-flex items-center gap-1 rounded-pill bg-green-weak px-2 py-0.5 text-[11px] font-bold text-green-ink">
                 <BadgeCheck size={12} />
                 {VERIF_LABEL[pro.verificationLevel]}
               </span>
@@ -64,7 +64,7 @@ export function ProRow({ pro }: { pro: Professional }) {
             {pro.specialties.slice(0, 4).map((s) => (
               <span
                 key={s}
-                className="rounded-sm border border-ink/15 px-2 py-0.5 text-xs text-ink-soft"
+                className="rounded-pill border border-border bg-sunk px-2.5 py-0.5 text-xs text-ink-soft"
               >
                 {specialtyLabel(s)}
               </span>
@@ -74,14 +74,11 @@ export function ProRow({ pro }: { pro: Professional }) {
 
         <div className="hidden shrink-0 flex-col items-end justify-between sm:flex">
           {pro.plan === "pro" && (
-            <span className="bg-band px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-white">
+            <span className="rounded-pill bg-band px-2.5 py-0.5 text-[11px] font-bold text-white">
               Membro
             </span>
           )}
-          <Link
-            href={`/profissionais/${pro.slug}`}
-            className="mt-auto whitespace-nowrap border border-ink px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-green-ink hover:bg-green-ink hover:text-white"
-          >
+          <Link href={`/profissionais/${pro.slug}`} className="btn btn-secondary btn-sm mt-auto">
             Ver perfil
           </Link>
         </div>

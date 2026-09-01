@@ -15,7 +15,7 @@ export async function ProjectTile({ project: p }: { project: Project }) {
 
   return (
     <Link href={`/projetos/${p.slug}`} className="group block">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-card border border-border">
         {p.images?.[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -29,8 +29,7 @@ export async function ProjectTile({ project: p }: { project: Project }) {
             className="h-full w-full transition-transform duration-500 group-hover:scale-[1.04]"
           />
         )}
-        {/* etiqueta de estado — canto, tipografia dura */}
-        <span className="absolute left-0 top-0 bg-band px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-white">
+        <span className="absolute left-3 top-3 rounded-pill bg-surface/95 px-2.5 py-1 text-[11px] font-semibold text-ink-soft shadow-[var(--shadow-card)]">
           {projectStatusLabel(p.status)}
         </span>
         {/* revela no hover, estilo mural */}
