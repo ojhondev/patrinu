@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Play } from "lucide-react";
+import { Play, Mail } from "lucide-react";
 
 import { getSetting } from "@/lib/settings";
 import { pendingIngestCounts } from "@/lib/ingest/run";
-import { saveBanner, triggerIngest } from "../../actions";
+import { saveBanner, triggerIngest, sendTestEmail } from "../../actions";
 
 const BANNERS = [
   {
@@ -22,7 +22,7 @@ const IMG_HINT =
   "Cole o LINK DIRETO da imagem (termina em .jpg / .png). No ImgBB: abra a imagem, botão direito → Copiar endereço da imagem (i.ibb.co/…), não o link da página (ibb.co/…).";
 
 export default async function ConfigPage() {
-  const [banners, counts] = await Promise.all([
+  const [banners, counts, emailTest] = await Promise.all([
     Promise.all(
       BANNERS.map(async (b) => ({
         ...b,
@@ -31,6 +31,7 @@ export default async function ConfigPage() {
       })),
     ),
     pendingIngestCounts(),
+    getSetting("email_test_result"),
   ]);
 
   return (
@@ -61,6 +62,22 @@ export default async function ConfigPage() {
             <Play size={13} /> Rodar ingestão agora
           </button>
         </form>
+      </section>
+
+      <section>
+        <h2 className="text-lg font-bold">E-mail (Resend)</h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          Envia um e-mail de teste para o endereço do Master. Se chegar, os avisos da
+          plataforma (projeto em análise, vaga aprovada, nova candidatura…) estão funcionando.
+        </p>
+        <form action={sendTestEmail} className="mt-3">
+          <button type="submit" className="btn btn-secondary btn-sm">
+            <Mail size={13} /> Enviar e-mail de teste
+          </button>
+        </form>
+        {emailTest && (
+          <p className="mt-2 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">{emailTest}</p>
+        )}
       </section>
 
       <section>

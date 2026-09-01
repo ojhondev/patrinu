@@ -94,6 +94,29 @@ export async function triggerIngest() {
   revalidatePath("/");
 }
 
+/** Envia um e-mail de teste para o MASTER_EMAIL e mostra o resultado. */
+export async function sendTestEmail() {
+  if (!(await isMasterSession())) redirect("/master/entrar");
+  const to = process.env.MASTER_EMAIL;
+  let result: string;
+  if (!process.env.RESEND_API_KEY) {
+    result = "RESEND_API_KEY não configurada — nenhum e-mail sai ainda.";
+  } else if (!to) {
+    result = "MASTER_EMAIL não configurada.";
+  } else {
+    const r = await sendEmail({
+      to,
+      subject: "Teste de envio — Patrinu",
+      text: `Se você recebeu isto, o Resend está funcionando.\n\nEnviado em ${new Date().toLocaleString("pt-BR")}.`,
+    });
+    result = r.ok
+      ? `Enviado para ${to}. Confira a caixa de entrada (e o spam).`
+      : "O Resend recusou o envio — veja os logs da Vercel para o motivo.";
+  }
+  await setSetting("email_test_result", `${result} [${new Date().toISOString()}]`);
+  revalidatePath("/master/config");
+}
+
 export async function loginMaster(_prev: unknown, formData: FormData) {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
