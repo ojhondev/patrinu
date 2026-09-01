@@ -127,7 +127,7 @@ export default function CookiesPage() {
           <h2>6. Contato</h2>
           <p>
             Dúvidas sobre esta política? Escreva para{" "}
-            <a href="mailto:contato@patrinu.com.br">contato@patrinu.com.br</a>.
+            <a href="mailto:contato@patrinu.com">contato@patrinu.com</a>.
           </p>
         </section>
       </LegalArticle>

@@ -12,9 +12,12 @@ type SendInput = {
   /** corpo em texto puro; para HTML use `html` */
   text?: string;
   html?: string;
+  replyTo?: string;
 };
 
-const FROM = process.env.EMAIL_FROM ?? "Patrinu <nao-responder@patrinu.com.br>";
+/** Remetente e "responder para" — configuráveis por env; default = domínio oficial. */
+const FROM = process.env.EMAIL_FROM ?? "Patrinu <avisos@patrinu.com>";
+const REPLY_TO = process.env.EMAIL_REPLY_TO ?? "contato@patrinu.com";
 
 export async function sendEmail(input: SendInput): Promise<{ ok: boolean; skipped?: boolean }> {
   const key = process.env.RESEND_API_KEY;
@@ -35,6 +38,7 @@ export async function sendEmail(input: SendInput): Promise<{ ok: boolean; skippe
       body: JSON.stringify({
         from: FROM,
         to: input.to,
+        reply_to: input.replyTo ?? REPLY_TO,
         subject: input.subject,
         text: input.text,
         html: input.html,

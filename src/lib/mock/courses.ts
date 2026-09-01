@@ -48,7 +48,7 @@ export const MOCK_COURSES: Course[] = [
     price: "R$ 890",
     proDiscount: true,
     specialties: ["arquitetura", "bens_integrados"],
-    url: "https://exemplo.patrinu.com.br/cursos",
+    url: "https://exemplo.patrinu.com/cursos",
   },
   {
     slug: "curso-online-conservacao-preventiva-acervos",
@@ -63,7 +63,7 @@ export const MOCK_COURSES: Course[] = [
     price: "R$ 350",
     proDiscount: true,
     specialties: ["acervo", "documental"],
-    url: "https://exemplo.patrinu.com.br/cursos",
+    url: "https://exemplo.patrinu.com/cursos",
   },
   {
     slug: "workshop-douramento-a-folha",
@@ -80,7 +80,7 @@ export const MOCK_COURSES: Course[] = [
     price: "R$ 1.200",
     proDiscount: true,
     specialties: ["bens_integrados", "bens_moveis"],
-    url: "https://exemplo.patrinu.com.br/cursos",
+    url: "https://exemplo.patrinu.com/cursos",
   },
   {
     slug: "pos-arquitetura-restauro-usp",
@@ -110,6 +110,6 @@ export const MOCK_COURSES: Course[] = [
     nextClass: "Março de 2027",
     price: "R$ 480",
     specialties: ["arqueologia"],
-    url: "https://exemplo.patrinu.com.br/cursos",
+    url: "https://exemplo.patrinu.com/cursos",
   },
 ];

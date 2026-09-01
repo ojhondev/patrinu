@@ -182,7 +182,7 @@ export default function PrivacidadePage() {
           <p>
             Dúvidas, solicitações ou reclamações sobre o tratamento dos seus dados podem ser
             enviadas para{" "}
-            <a href="mailto:contato@patrinu.com.br">contato@patrinu.com.br</a>. Você também pode
+            <a href="mailto:contato@patrinu.com">contato@patrinu.com</a>. Você também pode
             registrar reclamação junto à Autoridade Nacional de Proteção de Dados (ANPD).
           </p>
         </section>

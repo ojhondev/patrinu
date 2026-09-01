@@ -31,7 +31,7 @@ export async function signIn(_prev: State, form: FormData): Promise<State> {
     return { error: "E-mail ou senha incorretos." };
   }
   if (user.bannedAt) {
-    return { error: "Esta conta foi suspensa. Fale com contato@patrinu.com.br." };
+    return { error: "Esta conta foi suspensa. Fale com contato@patrinu.com." };
   }
   await applyPendingGrant(user.id, user.email).catch(() => {});
   await startUserSession(user.id);

@@ -42,7 +42,7 @@ export async function submitFinancingRequest(
   });
 
   await sendEmail({
-    to: process.env.MASTER_EMAIL ?? "contato@patrinu.com.br",
+    to: process.env.MASTER_EMAIL ?? "contato@patrinu.com",
     subject: `Novo pedido de financiamento — ${organization}`,
     text: `${contactName} (${contactEmail}) enviou um pedido de financiamento para "${assetName}", ${organization}.\n\nEstágio: ${get("projectStage") || "—"}\nMeta: ${get("fundingGoal") || "—"}\nMecanismo: ${get("mechanism") || "—"}\n\n${get("summary") || ""}\n\nVeja na fila do Master.`,
   });

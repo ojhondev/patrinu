@@ -40,7 +40,7 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
       { label: "Fontes do Radar de Editais", href: "/fontes" },
       {
         label: "Divulgar um curso",
-        href: "mailto:contato@patrinu.com.br?subject=Divulgar%20curso%20na%20Patrinu",
+        href: "mailto:contato@patrinu.com?subject=Divulgar%20curso%20na%20Patrinu",
       },
       { label: "Entrar", href: "/entrar" },
       { label: "Seja membro", href: "/pro" },

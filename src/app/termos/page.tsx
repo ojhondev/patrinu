@@ -119,7 +119,7 @@ export default function TermosPage() {
           <h2>10. Contato</h2>
           <p>
             Dúvidas sobre estes termos? Escreva para{" "}
-            <a href="mailto:contato@patrinu.com.br">contato@patrinu.com.br</a>. Veja também a{" "}
+            <a href="mailto:contato@patrinu.com">contato@patrinu.com</a>. Veja também a{" "}
             <Link href="/privacidade">Política de Privacidade</Link> e a{" "}
             <Link href="/cookies">Política de Cookies</Link>.
           </p>
