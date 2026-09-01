@@ -7,6 +7,8 @@ import { ProjectTile } from "@/components/project-tile";
 import { FilterBar } from "@/components/filter-bar";
 import { AdBanner } from "@/components/ad-banner";
 import { HeaderSearch } from "@/components/header-search";
+import { CATEGORY_GROUPS } from "@/lib/categories";
+import { UFS } from "@/lib/taxonomy";
 
 export const metadata: Metadata = {
   title: "Projetos",
@@ -25,33 +27,39 @@ export default async function ProjetosPage({
   const sp = await searchParams;
   const q = one(sp.q);
   const specialty = one(sp.specialty);
+  const grupo = one(sp.grupo);
   const uf = one(sp.uf);
-  const projects = await listProjects({ mode: "vitrine", q, specialty, uf });
+  const projects = await listProjects({
+    mode: "vitrine",
+    entryKind: "projeto",
+    q,
+    specialty,
+    grupo,
+    uf,
+  });
 
   return (
     <div>
-      <header className="band band-hairlines">
-        <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11 lg:py-20">
-          <p className="kicker text-accent">O acervo visual do restauro brasileiro</p>
-          <h1 className="display mt-3 max-w-4xl text-4xl text-white sm:text-6xl">
+      <header className="border-b border-border bg-sunk">
+        <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11 lg:py-14">
+          <p className="kicker text-muted">O acervo visual do restauro brasileiro</p>
+          <h1 className="display mt-2 max-w-4xl text-3xl text-ink sm:text-5xl">
             {q ? (
               <>
-                Projetos <span className="accent text-accent">“{q}”</span>
+                Projetos <span className="accent font-medium text-green-ink">“{q}”</span>
               </>
             ) : (
               <>
-                Obras que já foram <span className="accent text-accent">restauradas</span>
+                Obras que já foram{" "}
+                <span className="accent font-medium text-green-ink">restauradas</span>
               </>
             )}
           </h1>
-          <p className="mt-4 max-w-xl text-white/70">
+          <p className="mt-3 max-w-xl text-lg text-ink-soft">
             Publicadas por quem as executou — antes, durante e depois. Referência técnica,
-            portfólio e memória do patrimônio, num só lugar.
+            portfólio e memória do patrimônio.
           </p>
-          <Link
-            href="/painel"
-            className="mt-6 inline-flex bg-white px-5 py-3 text-[11px] font-bold uppercase tracking-[0.13em] text-band hover:bg-white/90"
-          >
+          <Link href="/painel" className="btn btn-primary mt-5">
             Publicar um projeto
           </Link>
         </div>
@@ -64,7 +72,19 @@ export default async function ProjetosPage({
           </Suspense>
         </div>
 
-        <FilterBar total={projects.length} unit={["projeto", "projetos"]} />
+        <FilterBar
+          showSpecialty={false}
+          extraSelects={[
+            {
+              param: "grupo",
+              label: "Todos os grupos",
+              options: CATEGORY_GROUPS.map((g) => ({ value: g.key, label: g.label })),
+            },
+            { param: "uf", label: "UF", options: UFS.map((u) => ({ value: u, label: u })) },
+          ]}
+          total={projects.length}
+          unit={["projeto", "projetos"]}
+        />
 
         <AdBanner slot="projects" ratio="1920/500" className="my-8" />
 

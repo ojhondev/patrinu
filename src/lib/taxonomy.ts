@@ -1,18 +1,16 @@
-/** Taxonomia interna do Radar. Usada na classificação e no match perfil ↔ oportunidade. */
+/** Taxonomia interna. Categorias (grupo → especialidade) em `./categories`. */
 
-export const SPECIALTIES = {
-  bens_moveis: "Bens móveis",
-  bens_integrados: "Bens integrados",
-  arquitetura: "Arquitetura e restauro de edificações",
-  arqueologia: "Arqueologia",
-  acervo: "Acervos e conservação preventiva",
-  paisagismo: "Jardins e paisagismo histórico",
-  urbanismo: "Sítios urbanos e paisagem urbana",
-  imaterial: "Patrimônio imaterial",
-  documental: "Acervo documental e bibliográfico",
-} as const;
-
-export type SpecialtyKey = keyof typeof SPECIALTIES;
+export {
+  SPECIALTIES,
+  CATEGORY_GROUPS,
+  CATEGORY_GROUP_KEYS,
+  specialtyLabel,
+  groupOf,
+  groupLabel,
+  specialtiesInGroup,
+  type SpecialtyKey,
+  type CategoryGroup,
+} from "./categories";
 
 export const KINDS = {
   licitacao: "Licitação",
@@ -27,6 +25,59 @@ export const KINDS = {
 } as const;
 
 export type KindKey = keyof typeof KINDS;
+
+/* ---------------- vagas ---------------- */
+
+export const CONTRACT_TYPES = {
+  clt: "CLT",
+  pj: "PJ / autônomo",
+  obra: "Por obra / projeto",
+  temporario: "Temporário",
+  estagio: "Estágio",
+} as const;
+export type ContractTypeKey = keyof typeof CONTRACT_TYPES;
+export const contractTypeLabel = (k: string) =>
+  CONTRACT_TYPES[k as ContractTypeKey] ?? k;
+
+export const SENIORITY = {
+  junior: "Júnior",
+  pleno: "Pleno",
+  senior: "Sênior",
+  especialista: "Especialista",
+} as const;
+export type SeniorityKey = keyof typeof SENIORITY;
+export const seniorityLabel = (k: string) => SENIORITY[k as SeniorityKey] ?? k;
+
+export const WORK_MODES = {
+  presencial: "Presencial",
+  hibrido: "Híbrido",
+  remoto: "Remoto",
+} as const;
+export type WorkModeKey = keyof typeof WORK_MODES;
+export const workModeLabel = (k: string) => WORK_MODES[k as WorkModeKey] ?? k;
+
+const BRL_COMPACT = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  maximumFractionDigits: 0,
+});
+
+/** "R$ 4.500 – R$ 6.000" · "A partir de R$ 4.500" · null quando confidencial ou vazio. */
+export function formatSalary(
+  min: number | null | undefined,
+  max: number | null | undefined,
+  confidential?: boolean,
+): string | null {
+  if (confidential) return null;
+  const lo = min && min > 0 ? min : null;
+  const hi = max && max > 0 ? max : null;
+  if (lo && hi) return lo === hi
+    ? BRL_COMPACT.format(lo)
+    : `${BRL_COMPACT.format(lo)} – ${BRL_COMPACT.format(hi)}`;
+  if (lo) return `A partir de ${BRL_COMPACT.format(lo)}`;
+  if (hi) return `Até ${BRL_COMPACT.format(hi)}`;
+  return null;
+}
 
 export const ORGAN_SCOPES = {
   federal: "Federal",
@@ -47,10 +98,6 @@ export type UF = (typeof UFS)[number];
 
 /** Polos de patrimônio priorizados para a curadoria de oferta. */
 export const HERITAGE_HUBS: UF[] = ["MG", "BA", "PE", "RJ", "SP", "RS"];
-
-export function specialtyLabel(key: string): string {
-  return SPECIALTIES[key as SpecialtyKey] ?? key;
-}
 
 export function kindLabel(key: string): string {
   return KINDS[key as KindKey] ?? key;

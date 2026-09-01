@@ -3,8 +3,23 @@ import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { projects, projectInterests } from "@/db/schema";
 import type { Project, ProjectStatus } from "./types";
+import { specialtiesInGroup } from "./categories";
 
 export type ProjectMode = "vitrine" | "abertos" | "todos";
+
+function num(v: string | null): number | null {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+
+/** coluna text[] contém `specialty` OU qualquer especialidade do `grupo`. */
+function specialtyCond(col: unknown, specialty?: string, grupo?: string) {
+  const keys = specialty ? [specialty] : grupo ? specialtiesInGroup(grupo) : [];
+  if (!keys.length) return undefined;
+  const arr = sql`ARRAY[${sql.join(keys.map((k) => sql`${k}`), sql`, `)}]::text[]`;
+  return sql`${col} && ${arr}`;
+}
 
 const PUBLIC_STATUS: ProjectStatus[] = [
   "vitrine",
@@ -36,18 +51,37 @@ function rowToProject(r: Row): Project {
     videoUrl: r.videoUrl ?? undefined,
     credits: (r.credits ?? []) as Project["credits"],
     fromOpportunityId: r.fromOpportunityId ?? undefined,
+    entryKind: (r.entryKind === "vaga" ? "vaga" : "projeto"),
     budgetRange: r.budgetRange ?? undefined,
     deadlineAt: r.deadlineAt ? r.deadlineAt.toISOString() : null,
     requirements: r.requirements.length ? r.requirements : undefined,
+    vagaRole: r.vagaRole ?? undefined,
+    contractType: r.contractType ?? undefined,
+    seniority: r.seniority ?? undefined,
+    workMode: r.workMode ?? undefined,
+    salaryMin: num(r.salaryMin),
+    salaryMax: num(r.salaryMax),
+    salaryConfidential: r.salaryConfidential,
     publishedAt: (r.publishedAt ?? r.createdAt).toISOString(),
     featured: r.featured,
   };
 }
 
 export async function listProjects(
-  opts: { mode?: ProjectMode; q?: string; specialty?: string; uf?: string } = {},
+  opts: {
+    mode?: ProjectMode;
+    entryKind?: "projeto" | "vaga";
+    q?: string;
+    specialty?: string;
+    grupo?: string;
+    uf?: string;
+    contractType?: string;
+    seniority?: string;
+    workMode?: string;
+  } = {},
 ): Promise<Project[]> {
-  const { mode = "todos", q, specialty, uf } = opts;
+  const { mode = "todos", entryKind, q, specialty, grupo, uf, contractType, seniority, workMode } =
+    opts;
   const statuses =
     mode === "vitrine" ? VITRINE : mode === "abertos" ? ABERTO : PUBLIC_STATUS;
 
@@ -57,16 +91,25 @@ export async function listProjects(
     .where(
       and(
         inArray(projects.status, statuses),
+        entryKind ? eq(projects.entryKind, entryKind) : undefined,
         uf ? eq(projects.uf, uf) : undefined,
-        specialty ? sql`${projects.specialties} @> ARRAY[${specialty}]::text[]` : undefined,
+        contractType ? eq(projects.contractType, contractType) : undefined,
+        seniority ? eq(projects.seniority, seniority) : undefined,
+        workMode ? eq(projects.workMode, workMode) : undefined,
+        specialtyCond(projects.specialties, specialty, grupo),
         q
-          ? sql`(${projects.title} || ' ' || ${projects.summary} || ' ' || ${projects.assetName} || ' ' || ${projects.city}) ILIKE ${"%" + q + "%"}`
+          ? sql`(${projects.title} || ' ' || ${projects.summary} || ' ' || ${projects.assetName} || ' ' || ${projects.city} || ' ' || coalesce(${projects.vagaRole},'')) ILIKE ${"%" + q + "%"}`
           : undefined,
       ),
     )
     .orderBy(desc(projects.publishedAt), desc(projects.createdAt));
 
   return rows.map(rowToProject);
+}
+
+/** vagas em destaque para a home. */
+export async function featuredVagas(limit = 4): Promise<Project[]> {
+  return (await listProjects({ mode: "abertos", entryKind: "vaga" })).slice(0, limit);
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
@@ -148,17 +191,26 @@ export type NewProjectInput = {
   assetName: string;
   uf: string;
   city: string;
-  mode: "vitrine" | "aberto";
+  /** "vitrine" (projeto concluído) ou "vaga" (emprego). */
+  mode: "vitrine" | "vaga";
   year?: number;
   specialties: string[];
-  budgetRange?: string;
   images?: string[];
   videoUrl?: string | null;
+  // campos de vaga
+  vagaRole?: string;
+  contractType?: string;
+  seniority?: string;
+  workMode?: string;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryConfidential?: boolean;
 };
 
-/** Cria um projeto do usuário em status `em_analise` (fila do Master). */
+/** Cria um projeto/vaga do usuário em status `em_analise` (fila do Master). */
 export async function submitProject(input: NewProjectInput): Promise<Project> {
-  const base = slugify(input.title) || "projeto";
+  const isVaga = input.mode === "vaga";
+  const base = slugify(isVaga && input.vagaRole ? input.vagaRole : input.title) || "vaga";
   let slug = base;
   for (let i = 2; ; i++) {
     const [clash] = await db
@@ -178,17 +230,24 @@ export async function submitProject(input: NewProjectInput): Promise<Project> {
       title: input.title,
       summary: input.summary,
       status: "em_analise",
+      entryKind: isVaga ? "vaga" : "projeto",
       assetName: input.assetName,
       uf: input.uf,
       city: input.city,
       year: input.year ?? null,
       specialties: input.specialties,
-      images: input.images ?? [],
-      videoUrl: input.videoUrl ?? null,
-      credits: [{ role: "Proponente", name: input.ownerName }],
-      budgetRange: input.budgetRange ?? null,
+      images: isVaga ? [] : input.images ?? [],
+      videoUrl: isVaga ? null : input.videoUrl ?? null,
+      credits: [{ role: isVaga ? "Contratante" : "Proponente", name: input.ownerName }],
+      vagaRole: isVaga ? input.vagaRole ?? null : null,
+      contractType: isVaga ? input.contractType ?? null : null,
+      seniority: isVaga ? input.seniority ?? null : null,
+      workMode: isVaga ? input.workMode ?? null : null,
+      salaryMin: isVaga && input.salaryMin != null ? String(input.salaryMin) : null,
+      salaryMax: isVaga && input.salaryMax != null ? String(input.salaryMax) : null,
+      salaryConfidential: isVaga ? Boolean(input.salaryConfidential) : false,
       // guarda o modo pretendido para o Master aplicar na aprovação
-      requirements: [`__mode:${input.mode}`],
+      requirements: [`__mode:${isVaga ? "aberto" : "vitrine"}`],
       submittedAt: new Date(),
     })
     .returning();

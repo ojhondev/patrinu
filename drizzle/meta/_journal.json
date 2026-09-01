@@ -64,6 +64,13 @@
       "when": 1788203479148,
       "tag": "0008_white_iron_lad",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788270156087,
+      "tag": "0009_vagas",
+      "breakpoints": true
     }
   ]
 }

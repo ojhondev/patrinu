@@ -481,10 +481,22 @@ export const projects = pgTable(
 
     fromOpportunityId: uuid("from_opportunity_id").references(() => opportunities.id),
 
-    // modo brief
+    /** projeto (vitrine) vs vaga (emprego) */
+    entryKind: text("entry_kind").notNull().default("projeto"), // projeto | vaga
+
+    // modo brief / vitrine
     budgetRange: text("budget_range"),
     deadlineAt: timestamp("deadline_at", { withTimezone: true }),
     requirements: text("requirements").array().notNull().default(sql`'{}'::text[]`),
+
+    // modo vaga
+    vagaRole: text("vaga_role"), // função / cargo
+    contractType: text("contract_type"), // clt | pj | obra | temporario | estagio
+    seniority: text("seniority"), // junior | pleno | senior | especialista
+    workMode: text("work_mode"), // presencial | hibrido | remoto
+    salaryMin: numeric("salary_min", { precision: 12, scale: 2 }),
+    salaryMax: numeric("salary_max", { precision: 12, scale: 2 }),
+    salaryConfidential: boolean("salary_confidential").notNull().default(false),
 
     featured: boolean("featured").notNull().default(false),
 

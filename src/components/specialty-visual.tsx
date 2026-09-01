@@ -1,38 +1,71 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Frame,
+  Brush,
+  Sparkles,
   Landmark,
+  Book,
+  Camera,
+  Shirt,
+  Gem,
+  Shapes,
+  Pyramid,
   Hammer,
+  Building,
   Shovel,
   Archive,
   Trees,
-  Building,
   Music,
-  BookMarked,
+  Ruler,
 } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import type { SpecialtyKey } from "@/lib/taxonomy";
+import { groupOf } from "@/lib/categories";
 
-type Visual = { icon: LucideIcon; from: string; to: string };
-
-/** Cada especialidade ganha um gradiente da família do vermelho da marca +
- *  um ícone. Substitui as fotos de gig por um tratamento gráfico leve —
- *  nada de tiles escuros/pretos. */
-const VISUALS: Record<SpecialtyKey, Visual> = {
-  bens_moveis: { icon: Frame, from: "#e04a2c", to: "#a83318" },
-  bens_integrados: { icon: Landmark, from: "#d84a2a", to: "#9e3118" },
-  arquitetura: { icon: Hammer, from: "#cf4436", to: "#992e28" },
-  arqueologia: { icon: Shovel, from: "#d85c30", to: "#9c4020" },
-  acervo: { icon: Archive, from: "#dd4b30", to: "#a13320" },
-  paisagismo: { icon: Trees, from: "#cc5636", to: "#964024" },
-  urbanismo: { icon: Building, from: "#d24d3c", to: "#993830" },
-  imaterial: { icon: Music, from: "#e14e33", to: "#a2361f" },
-  documental: { icon: BookMarked, from: "#c74e3e", to: "#8f3a2e" },
+const GROUP_ICON: Record<string, LucideIcon> = {
+  "bens-moveis": Frame,
+  pintura: Brush,
+  douramento: Sparkles,
+  "bens-integrados": Landmark,
+  "papel-livros": Book,
+  "fotografia-midias": Camera,
+  texteis: Shirt,
+  metais: Gem,
+  "ceramica-vidro": Shapes,
+  "pedra-cantaria": Pyramid,
+  "madeira-estruturas": Hammer,
+  arquitetura: Building,
+  arqueologia: Shovel,
+  "acervos-museologia": Archive,
+  "jardins-paisagem": Trees,
+  imaterial: Music,
+  "documentacao-projeto": Ruler,
 };
 
-export function specialtyVisual(key: SpecialtyKey): Visual {
-  return VISUALS[key] ?? VISUALS.arquitetura;
+const GRAD: [from: string, to: string][] = [
+  ["#e04a2c", "#a83318"],
+  ["#d84a2a", "#9e3118"],
+  ["#cf4436", "#992e28"],
+  ["#d85c30", "#9c4020"],
+  ["#dd4b30", "#a13320"],
+  ["#cc5636", "#964024"],
+];
+
+function visualFor(specialtyKey: string) {
+  const group = groupOf(specialtyKey) ?? "arquitetura";
+  const icon = GROUP_ICON[group] ?? Building;
+  const idx = CATEGORY_INDEX(group) % GRAD.length;
+  const [from, to] = GRAD[idx];
+  return { icon, from, to };
+}
+
+function CATEGORY_INDEX(group: string): number {
+  return Math.abs([...group].reduce((a, c) => a + c.charCodeAt(0), 0));
+}
+
+/** compat — algumas telas chamavam specialtyVisual(key). */
+export function specialtyVisual(key: string) {
+  return visualFor(key);
 }
 
 export function SpecialtyThumb({
@@ -40,23 +73,19 @@ export function SpecialtyThumb({
   className,
   label,
 }: {
-  specialty: SpecialtyKey;
+  specialty: string;
   className?: string;
   label?: string;
 }) {
-  const { icon: Icon, from, to } = specialtyVisual(specialty);
+  const { icon: Icon, from, to } = visualFor(specialty);
   return (
     <div
       className={cn("relative overflow-hidden", className)}
       style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
     >
-      <Icon
-        size={140}
-        strokeWidth={1}
-        className="absolute -bottom-6 -right-4 text-white/25"
-      />
+      <Icon size={140} strokeWidth={1} className="absolute -bottom-6 -right-4 text-white/25" />
       {label ? (
-        <span className="absolute left-3 top-3 rounded-md bg-white/95 px-2 py-1 text-xs font-semibold text-ink">
+        <span className="absolute left-3 top-3 rounded-pill bg-surface/95 px-2.5 py-1 text-xs font-semibold text-ink">
           {label}
         </span>
       ) : null}
@@ -69,10 +98,24 @@ export function SpecialtyIcon({
   size = 22,
   className,
 }: {
-  specialty: SpecialtyKey;
+  specialty: string;
   size?: number;
   className?: string;
 }) {
-  const { icon: Icon } = specialtyVisual(specialty);
+  const { icon: Icon } = visualFor(specialty);
+  return <Icon size={size} strokeWidth={1.6} className={className} />;
+}
+
+/** ícone de um GRUPO (para a category rail). */
+export function GroupIcon({
+  group,
+  size = 22,
+  className,
+}: {
+  group: string;
+  size?: number;
+  className?: string;
+}) {
+  const Icon = GROUP_ICON[group] ?? Building;
   return <Icon size={size} strokeWidth={1.6} className={className} />;
 }

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { opportunities, sources } from "@/db/schema";
 import type { Opportunity, OpportunityFilters } from "./types";
 import type { KindKey, OrganScopeKey, SpecialtyKey } from "./taxonomy";
+import { specialtiesInGroup } from "./categories";
 
 /**
  * Camada de acesso ao Radar de Editais — agora do banco.
@@ -62,6 +63,10 @@ function localFilter(list: Opportunity[], f: OpportunityFilters): Opportunity[] 
       if (!hay.includes(f.q.toLowerCase())) return false;
     }
     if (f.specialty && !op.specialties.includes(f.specialty)) return false;
+    if (f.grupo) {
+      const keys = specialtiesInGroup(f.grupo);
+      if (!op.specialties.some((s) => keys.includes(s))) return false;
+    }
     if (f.uf && op.uf !== f.uf) return false;
     if (f.kind && op.kind !== f.kind) return false;
     if (f.scope && op.organScope !== f.scope) return false;

@@ -2,10 +2,22 @@ import { and, desc, eq, sql } from "drizzle-orm";
 
 import type { Article, Course, FundingSource, Professional } from "./types";
 import type { SpecialtyKey } from "./taxonomy";
+import { specialtiesInGroup } from "./categories";
 import { db } from "@/db";
 import { articles, professionals, users } from "@/db/schema";
 import { MOCK_COURSES } from "./mock/courses";
 import { MOCK_FUNDING } from "./mock/funding";
+
+/** condição SQL: a coluna text[] contém `specialty` OU qualquer especialidade do `grupo`. */
+function specialtyWhere(col: unknown, specialty?: string, grupo?: string) {
+  const keys = specialty ? [specialty] : grupo ? specialtiesInGroup(grupo) : [];
+  if (!keys.length) return undefined;
+  const arr = sql`ARRAY[${sql.join(
+    keys.map((k) => sql`${k}`),
+    sql`, `,
+  )}]::text[]`;
+  return sql`${col} && ${arr}`;
+}
 
 /* ---------------- Profissionais (banco) ---------------- */
 
@@ -41,9 +53,9 @@ function rowToProfessional(r: ProRow): Professional {
 }
 
 export async function listProfessionals(
-  opts: { q?: string; specialty?: string; uf?: string; verifiedOnly?: boolean } = {},
+  opts: { q?: string; specialty?: string; grupo?: string; uf?: string; verifiedOnly?: boolean } = {},
 ): Promise<Professional[]> {
-  const { q, specialty, uf, verifiedOnly } = opts;
+  const { q, specialty, grupo, uf, verifiedOnly } = opts;
   const rows = await db
     .select()
     .from(professionals)
@@ -53,9 +65,7 @@ export async function listProfessionals(
         sql`${users.bannedAt} is null`,
         verifiedOnly ? eq(professionals.verified, true) : undefined,
         uf ? eq(professionals.uf, uf) : undefined,
-        specialty
-          ? sql`${professionals.specialties} @> ARRAY[${specialty}]::text[]`
-          : undefined,
+        specialtyWhere(professionals.specialties, specialty, grupo),
         q
           ? sql`(${professionals.displayName} || ' ' || coalesce(${professionals.headline},'') || ' ' || coalesce(${professionals.bio},'') || ' ' || coalesce(${professionals.city},'')) ILIKE ${"%" + q + "%"}`
           : undefined,
@@ -107,7 +117,7 @@ function rowToArticle(r: ArticleRow): Article {
   };
 }
 
-export async function listArticles(category?: string): Promise<Article[]> {
+export async function listArticles(category?: string, q?: string): Promise<Article[]> {
   const rows = await db
     .select()
     .from(articles)
@@ -115,6 +125,9 @@ export async function listArticles(category?: string): Promise<Article[]> {
       and(
         eq(articles.reviewStatus, "publicado"),
         category ? eq(articles.category, category) : undefined,
+        q
+          ? sql`(${articles.title} || ' ' || ${articles.excerpt}) ILIKE ${"%" + q + "%"}`
+          : undefined,
       ),
     )
     .orderBy(desc(articles.publishedAt));

@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { radarStats, featuredOpportunities } from "@/lib/opportunities";
-import { listProjects } from "@/lib/projects";
+import { featuredOpportunities } from "@/lib/opportunities";
+import { listProjects, featuredVagas } from "@/lib/projects";
 import { featuredProfessionals, latestArticles, featuredCourses } from "@/lib/directory";
 import { HeaderSearch } from "@/components/header-search";
 import { PopularSearches } from "@/components/popular-searches";
 import { CategoryRail } from "@/components/category-rail";
-import { ProjectCard } from "@/components/project-card";
+import { VagaCard } from "@/components/vaga-card";
 import { ProjectTile } from "@/components/project-tile";
 import { ProfessionalCard } from "@/components/professional-card";
 import { OpportunityCard } from "@/components/opportunity-card";
@@ -18,6 +18,7 @@ import { FacadeMotif } from "@/components/facade-motif";
 import { ProBrandsRail } from "@/components/pro-brands-rail";
 import { LockedPanel } from "@/components/locked";
 import { has } from "@/lib/membership";
+import { CATEGORY_GROUPS } from "@/lib/categories";
 
 function SectionHead({
   eyebrow,
@@ -53,17 +54,15 @@ function SectionHead({
 }
 
 export default async function HomePage() {
-  const [stats, vagas, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
-    radarStats(),
-    listProjects({ mode: "abertos" }),
-    listProjects({ mode: "vitrine" }),
+  const [vagas, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
+    featuredVagas(4),
+    listProjects({ mode: "vitrine", entryKind: "projeto" }),
     featuredProfessionals(4),
     featuredOpportunities(4),
     latestArticles(3),
     featuredCourses(3),
     has("pro"),
   ]);
-  void stats;
 
   return (
     <>
@@ -125,8 +124,15 @@ export default async function HomePage() {
             especialidade.
           </p>
           <div className="mt-8">
-            <CategoryRail base="/profissionais" />
+            <CategoryRail base="/profissionais" limit={8} />
           </div>
+          <Link
+            href="/profissionais"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-green-ink hover:text-ink"
+          >
+            Ver todos os {CATEGORY_GROUPS.length} grupos
+            <ArrowRight size={15} />
+          </Link>
         </div>
       </section>
 
@@ -142,8 +148,8 @@ export default async function HomePage() {
           a faixa salarial.
         </SectionHead>
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {vagas.slice(0, 4).map((p) => (
-            <ProjectCard key={p.id} project={p} />
+          {vagas.map((v) => (
+            <VagaCard key={v.id} vaga={v} />
           ))}
         </div>
       </section>

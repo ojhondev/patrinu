@@ -16,43 +16,73 @@ import {
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { SPECIALTIES, UFS } from "@/lib/taxonomy";
+import {
+  SPECIALTIES,
+  UFS,
+  CONTRACT_TYPES,
+  SENIORITY,
+  WORK_MODES,
+} from "@/lib/taxonomy";
 
 type State = { error?: string; ok?: string } | null;
 
 const VALID_SPECIALTIES = Object.keys(SPECIALTIES);
+const num = (v: FormDataEntryValue | null) => {
+  const n = Number(String(v ?? "").replace(/[^\d.,]/g, "").replace(".", "").replace(",", "."));
+  return Number.isFinite(n) && n > 0 ? n : null;
+};
 
 export async function createProject(_prev: State, form: FormData): Promise<State> {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/projetos/novo");
+
+  const mode = String(form.get("mode") ?? "vaga") === "vitrine" ? "vitrine" : "vaga";
+  const isVaga = mode === "vaga";
 
   const title = String(form.get("title") ?? "").trim();
   const summary = String(form.get("summary") ?? "").trim();
   const assetName = String(form.get("assetName") ?? "").trim();
   const uf = String(form.get("uf") ?? "").trim().toUpperCase();
   const city = String(form.get("city") ?? "").trim();
-  const mode = String(form.get("mode") ?? "aberto") === "vitrine" ? "vitrine" : "aberto";
   const yearRaw = String(form.get("year") ?? "").trim();
-  const budgetRange = String(form.get("budgetRange") ?? "").trim() || undefined;
   const specialties = form
     .getAll("specialties")
     .map((s) => String(s))
     .filter((s) => VALID_SPECIALTIES.includes(s));
 
-  if (title.length < 6) return { error: "Dê um título com pelo menos 6 caracteres." };
+  // campos de vaga
+  const vagaRole = String(form.get("vagaRole") ?? "").trim();
+  const contractType = String(form.get("contractType") ?? "");
+  const seniority = String(form.get("seniority") ?? "");
+  const workMode = String(form.get("workMode") ?? "");
+  const salaryConfidential = form.get("salaryConfidential") != null;
+  const salaryMin = salaryConfidential ? null : num(form.get("salaryMin"));
+  const salaryMax = salaryConfidential ? null : num(form.get("salaryMax"));
+
+  if (isVaga && vagaRole.length < 4) return { error: "Informe a função da vaga." };
+  if (!isVaga && title.length < 6)
+    return { error: "Dê um título com pelo menos 6 caracteres." };
   if (summary.length < 40)
-    return { error: "Descreva o projeto em pelo menos 40 caracteres." };
-  if (!assetName) return { error: "Informe o bem / imóvel." };
+    return { error: `Descreva ${isVaga ? "a vaga" : "o projeto"} em pelo menos 40 caracteres.` };
+  if (!isVaga && !assetName) return { error: "Informe o bem / imóvel." };
   if (!(UFS as readonly string[]).includes(uf)) return { error: "Selecione a UF." };
   if (!city) return { error: "Informe a cidade." };
   if (specialties.length === 0)
-    return { error: "Escolha ao menos uma especialidade." };
+    return { error: `Escolha ${isVaga ? "as áreas desejadas" : "ao menos uma especialidade"}.` };
 
-  const year = yearRaw ? Number(yearRaw) : undefined;
+  if (isVaga) {
+    if (!(contractType in CONTRACT_TYPES)) return { error: "Selecione o tipo de contrato." };
+    if (workMode && !(workMode in WORK_MODES)) return { error: "Modelo de trabalho inválido." };
+    if (seniority && !(seniority in SENIORITY)) return { error: "Senioridade inválida." };
+    if (salaryMin && salaryMax && salaryMax < salaryMin)
+      return { error: "A faixa salarial máxima não pode ser menor que a mínima." };
+  }
+
+  const year = !isVaga && yearRaw ? Number(yearRaw) : undefined;
   if (year !== undefined && (Number.isNaN(year) || year < 1500 || year > 2100))
     return { error: "Ano inválido." };
 
-  // cota gratuita: 1 projeto por mês para quem não é Pro
+  // cota gratuita: 1 publicação por mês para quem não é Pro
   const plan = await getPlan();
   if (plan !== "pro") {
     const mine = await projectsByOwner(user.id);
@@ -64,38 +94,49 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     if (thisMonth.length >= 1) {
       return {
         error:
-          "O plano gratuito permite 1 projeto por mês. Assine o Patrinu Pro para publicar sem limite.",
+          "O plano gratuito permite 1 publicação por mês. Assine o Patrinu Pro para publicar sem limite.",
       };
     }
   }
 
-  // URLs geradas pelo upload client-side (Vercel Blob)
+  // URLs geradas pelo upload client-side (Vercel Blob) — só para vitrine
   const BLOB_HOST = ".public.blob.vercel-storage.com";
-  const images = form
-    .getAll("mediaImages")
-    .map((u) => String(u))
-    .filter((u) => u.includes(BLOB_HOST))
-    .slice(0, 8);
+  const images = isVaga
+    ? []
+    : form
+        .getAll("mediaImages")
+        .map((u) => String(u))
+        .filter((u) => u.includes(BLOB_HOST))
+        .slice(0, 8);
   const videoRaw = String(form.get("mediaVideo") ?? "");
-  const videoUrl = videoRaw.includes(BLOB_HOST) ? videoRaw : null;
+  const videoUrl = !isVaga && videoRaw.includes(BLOB_HOST) ? videoRaw : null;
 
   await submitProject({
     ownerId: user.id,
     ownerName: user.name,
-    title,
+    title: isVaga ? vagaRole : title,
     summary,
-    assetName,
+    assetName: assetName || (isVaga ? "—" : ""),
     uf,
     city,
     mode,
     year,
     specialties,
-    budgetRange,
     images,
     videoUrl,
+    vagaRole: isVaga ? vagaRole : undefined,
+    contractType: isVaga ? contractType : undefined,
+    seniority: isVaga && seniority ? seniority : undefined,
+    workMode: isVaga && workMode ? workMode : undefined,
+    salaryMin,
+    salaryMax,
+    salaryConfidential,
   });
 
-  await sendEmail({ to: user.email, ...projectSubmittedEmail(user.name, title) });
+  await sendEmail({
+    to: user.email,
+    ...projectSubmittedEmail(user.name, isVaga ? vagaRole : title),
+  });
 
   redirect("/painel?enviado=1");
 }

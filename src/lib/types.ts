@@ -98,10 +98,21 @@ export type Project = {
   credits: ProjectCredit[];
   fromOpportunityId?: string;
 
-  // modo brief
+  entryKind?: "projeto" | "vaga";
+
+  // modo brief / vitrine
   budgetRange?: string;
   deadlineAt?: string | null;
   requirements?: string[];
+
+  // modo vaga
+  vagaRole?: string;
+  contractType?: string;
+  seniority?: string;
+  workMode?: string;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
+  salaryConfidential?: boolean;
 
   publishedAt: string;
   featured?: boolean;
@@ -187,6 +198,7 @@ export type FundingSource = {
 export type OpportunityFilters = {
   q?: string;
   specialty?: SpecialtyKey;
+  grupo?: string;
   uf?: string;
   kind?: KindKey;
   scope?: OrganScopeKey;

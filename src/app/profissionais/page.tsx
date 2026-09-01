@@ -6,7 +6,7 @@ import { BadgeCheck } from "lucide-react";
 import { listProfessionals } from "@/lib/directory";
 import { ProRow } from "@/components/pro-row";
 import { HeaderSearch } from "@/components/header-search";
-import { SPECIALTIES, type SpecialtyKey } from "@/lib/taxonomy";
+import { CATEGORY_GROUPS, groupLabel, specialtyLabel } from "@/lib/categories";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
@@ -25,17 +25,28 @@ export default async function ProfissionaisPage({
 }) {
   const sp = await searchParams;
   const q = one(sp.q);
+  const grupo = one(sp.grupo);
   const specialty = one(sp.specialty);
   const uf = one(sp.uf);
   const verifiedOnly = one(sp.verified) === "1";
   const proOnly = one(sp.pro) === "1";
 
-  let pros = await listProfessionals({ q, specialty, uf, verifiedOnly });
+  let pros = await listProfessionals({ q, grupo, specialty, uf, verifiedOnly });
   if (proOnly) pros = pros.filter((p) => p.plan === "pro");
+
+  const activeGroup = CATEGORY_GROUPS.find((g) => g.key === grupo);
 
   const qs = (next: Record<string, string | undefined>) => {
     const p = new URLSearchParams();
-    for (const [k, v] of Object.entries({ q, specialty, uf, verified: verifiedOnly ? "1" : undefined, pro: proOnly ? "1" : undefined, ...next }))
+    for (const [k, v] of Object.entries({
+      q,
+      grupo,
+      specialty,
+      uf,
+      verified: verifiedOnly ? "1" : undefined,
+      pro: proOnly ? "1" : undefined,
+      ...next,
+    }))
       if (v) p.set(k, v);
     const s = p.toString();
     return s ? `/profissionais?${s}` : "/profissionais";
@@ -43,25 +54,28 @@ export default async function ProfissionaisPage({
 
   return (
     <div>
-      <header className="band band-hairlines">
-        <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11 lg:py-16">
-          <p className="kicker text-accent">Diretório curado</p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-bold leading-[1.03] tracking-tight text-white sm:text-5xl">
+      <header className="border-b border-border bg-sunk">
+        <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-11 lg:py-14">
+          <p className="kicker text-muted">Diretório curado</p>
+          <h1 className="display mt-2 max-w-3xl text-3xl text-ink sm:text-5xl">
             {q ? (
               <>
-                Profissionais <span className="accent text-accent">“{q}”</span>
+                Profissionais <span className="accent font-medium text-green-ink">“{q}”</span>
+              </>
+            ) : activeGroup ? (
+              <>
+                <span className="accent font-medium text-green-ink">{activeGroup.label}</span>
               </>
             ) : (
               <>
-                Quem restaura o <span className="accent text-accent">patrimônio</span> do
-                Brasil
+                Quem restaura o <span className="accent font-medium text-green-ink">patrimônio</span>{" "}
+                do Brasil
               </>
             )}
           </h1>
-          <p className="mt-4 max-w-xl text-white/70">
-            Restauradores, conservadores, ateliês e escritórios — perfil, portfólio e
-            reputação verificável. Selo por registro, obra documentada ou verificação
-            completa.
+          <p className="mt-3 max-w-xl text-lg text-ink-soft">
+            Restauradores, conservadores, ateliês e escritórios — perfil, portfólio e reputação
+            verificável.
           </p>
         </div>
       </header>
@@ -73,12 +87,9 @@ export default async function ProfissionaisPage({
           </Suspense>
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-[16rem_minmax(0,1fr)]">
-          {/* sidebar de filtros */}
-          <aside className="lg:sticky lg:top-24 lg:h-max">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-muted">
-              Selo
-            </p>
+        <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
+          <aside className="lg:sticky lg:top-24 lg:h-max lg:self-start">
+            <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Selo</p>
             <div className="mt-2 space-y-1.5">
               <Link
                 href={qs({ verified: verifiedOnly ? undefined : "1" })}
@@ -101,36 +112,56 @@ export default async function ProfissionaisPage({
               </Link>
             </div>
 
-            <p className="mt-6 text-[11px] font-bold uppercase tracking-wide text-muted">
-              Especialidade
-            </p>
-            <div className="mt-2 space-y-1">
+            <p className="mt-6 text-[11px] font-bold uppercase tracking-wide text-muted">Categoria</p>
+            <div className="mt-2 max-h-[70vh] space-y-0.5 overflow-y-auto pr-1">
               <Link
-                href={qs({ specialty: undefined })}
+                href={qs({ grupo: undefined, specialty: undefined })}
                 className={cn(
-                  "block text-sm",
-                  !specialty ? "font-bold text-ink" : "text-ink-soft hover:text-ink",
+                  "block rounded-btn px-2 py-1.5 text-sm",
+                  !grupo ? "bg-sunk font-bold text-ink" : "text-ink-soft hover:bg-sunk hover:text-ink",
                 )}
               >
-                Todas
+                Todas as categorias
               </Link>
-              {(Object.keys(SPECIALTIES) as SpecialtyKey[]).map((key) => (
-                <Link
-                  key={key}
-                  href={qs({ specialty: specialty === key ? undefined : key })}
-                  className={cn(
-                    "block text-sm",
-                    specialty === key
-                      ? "font-bold text-green-ink"
-                      : "text-ink-soft hover:text-ink",
-                  )}
-                >
-                  {SPECIALTIES[key]}
-                </Link>
-              ))}
+              {CATEGORY_GROUPS.map((g) => {
+                const on = grupo === g.key;
+                return (
+                  <div key={g.key}>
+                    <Link
+                      href={qs({ grupo: on ? undefined : g.key, specialty: undefined })}
+                      className={cn(
+                        "block rounded-btn px-2 py-1.5 text-sm",
+                        on
+                          ? "bg-green-weak font-bold text-green-ink"
+                          : "text-ink-soft hover:bg-sunk hover:text-ink",
+                      )}
+                    >
+                      {g.label}
+                    </Link>
+                    {on && (
+                      <div className="ml-2 border-l border-border pl-2">
+                        {g.specialties.map((s) => (
+                          <Link
+                            key={s.key}
+                            href={qs({ specialty: specialty === s.key ? undefined : s.key })}
+                            className={cn(
+                              "block rounded-btn px-2 py-1 text-[13px]",
+                              specialty === s.key
+                                ? "font-bold text-green-ink"
+                                : "text-ink-soft hover:text-ink",
+                            )}
+                          >
+                            {s.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
-            {(specialty || uf || verifiedOnly || proOnly || q) && (
+            {(grupo || specialty || uf || verifiedOnly || proOnly || q) && (
               <Link
                 href="/profissionais"
                 className="mt-6 inline-block text-sm font-semibold text-crit hover:underline"
@@ -140,15 +171,15 @@ export default async function ProfissionaisPage({
             )}
           </aside>
 
-          {/* lista */}
           <div>
-            <p className="border-b border-ink/15 pb-3 text-sm text-ink-soft">
+            <p className="border-b border-border pb-3 text-sm text-ink-soft">
               <strong className="font-bold text-ink tabular-nums">{pros.length}</strong>{" "}
               {pros.length === 1 ? "profissional" : "profissionais"}
+              {specialty ? ` · ${specialtyLabel(specialty)}` : grupo ? ` · ${groupLabel(grupo)}` : ""}
             </p>
 
             {pros.length === 0 ? (
-              <div className="mt-6 border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
+              <div className="mt-6 rounded-card border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
                 Nenhum profissional com esses filtros.
               </div>
             ) : (

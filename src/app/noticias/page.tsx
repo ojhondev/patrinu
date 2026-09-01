@@ -27,7 +27,8 @@ export default async function NoticiasPage({
 }) {
   const sp = await searchParams;
   const cat = one(sp.categoria);
-  const articles = await listArticles(cat);
+  const q = one(sp.q);
+  const articles = await listArticles(cat, q);
   const [lead, ...rest] = articles;
 
   return (
@@ -41,15 +42,18 @@ export default async function NoticiasPage({
 
       <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
         <NewsBanner className="mb-8" />
-        <div className="rule mb-6 flex flex-wrap gap-5 pb-3">
+        {q && (
+          <p className="mb-5 text-sm text-ink-soft">
+            Resultados para <span className="font-semibold text-ink">“{q}”</span> ·{" "}
+            <Link href="/noticias" className="text-green-ink hover:underline">
+              limpar
+            </Link>
+          </p>
+        )}
+        <div className="mb-6 flex flex-wrap gap-2 border-b border-border pb-4">
           <Link
             href="/noticias"
-            className={cn(
-              "text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
-              !cat
-                ? "text-ink underline decoration-2 underline-offset-[6px]"
-                : "text-muted hover:text-ink",
-            )}
+            className={cn("chip", !cat && "is-active")}
           >
             Tudo
           </Link>
@@ -57,12 +61,7 @@ export default async function NoticiasPage({
             <Link
               key={c}
               href={`/noticias?categoria=${c}`}
-              className={cn(
-                "text-[11px] font-bold uppercase tracking-[0.13em] transition-colors",
-                cat === c
-                  ? "text-ink underline decoration-2 underline-offset-[6px]"
-                  : "text-muted hover:text-ink",
-              )}
+              className={cn("chip", cat === c && "is-active")}
             >
               {articleCategoryLabel(c)}
             </Link>
@@ -70,17 +69,17 @@ export default async function NoticiasPage({
         </div>
 
         {articles.length === 0 ? (
-          <div className="border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
-            Nenhuma matéria nessa categoria.
+          <div className="rounded-card border border-dashed border-border-strong px-6 py-16 text-center text-sm text-ink-soft">
+            Nenhuma matéria encontrada.
           </div>
         ) : (
           <>
             {lead && (
               <Link
                 href={`/noticias/${lead.slug}`}
-                className="group mb-8 block border-l-4 border-brand bg-surface py-2 pl-6 transition-colors"
+                className="group mb-8 block rounded-card border border-border bg-surface p-6 transition-colors hover:border-border-strong"
               >
-                <span className="kicker text-green-ink">
+                <span className="text-xs font-semibold uppercase tracking-[0.08em] text-green-ink">
                   {articleCategoryLabel(lead.category)}
                 </span>
                 <h2 className="display mt-2 max-w-3xl text-2xl text-ink group-hover:text-green-ink sm:text-4xl">

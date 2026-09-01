@@ -5,7 +5,8 @@ import { useCallback, useTransition } from "react";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { KINDS, SPECIALTIES, UFS, HERITAGE_HUBS } from "@/lib/taxonomy";
+import { KINDS, UFS, HERITAGE_HUBS } from "@/lib/taxonomy";
+import { CATEGORY_GROUPS } from "@/lib/categories";
 
 const UF_OPTIONS: [string, string][] = [
   ...HERITAGE_HUBS.map((uf) => [uf, `${uf} · polo`] as [string, string]),
@@ -13,7 +14,11 @@ const UF_OPTIONS: [string, string][] = [
 ];
 
 const SELECTS: { key: string; label: string; options: [string, string][] }[] = [
-  { key: "specialty", label: "Especialidade", options: Object.entries(SPECIALTIES) },
+  {
+    key: "grupo",
+    label: "Categoria",
+    options: CATEGORY_GROUPS.map((g) => [g.key, g.label] as [string, string]),
+  },
   { key: "kind", label: "Tipo", options: Object.entries(KINDS) },
   { key: "uf", label: "Localização", options: UF_OPTIONS },
   {

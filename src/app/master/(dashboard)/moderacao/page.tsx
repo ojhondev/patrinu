@@ -31,15 +31,21 @@ export default async function ModeracaoPage() {
         <div className="mt-4 space-y-3">
           {projs.length === 0 && <Empty>Nenhum projeto na fila.</Empty>}
           {projs.map((p) => {
-            const mode =
-              (p.requirements ?? []).find((r) => r.startsWith("__mode:"))?.slice(7) ?? "aberto";
+            const kindLabel =
+              p.entryKind === "vaga"
+                ? "Vaga"
+                : (p.requirements ?? []).some((r) => r === "__mode:vitrine")
+                  ? "Vitrine"
+                  : "Projeto";
             return (
               <div key={p.id} className="border border-ink/12 bg-surface p-4">
                 <p className="text-xs text-muted">
-                  {mode === "vitrine" ? "Vitrine" : "Brief aberto"} ·{" "}
+                  {kindLabel} ·{" "}
                   {p.submittedAt ? formatDate(p.submittedAt.toISOString()) : "—"} · {p.city}/{p.uf}
                 </p>
-                <p className="mt-1 font-display font-bold text-ink">{p.title}</p>
+                <p className="mt-1 font-display font-bold text-ink">
+                  {p.entryKind === "vaga" ? p.vagaRole ?? p.title : p.title}
+                </p>
                 <p className="mt-1 line-clamp-3 text-sm text-ink-soft">{p.summary}</p>
                 {p.specialties.length > 0 && (
                   <p className="mt-1 text-xs text-muted">

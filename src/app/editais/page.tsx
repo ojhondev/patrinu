@@ -4,7 +4,6 @@ import { Suspense } from "react";
 
 import { RadarFilters } from "@/components/radar-filters";
 import { OpportunityCard } from "@/components/opportunity-card";
-import { CategoryRail } from "@/components/category-rail";
 import { HeaderSearch } from "@/components/header-search";
 import { PageHero } from "@/components/page-hero";
 import { LockedPanel } from "@/components/locked";
@@ -28,6 +27,7 @@ function toFilters(sp: SearchParams): OpportunityFilters {
   return {
     q: one(sp.q),
     specialty: one(sp.specialty) as SpecialtyKey | undefined,
+    grupo: one(sp.grupo),
     uf: one(sp.uf),
     kind: one(sp.kind) as KindKey | undefined,
     scope: one(sp.scope) as OrganScopeKey | undefined,
@@ -96,10 +96,6 @@ export default async function RadarPage({
         <Suspense>
           <HeaderSearch compact defaultValue={q ?? ""} />
         </Suspense>
-      </div>
-
-      <div className="mb-6 border-b border-border pb-3">
-        <CategoryRail base="/editais" className="pb-1" />
       </div>
 
       <div className="sticky top-[64px] z-10 -mx-4 mb-6 border-b border-border bg-bg/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-11 lg:px-11">
