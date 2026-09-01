@@ -18,6 +18,7 @@ import { ProjectCard } from "@/components/project-card";
 import { VagaCard } from "@/components/vaga-card";
 import { ProjectActions } from "@/components/project-actions";
 import { getCurrentUser } from "@/lib/auth";
+import { getPlan } from "@/lib/membership";
 import { hasInterest } from "@/lib/interactions";
 
 export async function generateMetadata({
@@ -48,6 +49,7 @@ export default async function ProjectPage({
   const isOwner = Boolean(user && raw?.ownerId === user.id);
   const alreadyApplied =
     user && raw ? await hasInterest(raw.id, user.id) : false;
+  const canApply = isVaga ? (await getPlan()) === "pro" : true;
 
   const all = await listProjects(
     isVaga ? { mode: "abertos", entryKind: "vaga" } : { mode: "vitrine", entryKind: "projeto" },
@@ -216,6 +218,7 @@ export default async function ProjectPage({
                     loggedIn={Boolean(user)}
                     isOwner={isOwner}
                     alreadyInterested={alreadyApplied}
+                    canApply={canApply}
                   />
                 </div>
               </>

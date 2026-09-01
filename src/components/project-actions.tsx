@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
-import { Send } from "lucide-react";
+import { Send, Lock } from "lucide-react";
 
 import { expressInterest } from "@/app/projetos/actions";
 
@@ -13,12 +14,15 @@ export function ProjectActions({
   loggedIn,
   isOwner,
   alreadyInterested,
+  canApply = true,
 }: {
   slug: string;
   kind?: "vaga" | "projeto";
   loggedIn: boolean;
   isOwner: boolean;
   alreadyInterested: boolean;
+  /** false = usuário não é membro Pro (candidatar-se a vaga exige Pro) */
+  canApply?: boolean;
 }) {
   const [state, action, pending] = useActionState<State, FormData>(expressInterest, null);
   const [open, setOpen] = useState(false);
@@ -43,6 +47,21 @@ export function ProjectActions({
       <p className="rounded-btn bg-green-weak px-3 py-2 text-sm font-semibold text-green-ink">
         {isVaga ? "Candidatura enviada." : "Você está na lista de interessados."}
       </p>
+    );
+  }
+
+  // candidatar-se a vaga é recurso Pro
+  if (isVaga && !canApply) {
+    return (
+      <div className="space-y-2">
+        <Link href="/pro/oferecer" className="btn btn-primary w-full">
+          <Lock size={14} />
+          Torne-se membro Pro
+        </Link>
+        <p className="text-xs text-muted">
+          Candidatar-se às vagas é um recurso do Patrinu Pro para profissionais.
+        </p>
+      </div>
     );
   }
 

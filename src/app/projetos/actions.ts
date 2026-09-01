@@ -82,9 +82,18 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   if (year !== undefined && (Number.isNaN(year) || year < 1500 || year > 2100))
     return { error: "Ano inválido." };
 
-  // cota gratuita: 1 publicação por mês para quem não é Pro
   const plan = await getPlan();
-  if (plan !== "pro") {
+
+  // publicar vaga exige Pro (contratante)
+  if (isVaga && plan !== "pro") {
+    return {
+      error:
+        "Publicar vagas é um recurso do Patrinu Pro para contratantes. Assine em /pro/contratar.",
+    };
+  }
+
+  // projeto/vitrine: cota gratuita de 1 publicação por mês para quem não é Pro
+  if (!isVaga && plan !== "pro") {
     const mine = await projectsByOwner(user.id);
     const now = new Date();
     const thisMonth = mine.filter((p) => {
@@ -161,9 +170,16 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
   if (!user) redirect(`/entrar?next=/projetos/${slug}`);
 
   const project = await openProjectForActions(slug);
-  if (!project || !project.isOpen) return { error: "Este projeto não está aberto." };
+  if (!project || !project.isOpen) return { error: "Esta publicação não está aberta." };
   if (project.ownerId === user.id)
-    return { error: "Você é o proponente deste projeto." };
+    return { error: "Esta publicação é sua." };
+
+  const isVaga = project.entryKind === "vaga";
+  if (isVaga && (await getPlan()) !== "pro") {
+    return {
+      error: "Candidatar-se às vagas é um recurso do Patrinu Pro. Assine em /pro/oferecer.",
+    };
+  }
 
   await addInterest(project.id, user.id, String(form.get("message") ?? ""));
 
@@ -171,14 +187,16 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
   if (owner) {
     await sendEmail({
       to: owner.email,
-      subject: `Novo interessado em "${project.title}"`,
-      text: `${user.name} quer participar do projeto "${project.title}". Veja a lista de interessados no seu painel.`,
+      subject: isVaga
+        ? `Nova candidatura para "${project.title}"`
+        : `Novo interessado em "${project.title}"`,
+      text: `${user.name} ${isVaga ? "se candidatou à vaga" : "quer participar do projeto"} "${project.title}". Veja no seu painel.`,
     });
   }
 
   revalidatePath(`/projetos/${slug}`);
   revalidatePath("/painel");
-  return { ok: "Você entrou na lista de interessados." };
+  return { ok: isVaga ? "Candidatura enviada." : "Você entrou na lista de interessados." };
 }
 
 export async function submitProposal(_prev: State, form: FormData): Promise<State> {

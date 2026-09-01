@@ -159,7 +159,7 @@ export default async function HomePage() {
         <div className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-11">
           <SectionHead
             eyebrow="Vitrine"
-            title="Restauros concluídos"
+            title="Projetos publicados"
             href="/projetos"
             cta="Ver a vitrine"
           >

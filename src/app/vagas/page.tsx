@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { listProjects } from "@/lib/projects";
+import { getPlan } from "@/lib/membership";
 import { CONTRACT_TYPES, SENIORITY, WORK_MODES, UFS } from "@/lib/taxonomy";
 import { CATEGORY_GROUPS } from "@/lib/categories";
 import { VagaCard } from "@/components/vaga-card";
@@ -37,16 +38,19 @@ export default async function VagasPage({
   const contractSeg = one(sp.contract);
   const contractType = contractSeg && contractSeg !== "todas" ? contractSeg : undefined;
 
-  const items = await listProjects({
-    mode: "abertos",
-    entryKind: "vaga",
-    q,
-    grupo,
-    uf,
-    seniority,
-    workMode,
-    contractType,
-  });
+  const [items, isPro] = await Promise.all([
+    listProjects({
+      mode: "abertos",
+      entryKind: "vaga",
+      q,
+      grupo,
+      uf,
+      seniority,
+      workMode,
+      contractType,
+    }),
+    (async () => (await getPlan()) === "pro")(),
+  ]);
 
   return (
     <div>
@@ -68,9 +72,14 @@ export default async function VagasPage({
             Escritórios, ateliês, museus e órgãos publicam vagas com a função, as áreas de atuação
             e, quando quiserem, a faixa salarial.
           </p>
-          <ButtonLink href="/pro/contratar" className="mt-5">
+          <ButtonLink href={isPro ? "/projetos/novo?tipo=vaga" : "/pro/contratar"} className="mt-5">
             Publicar uma vaga
           </ButtonLink>
+          {!isPro && (
+            <p className="mt-2 text-xs text-muted">
+              Candidatar-se e publicar vagas são recursos do Patrinu Pro.
+            </p>
+          )}
         </div>
       </header>
 

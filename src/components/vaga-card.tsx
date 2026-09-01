@@ -9,8 +9,10 @@ import {
   seniorityLabel,
   formatSalary,
 } from "@/lib/taxonomy";
+import { getPlan } from "@/lib/membership";
 
-export function VagaCard({ vaga: v }: { vaga: Project }) {
+export async function VagaCard({ vaga: v }: { vaga: Project }) {
+  const isPro = (await getPlan()) === "pro";
   const org = v.credits[0]?.name ?? "—";
   const salary = formatSalary(v.salaryMin, v.salaryMax, v.salaryConfidential);
   const meta = [
@@ -52,7 +54,7 @@ export function VagaCard({ vaga: v }: { vaga: Project }) {
         </div>
       )}
 
-      {/* hover: revela o botão candidatar-se; padrão: mostra o rodapé de meta+salário */}
+      {/* hover: revela a ação; padrão: rodapé de meta + salário */}
       <div className="mt-auto pt-3">
         <div className="flex items-center justify-between border-t border-border pt-3 text-xs group-hover:hidden">
           <span className="text-muted">{meta || "Contratação"}</span>
@@ -64,7 +66,15 @@ export function VagaCard({ vaga: v }: { vaga: Project }) {
             </span>
           )}
         </div>
-        <span className="btn btn-primary btn-sm hidden w-full group-hover:flex">Candidatar-se</span>
+        <span
+          className={
+            isPro
+              ? "btn btn-primary btn-sm hidden w-full group-hover:flex"
+              : "btn btn-secondary btn-sm hidden w-full group-hover:flex"
+          }
+        >
+          {isPro ? "Candidatar-se" : "Torne-se membro Pro"}
+        </span>
       </div>
     </Link>
   );

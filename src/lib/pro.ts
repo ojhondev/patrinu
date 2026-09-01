@@ -14,6 +14,8 @@ export const TRACKS: Record<
     /** preço mensal em centavos; null = trilha sem assinatura (vai por análise) */
     priceCents: number | null;
     priceLabel: string;
+    /** link de checkout (Mercado Pago) — quando existe, o CTA vai direto pra ele */
+    checkoutUrl?: string;
   }
 > = {
   contratar: {
@@ -24,6 +26,7 @@ export const TRACKS: Record<
     perfil: "contratante",
     priceCents: 6990,
     priceLabel: "R$ 69,90/mês",
+    checkoutUrl: "https://mpago.la/1sLtHDi",
   },
   oferecer: {
     slug: "oferecer",
@@ -33,6 +36,7 @@ export const TRACKS: Record<
     perfil: "profissional",
     priceCents: 7990,
     priceLabel: "R$ 79,90/mês",
+    checkoutUrl: "https://mpago.la/211MW6s",
   },
   financiamento: {
     slug: "financiamento",

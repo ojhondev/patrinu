@@ -50,16 +50,14 @@ export default function ProPage() {
             const t = TRACKS[key];
             const Icon = ICONS[key];
             return (
-              <Link
-                key={key}
-                href={`/pro/${key}`}
-                className="card card-hover group flex flex-col p-6"
-              >
+              <div key={key} className="card flex flex-col p-6">
                 <span className="grid h-12 w-12 place-items-center rounded-[10px] bg-green-weak text-green-ink">
                   <Icon size={24} />
                 </span>
-                <h2 className="mt-4 font-display text-xl font-bold group-hover:text-green-ink">
-                  {t.label}
+                <h2 className="mt-4 font-display text-xl font-bold">
+                  <Link href={`/pro/${key}`} className="hover:text-green-ink">
+                    {t.label}
+                  </Link>
                 </h2>
                 <p className="mt-1 text-sm font-semibold text-ink-soft">{t.who}</p>
                 <p className="mt-3 flex-1 text-sm text-ink-soft">{HELP[key]}</p>
@@ -73,11 +71,31 @@ export default function ProPage() {
                     <span className="text-lg">Sob análise</span>
                   )}
                 </p>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-green-ink">
-                  {t.priceCents != null ? "Ver e tornar-se membro" : "Enviar meu projeto"}
-                  <ArrowRight size={14} />
-                </span>
-              </Link>
+                {t.checkoutUrl ? (
+                  <div className="mt-4 flex flex-col gap-2">
+                    <a
+                      href={t.checkoutUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-primary"
+                    >
+                      Assinar agora
+                      <ArrowRight size={15} />
+                    </a>
+                    <Link
+                      href={`/pro/${key}`}
+                      className="text-center text-sm font-semibold text-green-ink hover:underline"
+                    >
+                      Ver o que inclui
+                    </Link>
+                  </div>
+                ) : (
+                  <Link href={`/pro/${key}`} className="btn btn-secondary mt-4">
+                    Enviar meu projeto
+                    <ArrowRight size={15} />
+                  </Link>
+                )}
+              </div>
             );
           })}
         </div>

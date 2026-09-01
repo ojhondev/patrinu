@@ -159,19 +159,22 @@ export default async function ProTrackPage({
           </div>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link
-              href={
-                trilha === "financiamento"
-                  ? "/comecar/financiamento"
-                  : `/comecar/${trilha}`
-              }
-              className="btn bg-white text-band hover:bg-white/90"
-            >
-              {track.priceCents != null
-                ? `Tornar-se membro — ${track.priceLabel.split("/")[0]}/mês`
-                : "Responder o questionário"}
-              <ArrowRight size={16} />
-            </Link>
+            {track.checkoutUrl ? (
+              <a
+                href={track.checkoutUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="btn bg-white text-band hover:bg-white/90"
+              >
+                Assinar — {track.priceLabel.split("/")[0]}/mês
+                <ArrowRight size={16} />
+              </a>
+            ) : (
+              <Link href="/comecar/financiamento" className="btn bg-white text-band hover:bg-white/90">
+                Responder o questionário
+                <ArrowRight size={16} />
+              </Link>
+            )}
             <Link
               href={`/painel?perfil=${track.perfil}`}
               className="btn border border-white/40 text-white hover:bg-white hover:text-band"
@@ -179,10 +182,10 @@ export default async function ProTrackPage({
               Ver um painel de exemplo
             </Link>
           </div>
-          {track.priceCents != null && (
+          {track.checkoutUrl && (
             <p className="mt-2 text-xs text-white/55">
-              O pagamento entra em breve — por ora você já cria a conta e usa o período de
-              apresentação.
+              Pagamento seguro pelo Mercado Pago. Depois de assinar, faça login com o mesmo
+              e-mail para liberar os recursos Pro.
             </p>
           )}
         </div>
@@ -212,10 +215,22 @@ export default async function ProTrackPage({
               </li>
             ))}
           </ul>
-          <Link href={`/comecar/${trilha}`} className="btn btn-primary mt-6">
-            Criar minha conta {track.label.toLowerCase()}
-            <ArrowRight size={16} />
-          </Link>
+          {track.checkoutUrl ? (
+            <a
+              href={track.checkoutUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-primary mt-6"
+            >
+              Assinar — {track.priceLabel.split("/")[0]}/mês
+              <ArrowRight size={16} />
+            </a>
+          ) : (
+            <Link href={`/comecar/${trilha}`} className="btn btn-primary mt-6">
+              Responder o questionário
+              <ArrowRight size={16} />
+            </Link>
+          )}
         </div>
       </section>
     </>

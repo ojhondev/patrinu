@@ -248,6 +248,7 @@ export async function openProjectForActions(slug: string) {
       title: projects.title,
       status: projects.status,
       ownerId: projects.ownerId,
+      entryKind: projects.entryKind,
     })
     .from(projects)
     .where(eq(projects.slug, slug))

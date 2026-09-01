@@ -10,9 +10,15 @@ import { fieldClass, textareaClass, labelClass } from "@/components/ui/field";
 
 type State = { error?: string } | null;
 
-export function NewProjectForm() {
+export function NewProjectForm({
+  isPro = true,
+  defaultMode = "vaga",
+}: {
+  isPro?: boolean;
+  defaultMode?: "vaga" | "vitrine";
+}) {
   const [state, action, pending] = useActionState<State, FormData>(createProject, null);
-  const [mode, setMode] = useState<"vaga" | "vitrine">("vaga");
+  const [mode, setMode] = useState<"vaga" | "vitrine">(isPro ? defaultMode : "vitrine");
   const [confidential, setConfidential] = useState(false);
   const isVaga = mode === "vaga";
 
@@ -21,17 +27,23 @@ export function NewProjectForm() {
       <fieldset className="space-y-2">
         <legend className={labelClass}>O que você vai publicar?</legend>
         <div className="grid gap-2.5 sm:grid-cols-2">
-          <label className="flex cursor-pointer items-start gap-2.5 rounded-card border border-border-strong p-3.5 text-sm has-[:checked]:border-brand has-[:checked]:bg-green-weak">
+          <label
+            className={
+              "flex items-start gap-2.5 rounded-card border border-border-strong p-3.5 text-sm has-[:checked]:border-brand has-[:checked]:bg-green-weak" +
+              (isPro ? " cursor-pointer" : " cursor-not-allowed opacity-60")
+            }
+          >
             <input
               type="radio"
               name="mode"
               value="vaga"
               checked={isVaga}
+              disabled={!isPro}
               onChange={() => setMode("vaga")}
               className="mt-0.5"
             />
             <span>
-              <strong className="block">Uma vaga</strong>
+              <strong className="block">Uma vaga {!isPro && "· Pro"}</strong>
               <span className="text-ink-soft">
                 Contrate um profissional — recebe candidaturas.
               </span>
