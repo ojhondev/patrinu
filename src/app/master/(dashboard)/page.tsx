@@ -16,8 +16,8 @@ function Stat({
   icon: typeof Users;
 }) {
   return (
-    <div className="border border-ink/12 bg-surface p-5">
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.13em] text-muted">
+    <div className="card p-5">
+      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
         <Icon size={14} className="text-green-ink" />
         {label}
       </div>
@@ -40,7 +40,7 @@ export default async function MasterHome() {
       {ov.queue.total > 0 && (
         <Link
           href="/master/moderacao"
-          className="flex items-center justify-between border-l-4 border-brand bg-sunk px-4 py-3 text-sm font-semibold hover:bg-green-weak"
+          className="flex items-center justify-between rounded-card border border-border bg-sunk px-4 py-3 text-sm font-semibold hover:bg-green-weak"
         >
           <span>
             <strong className="text-ink">{ov.queue.total}</strong> {ov.queue.total === 1 ? "item" : "itens"} aguardando
@@ -50,9 +50,7 @@ export default async function MasterHome() {
               {ov.queue.financiamento > 0 ? ` · ${ov.queue.financiamento} financiamento` : ""})
             </span>
           </span>
-          <span className="text-[11px] font-bold uppercase tracking-[0.13em] text-green-ink">
-            Abrir →
-          </span>
+          <span className="shrink-0 text-sm font-semibold text-green-ink">Abrir →</span>
         </Link>
       )}
 
@@ -75,7 +73,7 @@ export default async function MasterHome() {
         <Stat label="Fila de moderação" value={String(ov.queue.total)} icon={FolderKanban} />
       </div>
 
-      <div className="border border-ink/12 bg-surface p-5">
+      <div className="card p-5">
         <p className="kicker text-muted">Receita recorrente estimada</p>
         <p className="mt-1 text-xs text-ink-soft">
           Sem gateway de pagamento ainda — projeção pelo plano de cada trilha.

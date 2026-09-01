@@ -23,17 +23,16 @@ export default async function MasterLayout({ children }: { children: ReactNode }
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1500px]">
-      <aside className="hidden w-60 shrink-0 flex-col border-r border-ink/12 bg-sunk lg:flex">
-        <div className="flex items-center gap-2 border-b border-ink/12 px-5 py-5">
-          <ShieldCheck size={20} className="text-green-ink" />
+      <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-sunk lg:flex">
+        <div className="flex items-center gap-2 border-b border-border px-5 py-5">
+          <span className="grid h-8 w-8 place-items-center rounded-[10px] bg-green-weak text-green-ink">
+            <ShieldCheck size={18} />
+          </span>
           <span className="font-display text-lg font-bold tracking-tight">Master</span>
         </div>
         <MasterNav badges={badges} />
-        <form action={logoutMaster} className="border-t border-ink/12 p-3">
-          <button
-            type="submit"
-            className="w-full border border-ink/20 px-3 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-ink-soft hover:border-ink hover:text-ink"
-          >
+        <form action={logoutMaster} className="border-t border-border p-3">
+          <button type="submit" className="btn btn-secondary btn-sm w-full">
             Sair
           </button>
         </form>
@@ -41,7 +40,7 @@ export default async function MasterLayout({ children }: { children: ReactNode }
 
       <div className="min-w-0 flex-1">
         {/* nav mobile */}
-        <div className="border-b border-ink/12 lg:hidden">
+        <div className="border-b border-border lg:hidden">
           <MasterNav badges={badges} horizontal />
         </div>
         <div className="px-4 py-8 sm:px-8">{children}</div>

@@ -59,7 +59,7 @@ const STATUS_BADGE: Record<
   em_analise: { tone: "warn", label: "em análise" },
   recusado: { tone: "crit", label: "recusado" },
   vitrine: { tone: "green", label: "publicado · vitrine" },
-  aberto: { tone: "green", label: "publicado · brief aberto" },
+  aberto: { tone: "green", label: "publicada" },
   em_captacao: { tone: "green", label: "em captação" },
   em_execucao: { tone: "ok", label: "em execução" },
   concluido: { tone: "ok", label: "concluído" },
@@ -75,13 +75,22 @@ function Tile({
   icon: typeof Users;
 }) {
   return (
-    <div className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted">
+    <div className="card p-4">
+      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
         <Icon size={14} className="text-green-ink" />
         {label}
       </div>
-      <p className="mt-1.5 font-display text-2xl font-extrabold tabular-nums">{value}</p>
+      <p className="mt-2 font-display text-2xl font-extrabold tabular-nums">{value}</p>
     </div>
+  );
+}
+
+function SectionTitle({ children, count }: { children: React.ReactNode; count?: number }) {
+  return (
+    <h2 className="font-display text-lg font-bold text-ink">
+      {children}
+      {count != null && <span className="ml-1.5 text-sm font-medium text-muted">({count})</span>}
+    </h2>
   );
 }
 
@@ -109,8 +118,8 @@ export default async function PainelPage({
     ]);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
-      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto max-w-[1100px] px-4 py-8 sm:px-6 lg:px-11">
+      <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <details className="group relative">
             <summary className="cursor-pointer list-none">
@@ -118,38 +127,34 @@ export default async function PainelPage({
             </summary>
             <form
               action={updateAvatar}
-              className="absolute left-0 top-full z-20 mt-2 w-72 rounded-lg border border-border bg-surface p-3 shadow-[var(--shadow-pop)]"
+              className="absolute left-0 top-full z-20 mt-2 w-72 rounded-card border border-border bg-surface p-3 shadow-[var(--shadow-pop)]"
             >
-              <label className="mb-1 block text-xs font-semibold text-ink">
-                URL da sua foto
-              </label>
+              <label className="mb-1 block text-xs font-semibold text-ink">URL da sua foto</label>
               <input
                 name="avatarUrl"
                 defaultValue={user.avatarUrl ?? ""}
                 placeholder="https://…"
-                className="w-full rounded-md border border-border bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink"
+                className="w-full rounded-btn border border-border-strong bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand"
               />
-              <button
-                type="submit"
-                className="mt-2 w-full rounded-md bg-green px-3 py-1.5 text-sm font-bold text-white hover:bg-green-hover"
-              >
+              <button type="submit" className="btn btn-primary btn-sm mt-2 w-full">
                 Salvar foto
               </button>
               <p className="mt-1 text-[11px] text-muted">Upload de arquivo em breve.</p>
             </form>
           </details>
           <div>
-            <h1 className="font-display text-3xl font-bold tracking-tight">
+            <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
               Olá, {user.name.split(/\s+/)[0]}
             </h1>
             <p className="mt-1 text-sm text-ink-soft">
-              <strong className="text-ink">
-                {plan === "pro"
-                  ? "Membro"
-                  : plan === "cadastrado"
-                    ? "Conta gratuita"
-                    : "Visitante"}
-              </strong>
+              <span
+                className={cn(
+                  "rounded-pill px-2 py-0.5 text-xs font-semibold",
+                  plan === "pro" ? "bg-green-weak text-green-ink" : "bg-sunk text-ink-soft",
+                )}
+              >
+                {plan === "pro" ? "Membro" : plan === "cadastrado" ? "Conta gratuita" : "Visitante"}
+              </span>
               {plan !== "pro" && (
                 <>
                   {" · "}
@@ -161,35 +166,31 @@ export default async function PainelPage({
             </p>
           </div>
         </div>
-        <Link
-          href="/projetos/novo"
-          className="inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2.5 text-sm font-bold text-white hover:bg-green-hover"
-        >
+        <Link href="/projetos/novo" className="btn btn-primary">
           <Plus size={16} />
-          Publicar projeto
+          Publicar
         </Link>
       </header>
 
       {enviado && (
-        <div className="mb-6 flex items-start gap-3 rounded-[var(--radius-card)] border border-green-ink/30 bg-green-weak p-4">
+        <div className="mb-6 flex items-start gap-3 rounded-card border border-green-ink/25 bg-green-weak p-4">
           <Clock size={18} className="mt-0.5 shrink-0 text-green-ink" />
           <p className="text-sm text-ink-soft">
-            <strong className="text-ink">Projeto em análise.</strong> Tudo que é publicado
-            passa por revisão do time da Patrinu antes de ir ao ar — normalmente em até 1
-            dia útil.
+            <strong className="text-ink">Publicação em análise.</strong> Tudo que é publicado
+            passa por revisão do time da Patrinu antes de ir ao ar — normalmente em até 1 dia útil.
           </p>
         </div>
       )}
 
-      {/* ---------- MEUS PROJETOS (real) ---------- */}
+      {/* ---------- MINHAS PUBLICAÇÕES (real) ---------- */}
       <section className="mb-12">
-        <h2 className="text-lg font-bold">Meus projetos</h2>
+        <SectionTitle>Minhas publicações</SectionTitle>
         <div className="mt-4 space-y-3">
           {myProjects.length === 0 ? (
-            <p className="rounded-[var(--radius-card)] border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
-              Você ainda não publicou nenhum projeto.{" "}
+            <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Você ainda não publicou nada.{" "}
               <Link href="/projetos/novo" className="font-semibold text-green-ink hover:underline">
-                Publicar o primeiro
+                Publicar uma vaga ou um projeto
               </Link>
               .
             </p>
@@ -202,12 +203,7 @@ export default async function PainelPage({
       {/* ---------- PROPOSTAS RECEBIDAS (real) ---------- */}
       {receivedProposals.length > 0 && (
         <section className="mb-12">
-          <h2 className="text-lg font-bold">
-            Propostas recebidas{" "}
-            <span className="font-mono text-sm text-muted">
-              ({receivedProposals.length})
-            </span>
-          </h2>
+          <SectionTitle count={receivedProposals.length}>Propostas recebidas</SectionTitle>
           <p className="mt-1 text-sm text-ink-soft">
             Profissionais que enviaram proposta para os seus projetos. Converse e decida.
           </p>
@@ -224,23 +220,16 @@ export default async function PainelPage({
         </section>
       )}
 
-      {/* ---------- QUEM QUER PARTICIPAR (real) ---------- */}
+      {/* ---------- CANDIDATURAS RECEBIDAS (real) ---------- */}
       {myInterests.length > 0 && (
         <section className="mb-12">
-          <h2 className="text-lg font-bold">
-            Quem quer participar{" "}
-            <span className="font-mono text-sm text-muted">({myInterests.length})</span>
-          </h2>
+          <SectionTitle count={myInterests.length}>Candidaturas recebidas</SectionTitle>
           <p className="mt-1 text-sm text-ink-soft">
-            Pessoas na lista de interessados dos seus projetos — você pode chamá-las para a
-            equipe.
+            Quem se candidatou às suas vagas ou pediu para participar dos seus projetos.
           </p>
           <div className="mt-4 space-y-2">
             {myInterests.map((i) => (
-              <div
-                key={`${i.projectId}-${i.userId}`}
-                className="rounded-[var(--radius-card)] border border-border bg-surface p-4"
-              >
+              <div key={`${i.projectId}-${i.userId}`} className="card p-4">
                 <div className="flex flex-wrap items-baseline gap-x-2">
                   <span className="font-semibold text-ink">{i.userName}</span>
                   <span className="text-xs text-muted">{i.userEmail}</span>
@@ -258,7 +247,7 @@ export default async function PainelPage({
                   </Link>
                 </p>
                 {i.message && (
-                  <p className="mt-1.5 rounded-md bg-sunk px-3 py-2 text-sm text-ink-soft">
+                  <p className="mt-1.5 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
                     {i.message}
                   </p>
                 )}
@@ -271,10 +260,7 @@ export default async function PainelPage({
       {/* ---------- MINHAS PROPOSTAS (real) ---------- */}
       {sentProposals.length > 0 && (
         <section className="mb-12">
-          <h2 className="text-lg font-bold">
-            Minhas propostas{" "}
-            <span className="font-mono text-sm text-muted">({sentProposals.length})</span>
-          </h2>
+          <SectionTitle count={sentProposals.length}>Minhas propostas</SectionTitle>
           <div className="mt-4 space-y-3">
             {sentProposals.map((p) => (
               <ProposalThread
@@ -291,9 +277,7 @@ export default async function PainelPage({
       {/* ---------- DEMONSTRAÇÃO ---------- */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-t border-border pt-8">
         <div>
-          <h2 className="font-display text-xl font-bold tracking-tight">
-            Oportunidades e conexões
-          </h2>
+          <h2 className="font-display text-xl font-bold tracking-tight">Oportunidades e conexões</h2>
           <p className="mt-1 text-sm text-ink-soft">
             Prévia de demonstração — os dados abaixo ainda são exemplos.
           </p>
@@ -303,12 +287,7 @@ export default async function PainelPage({
             <Link
               key={pf.key}
               href={`/painel?perfil=${pf.key}`}
-              className={cn(
-                "rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors",
-                perfil === pf.key
-                  ? "border-green bg-green text-white"
-                  : "border-border-strong text-ink hover:border-green-ink",
-              )}
+              className={cn("chip", perfil === pf.key && "is-active")}
             >
               {pf.label}
             </Link>
@@ -329,7 +308,7 @@ function MyProjectRow({ p }: { p: Project }) {
     p.status,
   );
   return (
-    <div className="flex flex-col gap-2 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-2 card p-4 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={s.tone}>{s.label}</Badge>
@@ -352,10 +331,7 @@ function MyProjectRow({ p }: { p: Project }) {
         )}
       </div>
       {published && (
-        <Link
-          href={`/projetos/${p.slug}`}
-          className="shrink-0 rounded-lg border border-border-strong px-3.5 py-2 text-sm font-bold hover:border-green-ink"
-        >
+        <Link href={`/projetos/${p.slug}`} className="btn btn-secondary btn-sm shrink-0">
           Ver publicado
         </Link>
       )}
@@ -371,8 +347,8 @@ function ProspectRow({
   p: Awaited<ReturnType<typeof prospectsForContratante>>[number];
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-4 sm:flex-row sm:items-center">
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-green-weak text-green-ink">
+    <div className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-pill bg-green-weak text-green-ink">
         <SpecialtyIcon
           specialty={p.professional?.specialties[0] ?? "arquitetura"}
           size={20}
@@ -400,13 +376,8 @@ function ProspectRow({
         <span className="text-sm font-bold text-green-ink tabular-nums">
           {Math.round(p.fit * 100)}%
         </span>
-        <button
-          type="button"
-          className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
-        >
-          {p.status === "candidatou" || p.status === "em_conversa"
-            ? "Ver proposta"
-            : "Convidar"}
+        <button type="button" className="btn btn-primary btn-sm">
+          {p.status === "candidatou" || p.status === "em_conversa" ? "Ver proposta" : "Convidar"}
         </button>
       </div>
     </div>
@@ -501,7 +472,7 @@ async function Profissional() {
             return (
               <div
                 key={o.id}
-                className="rounded-[var(--radius-card)] border border-border bg-surface p-4"
+                className="card p-4"
               >
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone="green">{o.kind === "edital" ? "Edital" : "Projeto aberto"}</Badge>
@@ -527,7 +498,7 @@ async function Profissional() {
                     <MapPin size={12} />
                     {o.uf}
                   </span>
-                  <span className="font-mono">{o.value}</span>
+                  <span className="font-medium">{o.value}</span>
                   {o.deadlineAt && <span>· prazo {formatDate(o.deadlineAt)}</span>}
                 </div>
                 <p className="mt-2 text-sm text-ink-soft">{o.reason}</p>
@@ -563,7 +534,7 @@ async function Financiamento() {
           {signals.map((s) => (
             <div
               key={`${s.investor}-${s.projectSlug}`}
-              className="rounded-[var(--radius-card)] border border-border bg-surface p-4"
+              className="card p-4"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-semibold text-ink">{s.investor}</span>
@@ -575,7 +546,7 @@ async function Financiamento() {
                 </Link>{" "}
                 — {s.reason}
               </p>
-              <p className="mt-2 rounded-md bg-sunk px-3 py-2 text-sm text-ink-soft">
+              <p className="mt-2 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
                 <strong className="text-ink">Próximo passo:</strong> {s.nextStep}
               </p>
             </div>

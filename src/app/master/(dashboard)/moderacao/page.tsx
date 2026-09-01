@@ -7,7 +7,7 @@ import { moderateArticle, moderateOpportunity, moderateProject } from "../../act
 import { formatBRL, formatDate, specialtyLabel } from "@/lib/taxonomy";
 
 const input =
-  "w-full border border-ink/20 bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-green-ink";
+  "w-full rounded-btn border border-border-strong bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-brand";
 
 export default async function ModeracaoPage() {
   const [projs, editais, noticias] = await Promise.all([
@@ -26,7 +26,7 @@ export default async function ModeracaoPage() {
       {/* -------- PROJETOS -------- */}
       <section>
         <h2 className="text-lg font-bold">
-          Projetos <span className="font-mono text-sm text-muted">({projs.length})</span>
+          Projetos <span className="text-sm font-medium text-muted">({projs.length})</span>
         </h2>
         <div className="mt-4 space-y-3">
           {projs.length === 0 && <Empty>Nenhum projeto na fila.</Empty>}
@@ -38,7 +38,7 @@ export default async function ModeracaoPage() {
                   ? "Vitrine"
                   : "Projeto";
             return (
-              <div key={p.id} className="border border-ink/12 bg-surface p-4">
+              <div key={p.id} className="card p-4">
                 <p className="text-xs text-muted">
                   {kindLabel} ·{" "}
                   {p.submittedAt ? formatDate(p.submittedAt.toISOString()) : "—"} · {p.city}/{p.uf}
@@ -61,7 +61,7 @@ export default async function ModeracaoPage() {
                   <form action={moderateProject} className="flex gap-1.5">
                     <input type="hidden" name="id" value={p.id} />
                     <input type="hidden" name="decision" value="reject" />
-                    <input name="reason" placeholder="Motivo (opcional)" className="border border-ink/20 bg-surface px-2 py-1.5 text-xs outline-none" />
+                    <input name="reason" placeholder="Motivo (opcional)" className="rounded-btn border border-border-strong bg-surface px-2 py-1.5 text-xs outline-none" />
                     <Reject />
                   </form>
                 </div>
@@ -74,7 +74,7 @@ export default async function ModeracaoPage() {
       {/* -------- EDITAIS -------- */}
       <section>
         <h2 className="text-lg font-bold">
-          Editais <span className="font-mono text-sm text-muted">({editais.length})</span>
+          Editais <span className="text-sm font-medium text-muted">({editais.length})</span>
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
           Do PNCP, triados por palavra-chave. Revise o resumo antes de aprovar.
@@ -82,7 +82,7 @@ export default async function ModeracaoPage() {
         <div className="mt-4 space-y-3">
           {editais.length === 0 && <Empty>Nada na fila. Rode a ingestão em Configurações.</Empty>}
           {editais.map(({ o, s }) => (
-            <div key={o.id} className="border border-ink/12 bg-surface p-4">
+            <div key={o.id} className="card p-4">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                 <span>{s?.name ?? "PNCP"}</span>
                 {o.deadlineAt && <span>prazo {formatDate(o.deadlineAt.toISOString())}</span>}
@@ -124,7 +124,7 @@ export default async function ModeracaoPage() {
       {/* -------- NOTÍCIAS -------- */}
       <section>
         <h2 className="text-lg font-bold">
-          Notícias <span className="font-mono text-sm text-muted">({noticias.length})</span>
+          Notícias <span className="text-sm font-medium text-muted">({noticias.length})</span>
         </h2>
         <p className="mt-1 text-sm text-ink-soft">
           O feed traz só a manchete e a fonte. <strong>Escreva o resumo e o texto</strong> —
@@ -133,7 +133,7 @@ export default async function ModeracaoPage() {
         <div className="mt-4 space-y-3">
           {noticias.length === 0 && <Empty>Nada na fila.</Empty>}
           {noticias.map((a) => (
-            <div key={a.id} className="border border-ink/12 bg-surface p-4">
+            <div key={a.id} className="card p-4">
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                 <span>{a.sourceName ?? "Fonte"}</span>
                 <span>· {formatDate(a.publishedAt.toISOString())}</span>
@@ -163,7 +163,7 @@ export default async function ModeracaoPage() {
                     className={input}
                   />
                   <div className="flex flex-wrap items-center gap-2">
-                    <select name="category" defaultValue={a.category} className="border border-ink/20 bg-surface px-2 py-1.5 text-sm">
+                    <select name="category" defaultValue={a.category} className="rounded-btn border border-border-strong bg-surface px-2 py-1.5 text-sm">
                       {["obra", "tecnica", "politica", "mercado", "curso", "edital"].map((c) => (
                         <option key={c} value={c}>
                           {c}
@@ -191,28 +191,21 @@ export default async function ModeracaoPage() {
 
 function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+    <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
       {children}
     </p>
   );
 }
 function Approve({ children }: { children: React.ReactNode }) {
   return (
-    <button
-      type="submit"
-      className="inline-flex items-center gap-1.5 bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
-    >
+    <button type="submit" className="btn btn-primary btn-sm">
       <Check size={15} /> {children}
     </button>
   );
 }
 function Reject() {
   return (
-    <button
-      type="submit"
-      aria-label="Recusar"
-      className="inline-flex items-center gap-1.5 border border-border-strong px-3 py-1.5 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
-    >
+    <button type="submit" aria-label="Recusar" className="btn btn-danger btn-sm">
       <X size={15} />
     </button>
   );

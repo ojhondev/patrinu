@@ -56,7 +56,7 @@ export default async function ConfigPage() {
         <form action={triggerIngest} className="mt-3">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 border border-ink px-4 py-2 text-[11px] font-bold uppercase tracking-[0.13em] hover:bg-ink hover:text-white"
+            className="btn btn-secondary btn-sm"
           >
             <Play size={13} /> Rodar ingestão agora
           </button>
@@ -67,7 +67,7 @@ export default async function ConfigPage() {
         <h2 className="text-lg font-bold">Banners de anúncio</h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-2">
           {banners.map((b) => (
-            <div key={b.slot} className="border border-ink/12 bg-surface p-5">
+            <div key={b.slot} className="card p-5">
               <h3 className="text-base font-bold">{b.title}</h3>
               <p className="mt-1 text-sm text-ink-soft">{b.hint}</p>
               <p className="mt-1 text-xs text-muted">{IMG_HINT}</p>
@@ -77,17 +77,17 @@ export default async function ConfigPage() {
                   name="image"
                   defaultValue={b.image ?? ""}
                   placeholder="https://i.ibb.co/…/banner.png"
-                  className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+                  className="w-full rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
                 />
                 <input
                   name="link"
                   defaultValue={b.link ?? ""}
                   placeholder="https://… (destino do clique, opcional)"
-                  className="w-full border border-ink/25 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+                  className="w-full rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
                 />
                 <button
                   type="submit"
-                  className="bg-green px-4 py-2 text-xs font-bold uppercase tracking-[0.13em] text-white hover:bg-green-hover"
+                  className="btn btn-primary btn-sm"
                 >
                   Salvar
                 </button>
@@ -97,7 +97,7 @@ export default async function ConfigPage() {
                 <img
                   src={b.image}
                   alt="Banner atual"
-                  className="mt-4 max-h-28 border border-ink/15"
+                  className="mt-4 max-h-28 rounded-btn border border-border"
                 />
               )}
             </div>

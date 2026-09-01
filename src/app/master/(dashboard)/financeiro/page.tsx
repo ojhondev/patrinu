@@ -19,19 +19,19 @@ export default async function FinanceiroPage() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <div className="border border-ink/12 bg-surface p-5">
+        <div className="card p-5">
           <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-muted">MRR</p>
           <p className="mt-2 font-display text-3xl font-extrabold tabular-nums text-green-ink">
             {formatBRL(mrrCents / 100)}
           </p>
         </div>
-        <div className="border border-ink/12 bg-surface p-5">
+        <div className="card p-5">
           <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-muted">ARR</p>
           <p className="mt-2 font-display text-3xl font-extrabold tabular-nums">
             {formatBRL(arr / 100)}
           </p>
         </div>
-        <div className="border border-ink/12 bg-surface p-5">
+        <div className="card p-5">
           <p className="text-[11px] font-bold uppercase tracking-[0.13em] text-muted">
             Membros
           </p>
@@ -41,7 +41,7 @@ export default async function FinanceiroPage() {
         </div>
       </div>
 
-      <div className="border border-ink/12 bg-surface p-5">
+      <div className="card p-5">
         <p className="kicker text-muted">Por trilha</p>
         <table className="mt-3 w-full text-sm">
           <tbody>

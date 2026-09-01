@@ -27,7 +27,7 @@ export default async function FinanciamentoPage() {
           </p>
         )}
         {rows.map((f) => (
-          <div key={f.id} className="border border-ink/12 bg-surface p-4">
+          <div key={f.id} className="card p-4">
             <p className="text-xs text-muted">
               {f.status} · {formatDate(f.createdAt.toISOString())}
             </p>

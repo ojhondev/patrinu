@@ -34,7 +34,7 @@ export default async function ContasPage({
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar por nome ou e-mail"
-          className="w-full max-w-sm border border-ink/20 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          className="w-full max-w-sm rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
         />
         <button className="btn-museum">Buscar</button>
       </form>
@@ -79,7 +79,7 @@ export default async function ContasPage({
                     <select
                       name="plan"
                       defaultValue={u.plan === "pro" ? "pro" : "cadastrado"}
-                      className="border border-ink/20 bg-surface px-1.5 py-1 text-xs"
+                      className="rounded-btn border border-border-strong bg-surface px-1.5 py-1 text-xs"
                     >
                       <option value="cadastrado">Grátis</option>
                       <option value="pro">Membro</option>
@@ -108,7 +108,7 @@ export default async function ContasPage({
                         <input
                           name="reason"
                           placeholder="motivo"
-                          className="w-24 border border-ink/20 bg-surface px-1.5 py-1 text-[11px] outline-none"
+                          className="w-24 rounded-btn border border-border-strong bg-surface px-1.5 py-1 text-[11px] outline-none"
                         />
                         <button className="inline-flex items-center gap-1 text-xs font-bold text-crit hover:underline">
                           <Ban size={11} /> Banir

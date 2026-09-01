@@ -40,7 +40,7 @@ export default async function ProfissionaisMod({
           name="q"
           defaultValue={q ?? ""}
           placeholder="Buscar por nome, e-mail ou cidade"
-          className="w-full max-w-sm border border-ink/20 bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+          className="w-full max-w-sm rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
         />
         <button className="btn-museum">Buscar</button>
       </form>
@@ -52,7 +52,7 @@ export default async function ProfissionaisMod({
           </p>
         )}
         {pros.map((p) => (
-          <div key={p.id} className="border border-ink/12 bg-surface p-4">
+          <div key={p.id} className="card p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
@@ -91,7 +91,7 @@ export default async function ProfissionaisMod({
                 <select
                   name="level"
                   defaultValue={p.verificationLevel}
-                  className="border border-ink/20 bg-surface px-2 py-1.5 text-xs"
+                  className="rounded-btn border border-border-strong bg-surface px-2 py-1.5 text-xs"
                 >
                   {VERIF_LEVELS.map((l) => (
                     <option key={l} value={l}>
@@ -99,7 +99,7 @@ export default async function ProfissionaisMod({
                     </option>
                   ))}
                 </select>
-                <button className="border border-ink px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wide hover:bg-ink hover:text-white">
+                <button className="btn btn-secondary btn-sm">
                   Salvar selo
                 </button>
               </form>
@@ -117,7 +117,7 @@ export default async function ProfissionaisMod({
                   <input
                     name="reason"
                     placeholder="motivo do banimento"
-                    className="border border-ink/20 bg-surface px-2 py-1.5 text-xs outline-none"
+                    className="rounded-btn border border-border-strong bg-surface px-2 py-1.5 text-xs outline-none"
                   />
                   <button className="inline-flex items-center gap-1 text-xs font-bold text-crit hover:underline">
                     <Ban size={12} /> Banir

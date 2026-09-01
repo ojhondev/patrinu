@@ -28,7 +28,7 @@ export async function ProposalThread({
   const closed = proposal.status === "aceita" || proposal.status === "recusada";
 
   return (
-    <div className="rounded-[var(--radius-card)] border border-border bg-surface p-4">
+    <div className="card p-4">
       <div className="flex flex-wrap items-center gap-2">
         <Badge tone={s.tone}>{s.label}</Badge>
         <span className="text-xs text-muted">{formatDate(proposal.createdAt.toISOString())}</span>
@@ -50,7 +50,7 @@ export async function ProposalThread({
         </a>
       </p>
 
-      <p className="mt-2 whitespace-pre-wrap rounded-md bg-sunk px-3 py-2 text-sm text-ink-soft">
+      <p className="mt-2 whitespace-pre-wrap rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
         {proposal.message}
       </p>
       {proposal.priceRange && (
@@ -96,11 +96,11 @@ export async function ProposalThread({
             name="body"
             required
             placeholder="Escreva uma mensagem…"
-            className="min-w-0 flex-1 rounded-lg border border-border bg-surface px-3 py-2 text-sm outline-none focus:border-green-ink"
+            className="min-w-0 flex-1 rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
           />
           <button
             type="submit"
-            className="rounded-lg bg-green px-3.5 py-2 text-sm font-bold text-white hover:bg-green-hover"
+            className="btn btn-primary btn-sm"
           >
             Enviar
           </button>
@@ -114,7 +114,7 @@ export async function ProposalThread({
             <input type="hidden" name="decision" value="aceita" />
             <button
               type="submit"
-              className="rounded-lg bg-green px-3 py-1.5 text-sm font-bold text-white hover:bg-green-hover"
+              className="btn btn-primary btn-sm"
             >
               Aceitar
             </button>
@@ -124,7 +124,7 @@ export async function ProposalThread({
             <input type="hidden" name="decision" value="recusada" />
             <button
               type="submit"
-              className="rounded-lg border border-border-strong px-3 py-1.5 text-sm font-bold text-ink-soft hover:border-crit hover:text-crit"
+              className="btn btn-danger btn-sm"
             >
               Recusar
             </button>
