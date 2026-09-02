@@ -45,7 +45,6 @@ export default async function NoticiasPage({
       </PageHero>
 
       <div className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-11">
-        <NewsBanner className="mb-8" />
         {q && (
           <p className="mb-5 text-sm text-ink-soft">
             Resultados para <span className="font-semibold text-ink">“{q}”</span> ·{" "}
@@ -81,7 +80,7 @@ export default async function NoticiasPage({
             {lead && (
               <Link
                 href={`/noticias/${lead.slug}`}
-                className="group mb-8 block rounded-card border border-border bg-surface p-6 transition-colors hover:border-border-strong"
+                className="group block rounded-card border border-border bg-surface p-6 transition-colors hover:border-border-strong"
               >
                 <span className="text-xs font-semibold uppercase tracking-[0.08em] text-green-ink">
                   {articleCategoryLabel(lead.category)}
@@ -92,6 +91,9 @@ export default async function NoticiasPage({
                 <p className="mt-3 max-w-2xl text-ink-soft">{lead.excerpt}</p>
               </Link>
             )}
+
+            <NewsBanner className="my-8" />
+
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {rest.map((a) => (
                 <ArticleCard key={a.slug} article={a} />

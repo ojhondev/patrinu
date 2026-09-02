@@ -59,7 +59,8 @@ function rowToProfessional(r: ProRow, owner?: Owner): Professional {
     website: r.website ?? undefined,
     instagram: r.instagram ?? undefined,
     linkedin: r.linkedin ?? undefined,
-    email: owner?.email,
+    // não expõe e-mails sintéticos do seed
+    email: owner?.email?.endsWith("@seed.patrinu.local") ? undefined : owner?.email,
   };
 }
 

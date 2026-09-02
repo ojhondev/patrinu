@@ -76,14 +76,8 @@ export async function VagaCard({ vaga: v }: { vaga: Project }) {
             </span>
           )}
         </div>
-        <span
-          className={
-            isPro
-              ? "btn btn-primary btn-sm hidden w-full group-hover:flex"
-              : "btn btn-secondary btn-sm hidden w-full group-hover:flex"
-          }
-        >
-          {isPro ? "Candidatar-se" : "Torne-se membro Pro"}
+        <span className="btn btn-primary btn-sm hidden w-full group-hover:flex">
+          Candidatar-se
         </span>
       </div>
     </Link>

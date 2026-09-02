@@ -10,12 +10,14 @@ const BANNERS = [
   {
     slot: "news" as const,
     title: "Banner das notícias",
-    hint: "Aparece dentro de cada matéria e no topo da lista de notícias.",
+    hint: "Aparece abaixo da manchete e no meio de cada matéria. Desktop 1697 × 300, mobile 500 × 400.",
+    withMobile: true,
   },
   {
     slot: "projects" as const,
     title: "Banner de Projetos (1920 × 500)",
     hint: "Faixa abaixo dos filtros na página Projetos.",
+    withMobile: false,
   },
 ];
 
@@ -27,6 +29,7 @@ export default async function ConfigPage() {
       BANNERS.map(async (b) => ({
         ...b,
         image: await getSetting(`${b.slot}_banner_image`),
+        imageMobile: await getSetting(`${b.slot}_banner_image_mobile`),
         link: await getSetting(`${b.slot}_banner_link`),
       })),
     ),
@@ -88,7 +91,13 @@ export default async function ConfigPage() {
               <h3 className="text-base font-bold">{b.title}</h3>
               <p className="mt-1 text-sm text-ink-soft">{b.hint}</p>
               <p className="mt-1 text-xs text-muted">{IMG_HINT}</p>
-              <BannerUpload slot={b.slot} currentImage={b.image} currentLink={b.link} />
+              <BannerUpload
+                slot={b.slot}
+                currentImage={b.image}
+                currentImageMobile={b.imageMobile}
+                currentLink={b.link}
+                withMobile={b.withMobile}
+              />
             </div>
           ))}
         </div>

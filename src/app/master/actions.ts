@@ -36,17 +36,22 @@ export async function saveBanner(formData: FormData) {
   const slot = String(formData.get("slot") ?? "");
   if (!(BANNER_SLOTS as readonly string[]).includes(slot)) return;
 
-  const raw = String(formData.get("image") ?? "").trim();
   const link = String(formData.get("link") ?? "").trim();
 
-  if (raw === "") {
-    // campo limpo = remover o banner
-    await setSetting(`${slot}_banner_image`, null);
-  } else {
+  // aplica um campo de imagem: vazio = remove; inválido = mantém o atual
+  const apply = async (field: string, key: string) => {
+    if (!formData.has(field)) return;
+    const raw = String(formData.get(field) ?? "").trim();
+    if (raw === "") {
+      await setSetting(key, null);
+      return;
+    }
     const img = validBannerImage(raw);
-    // imagem inválida: NÃO sobrescreve a atual (evita "o banner sumiu")
-    if (img) await setSetting(`${slot}_banner_image`, img);
-  }
+    if (img) await setSetting(key, img);
+  };
+
+  await apply("image", `${slot}_banner_image`);
+  await apply("image_mobile", `${slot}_banner_image_mobile`);
   await setSetting(`${slot}_banner_link`, /^https?:\/\//.test(link) ? link : null);
 
   revalidatePath(slot === "news" ? "/noticias" : "/projetos");

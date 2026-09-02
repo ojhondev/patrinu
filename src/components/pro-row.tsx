@@ -9,7 +9,7 @@ const VERIF_LABEL: Record<Professional["verificationLevel"], string> = {
   email: "Cadastro",
   registro: "Registro verificado",
   projeto_documentado: "Obra documentada",
-  completo: "Pro verificado",
+  completo: "Perfil completo",
 };
 
 export function ProRow({ pro }: { pro: Professional }) {
