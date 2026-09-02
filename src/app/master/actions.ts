@@ -22,17 +22,15 @@ import { projectApprovedEmail, sendEmail } from "@/lib/email";
 
 const BANNER_SLOTS = ["news", "projects"] as const;
 
-/** aceita caminho interno (/algo.jpg) ou URL http(s) que aponte para uma imagem. */
-function normalizeImage(raw: string): string | null {
+/** só aceita upload do próprio site (Vercel Blob) ou arquivo de /public. */
+function validBannerImage(raw: string): string | null {
   const v = raw.trim();
   if (!v) return null;
-  if (v.startsWith("/")) return v;
-  // ibb.co/CODE é a PÁGINA, não a imagem — converte para o link direto
-  const ibb = v.match(/^https?:\/\/ibb\.co\/([A-Za-z0-9]+)/);
-  if (ibb) return null; // não dá pra resolver aqui — melhor recusar do que salvar quebrado
-  if (/^https?:\/\/.+\.(jpe?g|png|webp|gif|avif)(\?.*)?$/i.test(v)) return v;
-  if (/^https?:\/\/[^ ]*(i\.ibb\.co|blob\.vercel-storage\.com|imgur\.com|cloudinary\.com)/i.test(v))
-    return v;
+  if (v.startsWith("/")) return v; // /ad-restaura.jpg etc.
+  try {
+    const u = new URL(v);
+    if (u.protocol === "https:" && u.hostname.endsWith(".public.blob.vercel-storage.com")) return v;
+  } catch {}
   return null;
 }
 
@@ -40,10 +38,22 @@ export async function saveBanner(formData: FormData) {
   if (!(await isMasterSession())) redirect("/master/entrar");
   const slot = String(formData.get("slot") ?? "");
   if (!(BANNER_SLOTS as readonly string[]).includes(slot)) return;
+
+  const raw = String(formData.get("image") ?? "").trim();
   const link = String(formData.get("link") ?? "").trim();
-  await setSetting(`${slot}_banner_image`, normalizeImage(String(formData.get("image") ?? "")));
+
+  if (raw === "") {
+    // campo limpo = remover o banner
+    await setSetting(`${slot}_banner_image`, null);
+  } else {
+    const img = validBannerImage(raw);
+    // imagem inválida: NÃO sobrescreve a atual (evita "o banner sumiu")
+    if (img) await setSetting(`${slot}_banner_image`, img);
+  }
   await setSetting(`${slot}_banner_link`, /^https?:\/\//.test(link) ? link : null);
+
   revalidatePath(slot === "news" ? "/noticias" : "/projetos");
+  revalidatePath("/", "layout");
   revalidatePath("/master");
 }
 

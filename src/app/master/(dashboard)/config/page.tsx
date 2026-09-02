@@ -3,7 +3,8 @@ import { Play, Mail } from "lucide-react";
 
 import { getSetting } from "@/lib/settings";
 import { pendingIngestCounts } from "@/lib/ingest/run";
-import { saveBanner, triggerIngest, sendTestEmail } from "../../actions";
+import { triggerIngest, sendTestEmail } from "../../actions";
+import { BannerUpload } from "@/components/banner-upload";
 
 const BANNERS = [
   {
@@ -18,8 +19,7 @@ const BANNERS = [
   },
 ];
 
-const IMG_HINT =
-  "Cole o LINK DIRETO da imagem (termina em .jpg / .png). No ImgBB: abra a imagem, botão direito → Copiar endereço da imagem (i.ibb.co/…), não o link da página (ibb.co/…).";
+const IMG_HINT = "Envie o arquivo da imagem (JPG, PNG ou WebP, até 8 MB).";
 
 export default async function ConfigPage() {
   const [banners, counts, emailTest] = await Promise.all([
@@ -88,35 +88,7 @@ export default async function ConfigPage() {
               <h3 className="text-base font-bold">{b.title}</h3>
               <p className="mt-1 text-sm text-ink-soft">{b.hint}</p>
               <p className="mt-1 text-xs text-muted">{IMG_HINT}</p>
-              <form action={saveBanner} className="mt-4 space-y-3">
-                <input type="hidden" name="slot" value={b.slot} />
-                <input
-                  name="image"
-                  defaultValue={b.image ?? ""}
-                  placeholder="https://i.ibb.co/…/banner.png"
-                  className="w-full rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
-                />
-                <input
-                  name="link"
-                  defaultValue={b.link ?? ""}
-                  placeholder="https://… (destino do clique, opcional)"
-                  className="w-full rounded-btn border border-border-strong bg-surface px-3 py-2 text-sm outline-none focus:border-brand"
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-sm"
-                >
-                  Salvar
-                </button>
-              </form>
-              {b.image && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={b.image}
-                  alt="Banner atual"
-                  className="mt-4 max-h-28 rounded-btn border border-border"
-                />
-              )}
+              <BannerUpload slot={b.slot} currentImage={b.image} currentLink={b.link} />
             </div>
           ))}
         </div>

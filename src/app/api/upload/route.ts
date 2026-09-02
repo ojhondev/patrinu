@@ -1,7 +1,7 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
 
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isMasterSession } from "@/lib/auth";
 
 export async function POST(request: Request): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
@@ -11,8 +11,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async () => {
-        const user = await getCurrentUser();
-        if (!user) throw new Error("Faça login para enviar arquivos.");
+        const [user, master] = await Promise.all([getCurrentUser(), isMasterSession()]);
+        if (!user && !master) throw new Error("Faça login para enviar arquivos.");
         return {
           allowedContentTypes: [
             "image/jpeg",
@@ -25,7 +25,7 @@ export async function POST(request: Request): Promise<NextResponse> {
           ],
           maximumSizeInBytes: 55 * 1024 * 1024,
           addRandomSuffix: true,
-          tokenPayload: JSON.stringify({ userId: user.id }),
+          tokenPayload: JSON.stringify({ userId: user?.id ?? "master" }),
         };
       },
       onUploadCompleted: async () => {
