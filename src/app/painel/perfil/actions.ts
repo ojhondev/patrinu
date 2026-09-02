@@ -34,7 +34,8 @@ export async function saveProfile(_prev: State, form: FormData): Promise<State> 
   const registros = list(String(form.get("registros") ?? ""), 10);
   const whatsapp = String(form.get("whatsapp") ?? "").replace(/[^\d+]/g, "").slice(0, 20);
   const website = String(form.get("website") ?? "").trim().slice(0, 200);
-  const avatarUrl = String(form.get("avatarUrl") ?? "").trim().slice(0, 400);
+  const avatarRaw = String(form.get("avatarUrl") ?? "").trim().slice(0, 400);
+  const avatarUrl = /^https?:\/\/.+/i.test(avatarRaw) ? avatarRaw : "";
 
   if (displayName.length < 3) return { error: "Informe seu nome ou o nome do ateliê." };
   if (headline.length < 8) return { error: "Escreva um resumo curto do que você faz." };

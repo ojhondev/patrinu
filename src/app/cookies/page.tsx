@@ -22,18 +22,14 @@ const COOKIES = [
     type: "Essencial",
     duration: "12 horas",
   },
-  {
-    name: "patrinu_plan",
-    purpose: "Lembra o plano usado numa navegação de demonstração.",
-    type: "Funcional",
-    duration: "1 ano",
-  },
 ];
 
 const LOCAL_STORAGE = [
   { name: "patrinu_signup_dismissed", purpose: "Não repetir o convite de cadastro." },
   { name: "patrinu_promo_anual60_dismissed", purpose: "Não repetir uma faixa de promoção já fechada." },
   { name: "patrinu_cookie_consent", purpose: "Lembra que você já leu este aviso de cookies." },
+  { name: "patrinu_sharebar_closed", purpose: "Lembra que você fechou a faixa de compartilhamento." },
+  { name: "patrinu_credits_widget_closed", purpose: "Lembra que você fechou o indicador de créditos." },
 ];
 
 export default function CookiesPage() {

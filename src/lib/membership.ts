@@ -1,15 +1,13 @@
-import { cookies } from "next/headers";
-
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 
 /**
- * Plano do visitante:
- *  - visitante  → só informações básicas; publica 1 projeto/mês
- *  - cadastrado → vê valores de projeto; ainda não envia proposta nem usa o Radar
- *  - pro        → acesso completo
+ * Plano do usuário:
+ *  - visitante  → só informações básicas
+ *  - cadastrado → conta gratuita (vê valores de projeto, 3 créditos/mês)
+ *  - pro        → assinatura ativa; acesso completo
  *
- * Ordem de resolução: sessão master → conta de usuário logada → cookie de
- * demonstração `patrinu_plan` (enquanto não há checkout real).
+ * Ordem de resolução: sessão master → conta de usuário logada → visitante.
+ * O plano vem SEMPRE do servidor (`users.plan`), nunca de cookie do cliente.
  */
 export type Plan = "visitante" | "cadastrado" | "pro";
 
@@ -21,9 +19,7 @@ export async function getPlan(): Promise<Plan> {
   const user = await getCurrentUser();
   if (user) return user.plan;
 
-  const store = await cookies();
-  const raw = store.get("patrinu_plan")?.value;
-  return raw === "pro" || raw === "cadastrado" ? raw : "visitante";
+  return "visitante";
 }
 
 export async function has(min: Plan): Promise<boolean> {

@@ -1,29 +1,24 @@
-"use client";
-
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 
-/** Demo: "assina" o Pro setando o cookie de plano. Sem cobrança real —
- *  a cobrança entra com a autenticação e o checkout. */
+/** CTA para a página de planos. A liberação do Pro é feita pelo servidor
+ *  (webhook do Mercado Pago → `users.plan`), nunca por cookie do cliente. */
 export function UpgradeButton({
   label = "Torne-se membro",
   className,
   variant = "solid",
+  href = "/pro",
 }: {
   label?: string;
   className?: string;
   variant?: "solid" | "outline";
+  href?: string;
 }) {
-  const router = useRouter();
   return (
-    <button
-      type="button"
-      onClick={() => {
-        document.cookie = "patrinu_plan=pro; path=/; max-age=31536000";
-        router.refresh();
-      }}
+    <Link
+      href={href}
       className={cn(
         "inline-flex items-center gap-2 rounded-lg px-5 py-3 text-sm font-bold transition-colors",
         variant === "solid"
@@ -34,6 +29,6 @@ export function UpgradeButton({
     >
       <Sparkles size={16} />
       {label}
-    </button>
+    </Link>
   );
 }

@@ -34,6 +34,16 @@ const num = (v: FormDataEntryValue | null) => {
   return Number.isFinite(n) && n > 0 ? n : null;
 };
 
+/** aceita só URLs https servidas pelo próprio Vercel Blob (evita link externo forjado). */
+function isBlobUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    return u.protocol === "https:" && u.hostname.endsWith(".public.blob.vercel-storage.com");
+  } catch {
+    return false;
+  }
+}
+
 export async function createProject(_prev: State, form: FormData): Promise<State> {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/projetos/novo");
@@ -106,16 +116,15 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     : undefined;
 
   // URLs geradas pelo upload client-side (Vercel Blob) — só para vitrine
-  const BLOB_HOST = ".public.blob.vercel-storage.com";
   const images = isVaga
     ? []
     : form
         .getAll("mediaImages")
         .map((u) => String(u))
-        .filter((u) => u.includes(BLOB_HOST))
+        .filter(isBlobUrl)
         .slice(0, 8);
   const videoRaw = String(form.get("mediaVideo") ?? "");
-  const videoUrl = !isVaga && videoRaw.includes(BLOB_HOST) ? videoRaw : null;
+  const videoUrl = !isVaga && isBlobUrl(videoRaw) ? videoRaw : null;
 
   const created = await submitProject({
     ownerId: user.id,
@@ -164,7 +173,6 @@ async function ownerEmail(ownerId: string | null): Promise<{ name: string; email
   return u ?? null;
 }
 
-const BLOB = ".public.blob.vercel-storage.com";
 const AVAIL = ["imediata", "15_dias", "30_dias", "a_combinar"];
 
 export async function expressInterest(_prev: State, form: FormData): Promise<State> {
@@ -195,7 +203,7 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
     ? null
     : String(form.get("applicantCity") ?? "").trim().slice(0, 80) || null;
   const cvRaw = String(form.get("cvUrl") ?? "");
-  const cvUrl = cvRaw.includes(BLOB) ? cvRaw : null;
+  const cvUrl = isBlobUrl(cvRaw) ? cvRaw : null;
   const availRaw = String(form.get("availability") ?? "");
   const availability = AVAIL.includes(availRaw) ? availRaw : null;
 

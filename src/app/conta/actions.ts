@@ -22,6 +22,13 @@ type State = { error?: string } | null;
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** só caminho interno — barra `//evil.com`, `/\evil.com` e URLs absolutas. */
+function safeNext(next: string): string {
+  return next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\")
+    ? next
+    : "/painel";
+}
+
 export async function signIn(_prev: State, form: FormData): Promise<State> {
   const email = String(form.get("email") ?? "").trim();
   const password = String(form.get("password") ?? "");
@@ -36,7 +43,7 @@ export async function signIn(_prev: State, form: FormData): Promise<State> {
   }
   await applyPendingGrant(user.id, user.email).catch(() => {});
   await startUserSession(user.id);
-  redirect(next.startsWith("/") ? next : "/painel");
+  redirect(safeNext(next));
 }
 
 export async function signUp(_prev: State, form: FormData): Promise<State> {
@@ -58,7 +65,7 @@ export async function signUp(_prev: State, form: FormData): Promise<State> {
   await applyPendingGrant(user.id, user.email).catch(() => {});
   await sendEmail({ to: user.email, ...welcomeEmail(user.name) }).catch(() => {});
   await startUserSession(user.id);
-  redirect(next.startsWith("/") ? next : "/painel");
+  redirect(safeNext(next));
 }
 
 export async function signOut(): Promise<void> {
