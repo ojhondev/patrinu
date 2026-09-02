@@ -166,10 +166,16 @@ export default async function PainelPage({
             </p>
           </div>
         </div>
-        <Link href="/projetos/novo" className="btn btn-primary">
-          <Plus size={16} />
-          Publicar
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/painel/perfil" className="btn btn-secondary">
+            <BadgeCheck size={16} />
+            Meu perfil profissional
+          </Link>
+          <Link href="/projetos/novo" className="btn btn-primary">
+            <Plus size={16} />
+            Publicar
+          </Link>
+        </div>
       </header>
 
       {enviado && (
@@ -231,8 +237,12 @@ export default async function PainelPage({
             {myInterests.map((i) => (
               <div key={`${i.projectId}-${i.userId}`} className="card p-4">
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold text-ink">{i.userName}</span>
-                  <span className="text-xs text-muted">{i.userEmail}</span>
+                  <span className="font-semibold text-ink">
+                    {i.applicantName || i.userName}
+                  </span>
+                  <span className="text-xs text-muted">
+                    {i.applicantEmail || i.userEmail}
+                  </span>
                   <span className="text-xs text-muted">
                     · {formatDate(i.createdAt.toISOString())}
                   </span>
@@ -246,6 +256,26 @@ export default async function PainelPage({
                     {i.projectTitle}
                   </Link>
                 </p>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted">
+                  {i.nationwide ? (
+                    <span>Atende todo o Brasil</span>
+                  ) : (
+                    i.applicantCity && <span>{i.applicantCity}</span>
+                  )}
+                  {i.availability && (
+                    <span>Disponibilidade: {i.availability.replace("_", " ")}</span>
+                  )}
+                  {i.cvUrl && (
+                    <a
+                      href={i.cvUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-green-ink hover:underline"
+                    >
+                      Ver currículo (PDF)
+                    </a>
+                  )}
+                </div>
                 {i.message && (
                   <p className="mt-1.5 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
                     {i.message}

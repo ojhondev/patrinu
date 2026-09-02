@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
+import { creditStatus } from "@/lib/credits";
 import { NewProjectForm } from "@/components/new-project-form";
 
 export const metadata: Metadata = { title: "Publicar" };
@@ -16,6 +17,7 @@ export default async function NovoProjetoPage({
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/projetos/novo");
   const isPro = (await getPlan()) === "pro";
+  const credits = isPro ? null : await creditStatus(user.id, false);
   const wantsProjeto = (await searchParams).tipo === "projeto";
 
   return (
@@ -28,17 +30,24 @@ export default async function NovoProjetoPage({
         Uma vaga para contratar profissionais, ou uma obra concluída para a vitrine.
       </p>
 
-      {!isPro && (
+      {!isPro && credits && (
         <p className="mt-4 rounded-card border border-border bg-sunk px-4 py-3 text-sm text-ink-soft">
-          Publicar <strong className="text-ink">vagas</strong> é um recurso do{" "}
-          <Link href="/pro/contratar" className="font-semibold text-green-ink hover:underline">
+          Você tem{" "}
+          <strong className="text-ink">
+            {credits.remaining} de {credits.limit} créditos grátis
+          </strong>{" "}
+          neste mês. Publicar uma vaga ou um projeto custa 1 crédito. Com o{" "}
+          <Link href="/pro" className="font-semibold text-green-ink hover:underline">
             Patrinu Pro
-          </Link>
-          . Projetos para a vitrine seguem gratuitos (1 por mês).
+          </Link>{" "}
+          é ilimitado.
         </p>
       )}
 
-      <NewProjectForm isPro={isPro} defaultMode={isPro && !wantsProjeto ? "vaga" : "vitrine"} />
+      <NewProjectForm
+        canPublish={isPro || (credits ? credits.remaining > 0 : true)}
+        defaultMode={!wantsProjeto ? "vaga" : "vitrine"}
+      />
     </div>
   );
 }

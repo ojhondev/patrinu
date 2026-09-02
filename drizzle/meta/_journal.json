@@ -78,6 +78,13 @@
       "when": 1788279092960,
       "tag": "0010_mp_billing",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1788357678833,
+      "tag": "0011_creditos_vagas_perfil",
+      "breakpoints": true
     }
   ]
 }

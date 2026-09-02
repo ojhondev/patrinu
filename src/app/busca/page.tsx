@@ -4,6 +4,8 @@ import { Suspense } from "react";
 import { ArrowRight } from "lucide-react";
 
 import { searchAll } from "@/lib/search";
+import { getPlan } from "@/lib/membership";
+import { redactContratante } from "@/lib/projects";
 import { HeaderSearch } from "@/components/header-search";
 import { PopularSearches } from "@/components/popular-searches";
 import { CategoryRail } from "@/components/category-rail";
@@ -59,6 +61,7 @@ export default async function BuscaPage({
   const q = one((await searchParams).q)?.trim() ?? "";
   const r = await searchAll(q);
   const enc = encodeURIComponent(q);
+  if ((await getPlan()) !== "pro") r.vagas = r.vagas.map(redactContratante);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-11">

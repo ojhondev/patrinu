@@ -7,7 +7,10 @@ import { SiteFooter } from "@/components/site-footer";
 import { SignupPopup } from "@/components/signup-popup";
 import { AnnouncementBar } from "@/components/announcement-bar";
 import { CookieConsent } from "@/components/cookie-consent";
+import { ShareBar } from "@/components/share-bar";
+import { CreditsWidget } from "@/components/credits-widget";
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
+import { creditStatus } from "@/lib/credits";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -49,6 +52,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       ? { name: user.name, plan: user.plan, master: false, avatarUrl: user.avatarUrl }
       : null;
 
+  const credits =
+    user && !master && user.plan !== "pro"
+      ? await creditStatus(user.id, false)
+      : null;
+
   return (
     <html
       lang="pt-BR"
@@ -60,6 +68,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <div className="flex-1">{children}</div>
         <SiteFooter />
         {!account && <SignupPopup />}
+        {credits && <CreditsWidget used={credits.used} limit={credits.limit} />}
+        <ShareBar />
         <CookieConsent />
       </body>
     </html>

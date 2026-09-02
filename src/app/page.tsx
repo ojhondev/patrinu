@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { featuredOpportunities } from "@/lib/opportunities";
-import { listProjects, featuredVagas } from "@/lib/projects";
+import { listProjects, featuredVagas, redactContratante } from "@/lib/projects";
 import { featuredProfessionals, latestArticles, featuredCourses } from "@/lib/directory";
 import { HeaderSearch } from "@/components/header-search";
 import { PopularSearches } from "@/components/popular-searches";
@@ -54,7 +54,7 @@ function SectionHead({
 }
 
 export default async function HomePage() {
-  const [vagas, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
+  const [vagasRaw, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
     featuredVagas(4),
     listProjects({ mode: "vitrine", entryKind: "projeto" }),
     featuredProfessionals(4),
@@ -63,6 +63,7 @@ export default async function HomePage() {
     featuredCourses(3),
     has("pro"),
   ]);
+  const vagas = isPro ? vagasRaw : vagasRaw.map(redactContratante);
 
   return (
     <>

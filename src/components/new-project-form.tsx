@@ -11,14 +11,15 @@ import { fieldClass, textareaClass, labelClass } from "@/components/ui/field";
 type State = { error?: string } | null;
 
 export function NewProjectForm({
-  isPro = true,
+  canPublish = true,
   defaultMode = "vaga",
 }: {
-  isPro?: boolean;
+  /** false = conta grátis sem créditos no mês */
+  canPublish?: boolean;
   defaultMode?: "vaga" | "vitrine";
 }) {
   const [state, action, pending] = useActionState<State, FormData>(createProject, null);
-  const [mode, setMode] = useState<"vaga" | "vitrine">(isPro ? defaultMode : "vitrine");
+  const [mode, setMode] = useState<"vaga" | "vitrine">(defaultMode);
   const [confidential, setConfidential] = useState(false);
   const isVaga = mode === "vaga";
 
@@ -27,23 +28,17 @@ export function NewProjectForm({
       <fieldset className="space-y-2">
         <legend className={labelClass}>O que você vai publicar?</legend>
         <div className="grid gap-2.5 sm:grid-cols-2">
-          <label
-            className={
-              "flex items-start gap-2.5 rounded-card border border-border-strong p-3.5 text-sm has-[:checked]:border-brand has-[:checked]:bg-green-weak" +
-              (isPro ? " cursor-pointer" : " cursor-not-allowed opacity-60")
-            }
-          >
+          <label className="flex cursor-pointer items-start gap-2.5 rounded-card border border-border-strong p-3.5 text-sm has-[:checked]:border-brand has-[:checked]:bg-green-weak">
             <input
               type="radio"
               name="mode"
               value="vaga"
               checked={isVaga}
-              disabled={!isPro}
               onChange={() => setMode("vaga")}
               className="mt-0.5"
             />
             <span>
-              <strong className="block">Uma vaga {!isPro && "· Pro"}</strong>
+              <strong className="block">Uma vaga</strong>
               <span className="text-ink-soft">
                 Contrate um profissional — recebe candidaturas.
               </span>
@@ -144,6 +139,32 @@ export function NewProjectForm({
               />
               Salário a combinar (o valor aparece borrado no card)
             </label>
+          </fieldset>
+
+          <fieldset className="space-y-2">
+            <legend className={labelClass}>Contato do contratante</legend>
+            <p className="text-xs text-muted">
+              Fica visível apenas para candidatos membros do Patrinu Pro.
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input
+                name="contactWhatsapp"
+                inputMode="tel"
+                className={fieldClass}
+                placeholder="WhatsApp (ex.: 31 99999-0000)"
+              />
+              <input
+                name="contactEmail"
+                type="email"
+                className={fieldClass}
+                placeholder="E-mail para candidaturas"
+              />
+            </div>
+            <input
+              name="locationNote"
+              className={fieldClass}
+              placeholder="Localização desejada (ex.: presencial em Ouro Preto / MG)"
+            />
           </fieldset>
         </>
       ) : (
@@ -248,7 +269,17 @@ export function NewProjectForm({
         do time da Patrinu.
       </div>
 
-      <button type="submit" disabled={pending} className="btn btn-primary disabled:opacity-60">
+      {!canPublish && (
+        <p className="rounded-btn bg-crit/10 px-3 py-2 text-sm font-semibold text-crit">
+          Você usou seus créditos grátis do mês. Assine o Patrinu Pro para publicar sem limite.
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending || !canPublish}
+        className="btn btn-primary disabled:opacity-60"
+      >
         {pending ? "Enviando…" : "Enviar para análise"}
       </button>
     </form>

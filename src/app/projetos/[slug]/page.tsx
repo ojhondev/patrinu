@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin, Briefcase, Lock } from "lucide-react";
 
-import { getProject, getProjectRaw, listProjects } from "@/lib/projects";
+import { getProject, getProjectRaw, listProjects, redactContratante } from "@/lib/projects";
 import {
   formatDate,
   projectStatusLabel,
@@ -20,6 +20,7 @@ import { ProjectActions } from "@/components/project-actions";
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { hasInterest } from "@/lib/interactions";
+import { creditStatus } from "@/lib/credits";
 
 export async function generateMetadata({
   params,
@@ -42,21 +43,30 @@ export default async function ProjectPage({
 
   const isVaga = p.entryKind === "vaga";
   const salary = formatSalary(p.salaryMin, p.salaryMax, p.salaryConfidential);
-  const org = p.credits[0]?.name ?? "—";
+  const realOrg = p.credits[0]?.name ?? "—";
 
   const user = await getCurrentUser();
   const raw = isVaga ? await getProjectRaw(slug) : null;
   const isOwner = Boolean(user && raw?.ownerId === user.id);
   const alreadyApplied =
     user && raw ? await hasInterest(raw.id, user.id) : false;
-  const canApply = isVaga ? (await getPlan()) === "pro" : true;
+  const isPro = (await getPlan()) === "pro";
+  const credits = user ? await creditStatus(user.id, isPro) : null;
+  const canApply = isVaga
+    ? isPro || (credits ? credits.remaining > 0 : false)
+    : true;
+  // membros Pro (ou o dono) veem o nome e o contato do contratante
+  const revealContratante = isPro || isOwner;
+  const org = revealContratante ? realOrg : "Contratante reservado";
+  const hasContato = Boolean(p.contactWhatsapp || p.contactEmail || p.locationNote);
 
   const all = await listProjects(
     isVaga ? { mode: "abertos", entryKind: "vaga" } : { mode: "vitrine", entryKind: "projeto" },
   );
   const related = all
     .filter((x) => x.slug !== p.slug && x.specialties.some((s) => p.specialties.includes(s)))
-    .slice(0, 4);
+    .slice(0, 4)
+    .map((x) => (isVaga && !isPro ? redactContratante(x) : x));
 
   const images = p.images ?? [];
 
@@ -80,7 +90,14 @@ export default async function ProjectPage({
         <article className="min-w-0">
           {isVaga ? (
             <>
-              <p className="text-sm font-medium text-muted">{org}</p>
+              <p className="text-sm font-medium text-muted">
+                {org}
+                {!revealContratante && (
+                  <span className="ml-2 align-middle text-xs">
+                    · nome visível para membros Pro
+                  </span>
+                )}
+              </p>
               <h1 className="display mt-1 text-3xl text-ink sm:text-[42px]">{p.vagaRole ?? p.title}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-ink-soft">
                 <span className="inline-flex items-center gap-1">
@@ -219,6 +236,8 @@ export default async function ProjectPage({
                     isOwner={isOwner}
                     alreadyInterested={alreadyApplied}
                     canApply={canApply}
+                    defaultName={user?.name ?? ""}
+                    defaultEmail={user?.email ?? ""}
                   />
                 </div>
               </>
@@ -250,6 +269,56 @@ export default async function ProjectPage({
               </>
             )}
           </div>
+
+          {isVaga && hasContato && (
+            <div className="card mt-4 p-5">
+              <h2 className="kicker text-muted">Contato do contratante</h2>
+              {revealContratante ? (
+                <ul className="mt-3 space-y-2 text-sm text-ink-soft">
+                  {p.contactWhatsapp && (
+                    <li>
+                      <span className="text-muted">WhatsApp:</span>{" "}
+                      <a
+                        href={`https://wa.me/55${p.contactWhatsapp.replace(/\D/g, "")}`}
+                        className="font-semibold text-green-ink hover:underline"
+                      >
+                        {p.contactWhatsapp}
+                      </a>
+                    </li>
+                  )}
+                  {p.contactEmail && (
+                    <li>
+                      <span className="text-muted">E-mail:</span>{" "}
+                      <a
+                        href={`mailto:${p.contactEmail}`}
+                        className="font-semibold text-green-ink hover:underline"
+                      >
+                        {p.contactEmail}
+                      </a>
+                    </li>
+                  )}
+                  {p.locationNote && (
+                    <li>
+                      <span className="text-muted">Localização desejada:</span>{" "}
+                      {p.locationNote}
+                    </li>
+                  )}
+                </ul>
+              ) : (
+                <div className="mt-3">
+                  <p className="select-none space-y-1 blur-[5px]" aria-hidden>
+                    WhatsApp: (00) 00000-0000
+                    <br />
+                    E-mail: contato@empresa.com
+                  </p>
+                  <Link href="/pro/oferecer" className="btn btn-primary btn-sm mt-3">
+                    <Lock size={14} />
+                    Ver contato com o Patrinu Pro
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
 
           {isVaga && (
             <p className="mt-4 flex items-start gap-2 text-xs text-muted">

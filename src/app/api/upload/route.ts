@@ -21,6 +21,7 @@ export async function POST(request: Request): Promise<NextResponse> {
             "video/mp4",
             "video/webm",
             "video/quicktime",
+            "application/pdf",
           ],
           maximumSizeInBytes: 55 * 1024 * 1024,
           addRandomSuffix: true,

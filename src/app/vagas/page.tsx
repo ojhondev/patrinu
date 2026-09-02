@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { listProjects } from "@/lib/projects";
+import { listProjects, redactContratante } from "@/lib/projects";
 import { getPlan } from "@/lib/membership";
 import { CONTRACT_TYPES, SENIORITY, WORK_MODES, UFS } from "@/lib/taxonomy";
 import { CATEGORY_GROUPS } from "@/lib/categories";
@@ -38,7 +38,7 @@ export default async function VagasPage({
   const contractSeg = one(sp.contract);
   const contractType = contractSeg && contractSeg !== "todas" ? contractSeg : undefined;
 
-  const [items, isPro] = await Promise.all([
+  const [itemsRaw, isPro] = await Promise.all([
     listProjects({
       mode: "abertos",
       entryKind: "vaga",
@@ -51,6 +51,7 @@ export default async function VagasPage({
     }),
     (async () => (await getPlan()) === "pro")(),
   ]);
+  const items = isPro ? itemsRaw : itemsRaw.map(redactContratante);
 
   return (
     <div>

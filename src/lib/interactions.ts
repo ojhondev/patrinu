@@ -24,14 +24,35 @@ export async function hasInterest(projectId: string, userId: string): Promise<bo
   return Boolean(row);
 }
 
+export type InterestInput = {
+  message?: string;
+  applicantName?: string | null;
+  applicantEmail?: string | null;
+  applicantCity?: string | null;
+  nationwide?: boolean;
+  cvUrl?: string | null;
+  availability?: string | null;
+};
+
 export async function addInterest(
   projectId: string,
   userId: string,
-  message?: string,
+  data: string | InterestInput = {},
 ): Promise<void> {
+  const d: InterestInput = typeof data === "string" ? { message: data } : data;
   await db
     .insert(projectInterests)
-    .values({ projectId, userId, message: message?.trim() || null })
+    .values({
+      projectId,
+      userId,
+      message: d.message?.trim() || null,
+      applicantName: d.applicantName?.trim() || null,
+      applicantEmail: d.applicantEmail?.trim() || null,
+      applicantCity: d.applicantCity?.trim() || null,
+      nationwide: Boolean(d.nationwide),
+      cvUrl: d.cvUrl || null,
+      availability: d.availability || null,
+    })
     .onConflictDoNothing();
 }
 
@@ -43,6 +64,12 @@ export type InterestRow = {
   userName: string;
   userEmail: string;
   message: string | null;
+  applicantName: string | null;
+  applicantEmail: string | null;
+  applicantCity: string | null;
+  nationwide: boolean;
+  cvUrl: string | null;
+  availability: string | null;
   createdAt: Date;
 };
 
@@ -56,6 +83,12 @@ export async function interestsForOwner(ownerId: string): Promise<InterestRow[]>
       userName: users.name,
       userEmail: users.email,
       message: projectInterests.message,
+      applicantName: projectInterests.applicantName,
+      applicantEmail: projectInterests.applicantEmail,
+      applicantCity: projectInterests.applicantCity,
+      nationwide: projectInterests.nationwide,
+      cvUrl: projectInterests.cvUrl,
+      availability: projectInterests.availability,
       createdAt: projectInterests.createdAt,
     })
     .from(projectInterests)

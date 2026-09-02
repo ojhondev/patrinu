@@ -320,6 +320,29 @@ video {
   color: var(--ink);
 }
 
+/* corpo de matéria — leitura estilo revista (Exame) */
+.article-body {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: var(--ink);
+  overflow-wrap: break-word;
+}
+.article-body p {
+  margin: 0 0 1.6rem;
+}
+.article-body p:last-child {
+  margin-bottom: 0;
+}
+.article-body .article-lead::first-letter {
+  float: left;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 3.6rem;
+  line-height: 0.82;
+  font-weight: 500;
+  padding: 0.1rem 0.6rem 0 0;
+  color: var(--brand);
+}
+
 } /* @layer components */
 
 /* régua fina */

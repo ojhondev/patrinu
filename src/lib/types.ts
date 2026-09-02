@@ -113,6 +113,10 @@ export type Project = {
   salaryMin?: number | null;
   salaryMax?: number | null;
   salaryConfidential?: boolean;
+  /** contato do contratante — só exibido a membros Pro */
+  contactWhatsapp?: string;
+  contactEmail?: string;
+  locationNote?: string;
 
   publishedAt: string;
   featured?: boolean;

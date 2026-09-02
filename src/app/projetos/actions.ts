@@ -5,11 +5,13 @@ import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
-import { projectsByOwner, submitProject } from "@/lib/projects";
+import { submitProject } from "@/lib/projects";
+import { spendCredit, NO_CREDITS_MSG } from "@/lib/credits";
 import { sendEmail } from "@/lib/email";
 import {
   addInterest,
   addProposal,
+  hasInterest,
   hasProposal,
   openProjectForActions,
 } from "@/lib/interactions";
@@ -83,30 +85,26 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     return { error: "Ano inválido." };
 
   const plan = await getPlan();
+  const isPro = plan === "pro";
 
-  // publicar vaga exige Pro (contratante)
-  if (isVaga && plan !== "pro") {
-    return {
-      error:
-        "Publicar vagas é um recurso do Patrinu Pro para contratantes. Assine em /pro/contratar.",
-    };
-  }
+  // conta grátis: publicar consome 1 dos 3 créditos/mês
+  const credit = await spendCredit(
+    user.id,
+    isPro,
+    isVaga ? "publicar_vaga" : "publicar_projeto",
+  );
+  if (!credit.ok) return { error: NO_CREDITS_MSG };
 
-  // projeto/vitrine: cota gratuita de 1 publicação por mês para quem não é Pro
-  if (!isVaga && plan !== "pro") {
-    const mine = await projectsByOwner(user.id);
-    const now = new Date();
-    const thisMonth = mine.filter((p) => {
-      const d = new Date(p.publishedAt);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    });
-    if (thisMonth.length >= 1) {
-      return {
-        error:
-          "O plano gratuito permite 1 publicação por mês. Assine o Patrinu Pro para publicar sem limite.",
-      };
-    }
-  }
+  // contato do contratante (só vaga) — visível só a membros Pro
+  const contactWhatsapp = isVaga
+    ? String(form.get("contactWhatsapp") ?? "").replace(/[^\d+]/g, "").slice(0, 20) || undefined
+    : undefined;
+  const contactEmail = isVaga
+    ? String(form.get("contactEmail") ?? "").trim().toLowerCase() || undefined
+    : undefined;
+  const locationNote = isVaga
+    ? String(form.get("locationNote") ?? "").trim().slice(0, 140) || undefined
+    : undefined;
 
   // URLs geradas pelo upload client-side (Vercel Blob) — só para vitrine
   const BLOB_HOST = ".public.blob.vercel-storage.com";
@@ -140,6 +138,9 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     salaryMin,
     salaryMax,
     salaryConfidential,
+    contactWhatsapp,
+    contactEmail,
+    locationNote,
   });
 
   // sem e-mail de "em análise" — o status aparece no painel do usuário.
@@ -160,6 +161,9 @@ async function ownerEmail(ownerId: string | null): Promise<{ name: string; email
   return u ?? null;
 }
 
+const BLOB = ".public.blob.vercel-storage.com";
+const AVAIL = ["imediata", "15_dias", "30_dias", "a_combinar"];
+
 export async function expressInterest(_prev: State, form: FormData): Promise<State> {
   const slug = String(form.get("slug") ?? "");
   const user = await getCurrentUser();
@@ -167,17 +171,43 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
 
   const project = await openProjectForActions(slug);
   if (!project || !project.isOpen) return { error: "Esta publicação não está aberta." };
-  if (project.ownerId === user.id)
-    return { error: "Esta publicação é sua." };
+  if (project.ownerId === user.id) return { error: "Esta publicação é sua." };
 
   const isVaga = project.entryKind === "vaga";
-  if (isVaga && (await getPlan()) !== "pro") {
-    return {
-      error: "Candidatar-se às vagas é um recurso do Patrinu Pro. Assine em /pro/oferecer.",
-    };
-  }
+  const isPro = (await getPlan()) === "pro";
 
-  await addInterest(project.id, user.id, String(form.get("message") ?? ""));
+  if (await hasInterest(project.id, user.id))
+    return { ok: isVaga ? "Candidatura enviada." : "Você está na lista de interessados." };
+
+  const message = String(form.get("message") ?? "").trim();
+  if (isVaga && message.length < 10)
+    return { error: "Escreva uma mensagem curta para o contratante." };
+
+  const applicantName = String(form.get("applicantName") ?? "").trim() || user.name;
+  const applicantEmail =
+    String(form.get("applicantEmail") ?? "").trim().toLowerCase() || user.email;
+  const nationwide = form.get("nationwide") != null;
+  const applicantCity = nationwide
+    ? null
+    : String(form.get("applicantCity") ?? "").trim().slice(0, 80) || null;
+  const cvRaw = String(form.get("cvUrl") ?? "");
+  const cvUrl = cvRaw.includes(BLOB) ? cvRaw : null;
+  const availRaw = String(form.get("availability") ?? "");
+  const availability = AVAIL.includes(availRaw) ? availRaw : null;
+
+  // candidatar-se consome 1 crédito (conta grátis: 3/mês) — Pro = ilimitado
+  const credit = await spendCredit(user.id, isPro, "candidatura", project.id);
+  if (!credit.ok) return { error: NO_CREDITS_MSG };
+
+  await addInterest(project.id, user.id, {
+    message,
+    applicantName,
+    applicantEmail,
+    applicantCity,
+    nationwide,
+    cvUrl,
+    availability,
+  });
 
   const owner = await ownerEmail(project.ownerId);
   if (owner) {
@@ -186,7 +216,9 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
       subject: isVaga
         ? `Nova candidatura para "${project.title}"`
         : `Novo interessado em "${project.title}"`,
-      text: `${user.name} ${isVaga ? "se candidatou à vaga" : "quer participar do projeto"} "${project.title}". Veja no seu painel.`,
+      text: `${applicantName} ${isVaga ? "se candidatou à vaga" : "quer participar do projeto"} "${project.title}".${
+        applicantCity ? `\nCidade: ${applicantCity}` : nationwide ? "\nAtende todo o Brasil" : ""
+      }${availability ? `\nDisponibilidade: ${availability.replace("_", " ")}` : ""}\n\n${message}\n\nVeja os detalhes no seu painel.`,
     });
   }
 

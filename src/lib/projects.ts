@@ -62,6 +62,9 @@ function rowToProject(r: Row): Project {
     salaryMin: num(r.salaryMin),
     salaryMax: num(r.salaryMax),
     salaryConfidential: r.salaryConfidential,
+    contactWhatsapp: r.contactWhatsapp ?? undefined,
+    contactEmail: r.contactEmail ?? undefined,
+    locationNote: r.locationNote ?? undefined,
     publishedAt: (r.publishedAt ?? r.createdAt).toISOString(),
     featured: r.featured,
   };
@@ -110,6 +113,21 @@ export async function listProjects(
 /** vagas em destaque para a home. */
 export async function featuredVagas(limit = 4): Promise<Project[]> {
   return (await listProjects({ mode: "abertos", entryKind: "vaga" })).slice(0, limit);
+}
+
+/**
+ * Remove dados do contratante (nome, WhatsApp, e-mail) — só membros Pro veem.
+ * Aplicar em toda listagem/detalhe de vaga quando o viewer não é Pro.
+ */
+export function redactContratante(p: Project): Project {
+  return {
+    ...p,
+    credits: p.credits.map((c, i) =>
+      i === 0 ? { role: c.role, name: "Contratante reservado" } : c,
+    ),
+    contactWhatsapp: undefined,
+    contactEmail: undefined,
+  };
 }
 
 export async function getProject(slug: string): Promise<Project | null> {
@@ -205,6 +223,9 @@ export type NewProjectInput = {
   salaryMin?: number | null;
   salaryMax?: number | null;
   salaryConfidential?: boolean;
+  contactWhatsapp?: string;
+  contactEmail?: string;
+  locationNote?: string;
 };
 
 /** Cria um projeto/vaga do usuário em status `em_analise` (fila do Master). */
@@ -246,6 +267,9 @@ export async function submitProject(input: NewProjectInput): Promise<Project> {
       salaryMin: isVaga && input.salaryMin != null ? String(input.salaryMin) : null,
       salaryMax: isVaga && input.salaryMax != null ? String(input.salaryMax) : null,
       salaryConfidential: isVaga ? Boolean(input.salaryConfidential) : false,
+      contactWhatsapp: isVaga ? input.contactWhatsapp ?? null : null,
+      contactEmail: isVaga ? input.contactEmail ?? null : null,
+      locationNote: isVaga ? input.locationNote ?? null : null,
       // guarda o modo pretendido para o Master aplicar na aprovação
       requirements: [`__mode:${isVaga ? "aberto" : "vitrine"}`],
       submittedAt: new Date(),

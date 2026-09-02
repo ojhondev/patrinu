@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, Building2 } from "lucide-react";
 
 import type { Project } from "@/lib/types";
 import {
@@ -13,7 +13,9 @@ import { getPlan } from "@/lib/membership";
 
 export async function VagaCard({ vaga: v }: { vaga: Project }) {
   const isPro = (await getPlan()) === "pro";
-  const org = v.credits[0]?.name ?? "—";
+  const realOrg = v.credits[0]?.name ?? "—";
+  // nome do contratante fica oculto para quem não é Pro
+  const org = isPro ? realOrg : "Contratante reservado";
   const salary = formatSalary(v.salaryMin, v.salaryMax, v.salaryConfidential);
   const meta = [
     v.contractType && contractTypeLabel(v.contractType),
@@ -30,10 +32,18 @@ export async function VagaCard({ vaga: v }: { vaga: Project }) {
     >
       <div className="flex items-center gap-2.5">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[9px] bg-sunk-2 text-[13px] font-bold text-ink-soft">
-          {org.slice(0, 2).toUpperCase()}
+          {isPro ? org.slice(0, 2).toUpperCase() : <Building2 size={15} />}
         </span>
         <span className="truncate text-[13px] text-muted">
-          {org} · {v.city}/{v.uf}
+          {isPro ? (
+            <>
+              {org} · {v.city}/{v.uf}
+            </>
+          ) : (
+            <span className="inline-flex items-center gap-1">
+              <Lock size={11} /> Contratante · {v.city}/{v.uf}
+            </span>
+          )}
         </span>
       </div>
 

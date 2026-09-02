@@ -338,6 +338,9 @@ export const professionals = pgTable("professionals", {
   plan: text("plan").notNull().default("free"),
   responseHours: integer("response_hours"),
   score: real("score"),
+  whatsapp: text("whatsapp"),
+  website: text("website"),
+  avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -526,6 +529,11 @@ export const projects = pgTable(
     salaryMin: numeric("salary_min", { precision: 12, scale: 2 }),
     salaryMax: numeric("salary_max", { precision: 12, scale: 2 }),
     salaryConfidential: boolean("salary_confidential").notNull().default(false),
+    /** contato do contratante — visível só para membros Pro */
+    contactWhatsapp: text("contact_whatsapp"),
+    contactEmail: text("contact_email"),
+    /** "Localização desejada" para o profissional (texto livre) */
+    locationNote: text("location_note"),
 
     featured: boolean("featured").notNull().default(false),
 
@@ -541,7 +549,7 @@ export const projects = pgTable(
   (t) => [index("projects_status_idx").on(t.status)],
 );
 
-/** "Quero participar" — profissional manifesta interesse; o dono vê a lista. */
+/** Candidatura a vaga / "quero participar" — o contratante vê a lista. */
 export const projectInterests = pgTable(
   "project_interests",
   {
@@ -552,10 +560,28 @@ export const projectInterests = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     message: text("message"),
+    /** dados da candidatura (wizard) */
+    applicantName: text("applicant_name"),
+    applicantEmail: text("applicant_email"),
+    applicantCity: text("applicant_city"),
+    nationwide: boolean("nationwide").notNull().default(false),
+    cvUrl: text("cv_url"),
+    availability: text("availability"), // imediata | 15_dias | 30_dias | a_combinar
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("project_interest_pk").on(t.projectId, t.userId)],
 );
+
+/** Créditos gastos por conta grátis (3/mês). Pro = ilimitado. */
+export const creditLedger = pgTable("credit_ledger", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  action: text("action").notNull(), // publicar_projeto | publicar_vaga | candidatura
+  refId: text("ref_id"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
 
 export const proposalStatus = pgEnum("proposal_status", [
   "enviada",
