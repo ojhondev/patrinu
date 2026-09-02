@@ -51,9 +51,10 @@ export default async function ProjectPage({
   const alreadyApplied =
     user && raw ? await hasInterest(raw.id, user.id) : false;
   const isPro = (await getPlan()) === "pro";
-  const credits = user ? await creditStatus(user.id, isPro) : null;
+  const isPaidPro = user?.plan === "pro";
+  const credits = user ? await creditStatus(user.id, isPaidPro) : null;
   const canApply = isVaga
-    ? isPro || (credits ? credits.remaining > 0 : false)
+    ? isPaidPro || (credits ? credits.remaining > 0 : false)
     : true;
   // membros Pro (ou o dono) veem o nome e o contato do contratante
   const revealContratante = isPro || isOwner;

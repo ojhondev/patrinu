@@ -84,8 +84,7 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   if (year !== undefined && (Number.isNaN(year) || year < 1500 || year > 2100))
     return { error: "Ano inválido." };
 
-  const plan = await getPlan();
-  const isPro = plan === "pro";
+  const isPro = user.plan === "pro";
 
   // conta grátis: publicar consome 1 dos 3 créditos/mês
   const credit = await spendCredit(
@@ -144,6 +143,7 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   });
 
   // sem e-mail de "em análise" — o status aparece no painel do usuário.
+  revalidatePath("/", "layout"); // atualiza o contador de créditos no rodapé
   redirect("/painel?enviado=1");
 }
 
@@ -174,7 +174,8 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
   if (project.ownerId === user.id) return { error: "Esta publicação é sua." };
 
   const isVaga = project.entryKind === "vaga";
-  const isPro = (await getPlan()) === "pro";
+  // p/ crédito: só a assinatura real do usuário conta como Pro (não o cookie de demo)
+  const isPro = user.plan === "pro";
 
   if (await hasInterest(project.id, user.id))
     return { ok: isVaga ? "Candidatura enviada." : "Você está na lista de interessados." };
@@ -224,6 +225,7 @@ export async function expressInterest(_prev: State, form: FormData): Promise<Sta
 
   revalidatePath(`/projetos/${slug}`);
   revalidatePath("/painel");
+  revalidatePath("/", "layout"); // atualiza o contador de créditos no rodapé
   return { ok: isVaga ? "Candidatura enviada." : "Você entrou na lista de interessados." };
 }
 

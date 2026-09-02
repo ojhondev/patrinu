@@ -90,14 +90,14 @@ export default async function HomePage() {
         <FacadeMotif className="pointer-events-none absolute -right-12 top-1/2 hidden h-[420px] -translate-y-1/2 text-white/10 lg:block" />
         <div className="relative mx-auto max-w-[1400px] px-4 py-16 sm:px-6 sm:py-20 lg:px-11 lg:py-24">
           <div className="max-w-3xl">
-            <p className="accent text-lg text-[#ffb59e]">O radar do patrimônio e restauro do Brasil</p>
+            <p className="accent text-lg text-[#ffb59e]">Patrimônio e restauro do Brasil</p>
             <h1 className="display mt-3 text-4xl text-white sm:text-6xl lg:text-[64px]">
-              Tudo sobre patrimônio e restauro do Brasil,{" "}
-              <span className="accent font-medium text-white">num só lugar</span>.
+              Encontre profissionais, vagas e editais de restauro{" "}
+              <span className="accent font-medium text-white">sem sair de uma aba</span>.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-white/80">
-              Profissionais verificados, vagas em escritórios de restauro, editais abertos e o
-              noticiário do setor.
+              A rede profissional do patrimônio: especialistas verificados, oportunidades de
+              trabalho e o que move o setor.
             </p>
 
             <div className="mt-8 max-w-2xl">

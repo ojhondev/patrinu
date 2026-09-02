@@ -1,34 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  BadgeCheck,
-  Clock,
-  MapPin,
-  Plus,
-  Sparkles,
-  TrendingUp,
-  Users,
-} from "lucide-react";
+import { BadgeCheck, Clock, Coins, FileText, Plus, Sparkles } from "lucide-react";
 
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { projectsByOwner } from "@/lib/projects";
+import { creditStatus } from "@/lib/credits";
 import type { Project, ProjectStatus } from "@/lib/types";
 import {
-  compatibleForProfissional,
-  eligibilityForFinanciamento,
-  prospectsForContratante,
-} from "@/lib/pro";
-import {
+  interestsByUser,
   interestsForOwner,
   proposalsByUser,
   proposalsForOwner,
 } from "@/lib/interactions";
-import { formatDate, daysUntil, specialtyLabel } from "@/lib/taxonomy";
+import { formatDate, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { Avatar } from "@/components/avatar";
-import { SpecialtyIcon } from "@/components/specialty-visual";
 import { ProposalThread } from "@/components/proposal-thread";
 import { updateAvatar } from "@/app/conta/actions";
 import { cn } from "@/lib/cn";
@@ -38,17 +26,11 @@ export const metadata: Metadata = { title: "Painel" };
 type SearchParams = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
 
-type Perfil = "contratante" | "profissional" | "financiamento";
-const PERFIS: { key: Perfil; label: string }[] = [
-  { key: "contratante", label: "Contratante" },
-  { key: "profissional", label: "Profissional" },
-  { key: "financiamento", label: "Financiamento" },
-];
-
-const TRACK_TO_PERFIL: Record<string, Perfil> = {
-  contratar: "contratante",
-  oferecer: "profissional",
-  financiamento: "financiamento",
+const AVAIL_LABEL: Record<string, string> = {
+  imediata: "disponível imediatamente",
+  "15_dias": "disponível em até 15 dias",
+  "30_dias": "disponível em até 30 dias",
+  a_combinar: "disponibilidade a combinar",
 };
 
 const STATUS_BADGE: Record<
@@ -65,25 +47,7 @@ const STATUS_BADGE: Record<
   concluido: { tone: "ok", label: "concluído" },
 };
 
-function Tile({
-  label,
-  value,
-  icon: Icon,
-}: {
-  label: string;
-  value: string;
-  icon: typeof Users;
-}) {
-  return (
-    <div className="card p-4">
-      <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-muted">
-        <Icon size={14} className="text-green-ink" />
-        {label}
-      </div>
-      <p className="mt-2 font-display text-2xl font-extrabold tabular-nums">{value}</p>
-    </div>
-  );
-}
+const OPEN_STATUSES = ["aberto", "em_captacao"];
 
 function SectionTitle({ children, count }: { children: React.ReactNode; count?: number }) {
   return (
@@ -105,16 +69,18 @@ export default async function PainelPage({
 
   const sp = await searchParams;
   const enviado = one(sp.enviado) === "1";
-  const defaultPerfil = TRACK_TO_PERFIL[user.track ?? ""] ?? "contratante";
-  const perfil = (one(sp.perfil) as Perfil) || defaultPerfil;
 
-  const [plan, myProjects, myInterests, receivedProposals, sentProposals] =
+  const plan = await getPlan();
+  const isPro = plan === "pro";
+
+  const [myProjects, myApplications, receivedInterests, receivedProposals, sentProposals, credits] =
     await Promise.all([
-      getPlan(),
       projectsByOwner(user.id),
+      interestsByUser(user.id),
       interestsForOwner(user.id),
       proposalsForOwner(user.id),
       proposalsByUser(user.id),
+      creditStatus(user.id, isPro),
     ]);
 
   return (
@@ -150,12 +116,12 @@ export default async function PainelPage({
               <span
                 className={cn(
                   "rounded-pill px-2 py-0.5 text-xs font-semibold",
-                  plan === "pro" ? "bg-green-weak text-green-ink" : "bg-sunk text-ink-soft",
+                  isPro ? "bg-green-weak text-green-ink" : "bg-sunk text-ink-soft",
                 )}
               >
-                {plan === "pro" ? "Membro" : plan === "cadastrado" ? "Conta gratuita" : "Visitante"}
+                {isPro ? "Membro Pro" : "Conta gratuita"}
               </span>
-              {plan !== "pro" && (
+              {!isPro && (
                 <>
                   {" · "}
                   <Link href="/pro" className="font-semibold text-green-ink hover:underline">
@@ -188,9 +154,51 @@ export default async function PainelPage({
         </div>
       )}
 
-      {/* ---------- MINHAS PUBLICAÇÕES (real) ---------- */}
+      {/* ---------- CRÉDITOS ---------- */}
+      <section className="mb-10">
+        {isPro ? (
+          <div className="card flex flex-wrap items-center justify-between gap-3 p-4">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-ink">
+              <Sparkles size={16} className="text-brand" />
+              Membro Pro — publicações e candidaturas ilimitadas.
+            </span>
+          </div>
+        ) : (
+          <div className="card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-sm font-bold text-ink">
+                <Coins size={16} className="text-brand" />
+                Créditos deste mês
+              </span>
+              <span className="text-sm font-extrabold tabular-nums text-ink">
+                {credits.remaining}
+                <span className="font-semibold text-muted"> de {credits.limit}</span>
+              </span>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-pill bg-sunk">
+              <span
+                className="block h-full rounded-pill bg-brand"
+                style={{ width: `${(credits.remaining / credits.limit) * 100}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-muted">
+              Publicar um projeto ou uma vaga e candidatar-se a uma vaga custam 1 crédito cada. O
+              saldo volta a {credits.limit} no início de cada mês.{" "}
+              <Link href="/pro" className="font-semibold text-green-ink hover:underline">
+                Seja Pro para não ter limite
+              </Link>
+              .
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* ---------- MINHAS PUBLICAÇÕES ---------- */}
       <section className="mb-12">
-        <SectionTitle>Minhas publicações</SectionTitle>
+        <SectionTitle count={myProjects.length || undefined}>Minhas publicações</SectionTitle>
+        <p className="mt-1 text-sm text-ink-soft">
+          Vagas e projetos que você publicou — com o status de moderação.
+        </p>
         <div className="mt-4 space-y-3">
           {myProjects.length === 0 ? (
             <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
@@ -206,43 +214,100 @@ export default async function PainelPage({
         </div>
       </section>
 
-      {/* ---------- PROPOSTAS RECEBIDAS (real) ---------- */}
-      {receivedProposals.length > 0 && (
-        <section className="mb-12">
-          <SectionTitle count={receivedProposals.length}>Propostas recebidas</SectionTitle>
-          <p className="mt-1 text-sm text-ink-soft">
-            Profissionais que enviaram proposta para os seus projetos. Converse e decida.
-          </p>
-          <div className="mt-4 space-y-3">
-            {receivedProposals.map((p) => (
-              <ProposalThread
-                key={p.id}
-                proposal={p}
-                viewer="owner"
-                currentUserId={user.id}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* ---------- MINHAS CANDIDATURAS ---------- */}
+      <section className="mb-12">
+        <SectionTitle count={myApplications.length || undefined}>Minhas candidaturas</SectionTitle>
+        <p className="mt-1 text-sm text-ink-soft">
+          Vagas e projetos em que você se candidatou. O contratante entra em contato pelo e-mail
+          ou WhatsApp que você informou.
+        </p>
+        <div className="mt-4 space-y-3">
+          {myApplications.length === 0 ? (
+            <p className="rounded-card border border-dashed border-border bg-surface p-6 text-center text-sm text-muted">
+              Você ainda não se candidatou a nenhuma vaga.{" "}
+              <Link href="/vagas" className="font-semibold text-green-ink hover:underline">
+                Ver vagas abertas
+              </Link>
+              .
+            </p>
+          ) : (
+            myApplications.map((a) => {
+              const open = OPEN_STATUSES.includes(a.projectStatus);
+              return (
+                <div key={a.projectId} className="card p-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tone={open ? "green" : "neutral"}>
+                      {open ? "candidatura enviada" : "vaga encerrada"}
+                    </Badge>
+                    <span className="text-xs text-muted">
+                      {formatDate(a.createdAt.toISOString())}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/projetos/${a.projectSlug}`}
+                    className="mt-1 block font-semibold text-ink hover:underline"
+                  >
+                    {a.projectTitle}
+                  </Link>
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted">
+                    <span>
+                      {a.nationwide
+                        ? "Você atende todo o Brasil"
+                        : a.applicantCity
+                          ? `Sua praça: ${a.applicantCity}`
+                          : null}
+                    </span>
+                    {a.availability && <span>{AVAIL_LABEL[a.availability] ?? a.availability}</span>}
+                    {a.cvUrl && (
+                      <a
+                        href={a.cvUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 font-semibold text-green-ink hover:underline"
+                      >
+                        <FileText size={12} />
+                        currículo enviado
+                      </a>
+                    )}
+                  </div>
+                  {a.message && (
+                    <p className="mt-2 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
+                      {a.message}
+                    </p>
+                  )}
+                  <p className="mt-2 text-xs text-muted">
+                    {open
+                      ? "Aguardando retorno do contratante."
+                      : "Esta vaga não está mais recebendo candidaturas."}
+                  </p>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </section>
 
-      {/* ---------- CANDIDATURAS RECEBIDAS (real) ---------- */}
-      {myInterests.length > 0 && (
+      {/* ---------- CANDIDATURAS RECEBIDAS ---------- */}
+      {receivedInterests.length > 0 && (
         <section className="mb-12">
-          <SectionTitle count={myInterests.length}>Candidaturas recebidas</SectionTitle>
+          <SectionTitle count={receivedInterests.length}>
+            Candidaturas nas minhas publicações
+          </SectionTitle>
           <p className="mt-1 text-sm text-ink-soft">
-            Quem se candidatou às suas vagas ou pediu para participar dos seus projetos.
+            Quem se candidatou às suas vagas ou pediu para participar dos seus projetos. Fale
+            direto pelo e-mail ou WhatsApp.
           </p>
           <div className="mt-4 space-y-2">
-            {myInterests.map((i) => (
+            {receivedInterests.map((i) => (
               <div key={`${i.projectId}-${i.userId}`} className="card p-4">
                 <div className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="font-semibold text-ink">
-                    {i.applicantName || i.userName}
-                  </span>
-                  <span className="text-xs text-muted">
+                  <span className="font-semibold text-ink">{i.applicantName || i.userName}</span>
+                  <a
+                    href={`mailto:${i.applicantEmail || i.userEmail}`}
+                    className="text-xs text-green-ink hover:underline"
+                  >
                     {i.applicantEmail || i.userEmail}
-                  </span>
+                  </a>
                   <span className="text-xs text-muted">
                     · {formatDate(i.createdAt.toISOString())}
                   </span>
@@ -263,7 +328,7 @@ export default async function PainelPage({
                     i.applicantCity && <span>{i.applicantCity}</span>
                   )}
                   {i.availability && (
-                    <span>Disponibilidade: {i.availability.replace("_", " ")}</span>
+                    <span>{AVAIL_LABEL[i.availability] ?? i.availability}</span>
                   )}
                   {i.cvUrl && (
                     <a
@@ -287,47 +352,43 @@ export default async function PainelPage({
         </section>
       )}
 
-      {/* ---------- MINHAS PROPOSTAS (real) ---------- */}
+      {/* ---------- PROPOSTAS (legado — só se houver) ---------- */}
+      {receivedProposals.length > 0 && (
+        <section className="mb-12">
+          <SectionTitle count={receivedProposals.length}>Propostas recebidas</SectionTitle>
+          <div className="mt-4 space-y-3">
+            {receivedProposals.map((p) => (
+              <ProposalThread key={p.id} proposal={p} viewer="owner" currentUserId={user.id} />
+            ))}
+          </div>
+        </section>
+      )}
       {sentProposals.length > 0 && (
         <section className="mb-12">
           <SectionTitle count={sentProposals.length}>Minhas propostas</SectionTitle>
           <div className="mt-4 space-y-3">
             {sentProposals.map((p) => (
-              <ProposalThread
-                key={p.id}
-                proposal={p}
-                viewer="proponent"
-                currentUserId={user.id}
-              />
+              <ProposalThread key={p.id} proposal={p} viewer="proponent" currentUserId={user.id} />
             ))}
           </div>
         </section>
       )}
 
-      {/* ---------- DEMONSTRAÇÃO ---------- */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-t border-border pt-8">
-        <div>
-          <h2 className="font-display text-xl font-bold tracking-tight">Oportunidades e conexões</h2>
-          <p className="mt-1 text-sm text-ink-soft">
-            Prévia de demonstração — os dados abaixo ainda são exemplos.
+      {!isPro && (
+        <section className="mt-4 rounded-card border border-brand/25 bg-green-weak/50 p-5">
+          <p className="inline-flex items-center gap-2 font-display text-base font-bold text-ink">
+            <Sparkles size={16} className="text-brand" />
+            Patrinu Pro
           </p>
-        </div>
-        <div className="flex gap-2">
-          {PERFIS.map((pf) => (
-            <Link
-              key={pf.key}
-              href={`/painel?perfil=${pf.key}`}
-              className={cn("chip", perfil === pf.key && "is-active")}
-            >
-              {pf.label}
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {perfil === "contratante" && <Contratante />}
-      {perfil === "profissional" && <Profissional />}
-      {perfil === "financiamento" && <Financiamento />}
+          <p className="mt-1 max-w-2xl text-sm text-ink-soft">
+            Publicações e candidaturas ilimitadas, contato dos contratantes das vagas visível,
+            editais completos e prioridade no diretório de profissionais.
+          </p>
+          <Link href="/pro" className="btn btn-primary btn-sm mt-3">
+            Ver planos
+          </Link>
+        </section>
+      )}
     </div>
   );
 }
@@ -343,7 +404,7 @@ function MyProjectRow({ p }: { p: Project }) {
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={s.tone}>{s.label}</Badge>
           <span className="text-xs text-muted">
-            {p.city}/{p.uf}
+            {p.entryKind === "vaga" ? "Vaga" : "Projeto"} · {p.city}/{p.uf}
             {p.year ? ` · ${p.year}` : ""}
           </span>
         </div>
@@ -367,232 +428,4 @@ function MyProjectRow({ p }: { p: Project }) {
       )}
     </div>
   );
-}
-
-/* ---------------- contratante (demo) ---------------- */
-
-function ProspectRow({
-  p,
-}: {
-  p: Awaited<ReturnType<typeof prospectsForContratante>>[number];
-}) {
-  return (
-    <div className="card flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-pill bg-green-weak text-green-ink">
-        <SpecialtyIcon
-          specialty={p.professional?.specialties[0] ?? "arquitetura"}
-          size={20}
-        />
-      </span>
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href={`/profissionais/${p.professionalSlug}`}
-            className="font-semibold text-ink hover:underline"
-          >
-            {p.professional?.displayName ?? p.professionalSlug}
-          </Link>
-          {p.professional?.verified && <BadgeCheck size={15} className="text-green" />}
-          <ProspectStatus status={p.status} />
-        </div>
-        <p className="mt-0.5 text-sm text-ink-soft">
-          <Link href={`/projetos/${p.projectSlug}`} className="hover:underline">
-            {p.projectTitle}
-          </Link>{" "}
-          — {p.reason}
-        </p>
-      </div>
-      <div className="flex shrink-0 items-center gap-3">
-        <span className="text-sm font-bold text-green-ink tabular-nums">
-          {Math.round(p.fit * 100)}%
-        </span>
-        <button type="button" className="btn btn-primary btn-sm">
-          {p.status === "candidatou" || p.status === "em_conversa" ? "Ver proposta" : "Convidar"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-async function Contratante() {
-  const prospects = await prospectsForContratante();
-  const candidatos = prospects.filter(
-    (p) => p.status === "candidatou" || p.status === "em_conversa",
-  );
-  const matches = prospects.filter(
-    (p) => p.status === "match" || p.status === "convidado",
-  );
-
-  return (
-    <>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Tile label="Candidaturas" value={String(candidatos.length)} icon={BadgeCheck} />
-        <Tile label="Matches (não candidatados)" value={String(matches.length)} icon={Sparkles} />
-        <Tile label="Projetos publicados" value="—" icon={TrendingUp} />
-      </div>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-bold">Quem se candidatou</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Profissionais e ateliês que enviaram proposta ou manifestaram interesse nos seus
-          projetos.
-        </p>
-        <div className="mt-4 space-y-3">
-          {candidatos.length > 0 ? (
-            candidatos.map((p) => (
-              <ProspectRow key={`${p.professionalSlug}-${p.projectSlug}`} p={p} />
-            ))
-          ) : (
-            <p className="text-sm text-muted">Nenhuma candidatura ainda.</p>
-          )}
-        </div>
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-bold">Matches sugeridos</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Deram match com o seu projeto pelo perfil, mas ainda não se candidataram — você
-          pode convidar.
-        </p>
-        <div className="mt-4 space-y-3">
-          {matches.length > 0 ? (
-            matches.map((p) => (
-              <ProspectRow key={`${p.professionalSlug}-${p.projectSlug}`} p={p} />
-            ))
-          ) : (
-            <p className="text-sm text-muted">Nenhum match no momento.</p>
-          )}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function ProspectStatus({ status }: { status: string }) {
-  const map: Record<string, { tone: "green" | "neutral" | "ok"; label: string }> = {
-    candidatou: { tone: "ok", label: "candidatou-se" },
-    match: { tone: "neutral", label: "deu match" },
-    convidado: { tone: "green", label: "convidado" },
-    em_conversa: { tone: "green", label: "em conversa" },
-  };
-  const m = map[status] ?? map.match;
-  return <Badge tone={m.tone}>{m.label}</Badge>;
-}
-
-/* ---------------- profissional (demo) ---------------- */
-
-async function Profissional() {
-  const opps = await compatibleForProfissional();
-  return (
-    <>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Tile label="Oportunidades compatíveis" value={String(opps.length)} icon={Sparkles} />
-        <Tile label="Candidaturas" value="—" icon={BadgeCheck} />
-        <Tile label="Visitas ao perfil (7d)" value="—" icon={TrendingUp} />
-      </div>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-bold">Oportunidades compatíveis com o seu perfil</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Editais e projetos abertos que casam com especialidade, técnica, região e porte.
-        </p>
-        <div className="mt-4 space-y-3">
-          {opps.map((o) => {
-            const d = daysUntil(o.deadlineAt);
-            return (
-              <div
-                key={o.id}
-                className="card p-4"
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge tone="green">{o.kind === "edital" ? "Edital" : "Projeto aberto"}</Badge>
-                  <span className="text-sm font-bold text-green-ink tabular-nums">
-                    {Math.round(o.fit * 100)}% aderência
-                  </span>
-                  {d != null && d >= 0 && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-warn">
-                      <Clock size={12} />
-                      {d} dias
-                    </span>
-                  )}
-                </div>
-                <Link
-                  href={o.kind === "edital" ? `/editais/${o.id}` : `/projetos/${o.id}`}
-                  className="mt-1.5 block font-semibold text-ink hover:underline"
-                >
-                  {o.title}
-                </Link>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-soft">
-                  <span>{o.organ}</span>
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin size={12} />
-                    {o.uf}
-                  </span>
-                  <span className="font-medium">{o.value}</span>
-                  {o.deadlineAt && <span>· prazo {formatDate(o.deadlineAt)}</span>}
-                </div>
-                <p className="mt-2 text-sm text-ink-soft">{o.reason}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-    </>
-  );
-}
-
-/* ---------------- financiamento (demo) ---------------- */
-
-async function Financiamento() {
-  const signals = await eligibilityForFinanciamento();
-  const elegiveis = signals.filter((s) => s.status === "elegivel").length;
-  return (
-    <>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Tile label="Investidores sinalizando" value={String(signals.length)} icon={Users} />
-        <Tile label="Elegibilidade confirmada" value={String(elegiveis)} icon={BadgeCheck} />
-        <Tile label="Meta de captação" value="—" icon={TrendingUp} />
-      </div>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-bold">Quem sinaliza elegibilidade</h2>
-        <p className="mt-1 text-sm text-ink-soft">
-          Bancos, institutos, estatais e leis de incentivo que marcaram o seu projeto como
-          aderente — com o próximo passo.
-        </p>
-        <div className="mt-4 space-y-3">
-          {signals.map((s) => (
-            <div
-              key={`${s.investor}-${s.projectSlug}`}
-              className="card p-4"
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-semibold text-ink">{s.investor}</span>
-                <EligibilityStatus status={s.status} />
-              </div>
-              <p className="mt-1 text-sm text-ink-soft">
-                <Link href={`/projetos/${s.projectSlug}`} className="hover:underline">
-                  {s.projectTitle}
-                </Link>{" "}
-                — {s.reason}
-              </p>
-              <p className="mt-2 rounded-btn bg-sunk px-3 py-2 text-sm text-ink-soft">
-                <strong className="text-ink">Próximo passo:</strong> {s.nextStep}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
-  );
-}
-
-function EligibilityStatus({ status }: { status: string }) {
-  const map: Record<string, { tone: "ok" | "warn" | "neutral"; label: string }> = {
-    elegivel: { tone: "ok", label: "elegível" },
-    aderencia_parcial: { tone: "warn", label: "aderência parcial" },
-    em_analise: { tone: "neutral", label: "em análise" },
-  };
-  const m = map[status] ?? map.em_analise;
-  return <Badge tone={m.tone}>{m.label}</Badge>;
 }

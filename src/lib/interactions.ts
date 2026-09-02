@@ -73,6 +73,42 @@ export type InterestRow = {
   createdAt: Date;
 };
 
+export type MyApplicationRow = {
+  projectId: string;
+  projectSlug: string;
+  projectTitle: string;
+  projectStatus: string;
+  entryKind: string;
+  message: string | null;
+  cvUrl: string | null;
+  availability: string | null;
+  applicantCity: string | null;
+  nationwide: boolean;
+  createdAt: Date;
+};
+
+/** Candidaturas / interesses que O USUÁRIO enviou. */
+export async function interestsByUser(userId: string): Promise<MyApplicationRow[]> {
+  return db
+    .select({
+      projectId: projectInterests.projectId,
+      projectSlug: projects.slug,
+      projectTitle: projects.title,
+      projectStatus: projects.status,
+      entryKind: projects.entryKind,
+      message: projectInterests.message,
+      cvUrl: projectInterests.cvUrl,
+      availability: projectInterests.availability,
+      applicantCity: projectInterests.applicantCity,
+      nationwide: projectInterests.nationwide,
+      createdAt: projectInterests.createdAt,
+    })
+    .from(projectInterests)
+    .innerJoin(projects, eq(projects.id, projectInterests.projectId))
+    .where(eq(projectInterests.userId, userId))
+    .orderBy(desc(projectInterests.createdAt)) as Promise<MyApplicationRow[]>;
+}
+
 export async function interestsForOwner(ownerId: string): Promise<InterestRow[]> {
   return db
     .select({
