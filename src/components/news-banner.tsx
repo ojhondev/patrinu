@@ -15,7 +15,6 @@ export async function NewsBanner({ className = "" }: { className?: string }) {
   const media = (
     <picture>
       {mobile && <source media="(max-width: 639px)" srcSet={mobile} />}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={image}
         alt="Anúncio"

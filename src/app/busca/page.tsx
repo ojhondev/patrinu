@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 
 import { searchAll } from "@/lib/search";
 import { getPlan } from "@/lib/membership";
@@ -61,7 +61,8 @@ export default async function BuscaPage({
   const q = one((await searchParams).q)?.trim() ?? "";
   const r = await searchAll(q);
   const enc = encodeURIComponent(q);
-  if ((await getPlan()) !== "pro") r.vagas = r.vagas.map(redactContratante);
+  const isPro = (await getPlan()) === "pro";
+  if (!isPro) r.vagas = r.vagas.map(redactContratante);
 
   return (
     <div className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-11">
@@ -122,13 +123,46 @@ export default async function BuscaPage({
             </div>
           </Section>
 
-          <Section title="Editais" href={`/editais?q=${enc}`} count={r.editais.length}>
-            <div className={grid}>
-              {r.editais.map((op) => (
-                <OpportunityCard key={op.id} op={op} />
-              ))}
-            </div>
-          </Section>
+          {r.editais.length > 0 && (
+            <section>
+              <div className="flex items-end justify-between border-b border-border pb-2">
+                <h2 className="font-display text-xl font-bold text-ink">
+                  Editais <span className="text-sm font-medium text-muted">({r.editais.length})</span>
+                </h2>
+                <Link
+                  href={`/editais?q=${enc}`}
+                  className="inline-flex items-center gap-1 text-sm font-semibold text-green-ink hover:text-ink"
+                >
+                  Ver todos <ArrowRight size={14} />
+                </Link>
+              </div>
+              <div className="mt-5">
+                {isPro ? (
+                  <div className={grid}>
+                    {r.editais.map((op) => (
+                      <OpportunityCard key={op.id} op={op} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-card border border-brand/25 bg-green-weak/50 p-5">
+                    <p className="inline-flex items-center gap-1.5 text-sm font-bold text-ink">
+                      <Lock size={14} className="text-brand" />
+                      {r.editais.length}{" "}
+                      {r.editais.length === 1 ? "edital corresponde" : "editais correspondem"} a
+                      “{q}”
+                    </p>
+                    <p className="mt-1 text-sm text-ink-soft">
+                      O Radar de Editais — feed completo, valores e checklist de habilitação — é
+                      um recurso do Patrinu Pro.
+                    </p>
+                    <Link href="/pro" className="btn btn-primary btn-sm mt-3">
+                      Conheça o Patrinu Pro
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           <Section title="Notícias" href={`/noticias?q=${enc}`} count={r.noticias.length}>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

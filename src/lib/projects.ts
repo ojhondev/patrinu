@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -181,15 +182,15 @@ export async function pendingProjectsCount(): Promise<number> {
   return row?.n ?? 0;
 }
 
-/** Todos os projetos do usuário logado — qualquer status. */
-export async function projectsByOwner(ownerId: string): Promise<Project[]> {
+/** Todos os projetos do usuário logado — qualquer status. Memoizado por request. */
+export const projectsByOwner = cache(async (ownerId: string): Promise<Project[]> => {
   const rows = await db
     .select()
     .from(projects)
     .where(eq(projects.ownerId, ownerId))
     .orderBy(desc(projects.createdAt));
   return rows.map(rowToProject);
-}
+});
 
 function slugify(s: string): string {
   return s

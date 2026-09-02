@@ -1,4 +1,5 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { eq } from "drizzle-orm";
 
@@ -91,7 +92,9 @@ export async function endUserSession(): Promise<void> {
   store.delete(USER_COOKIE);
 }
 
-export async function getCurrentUser(): Promise<SessionUser | null> {
+/** memoizada por request (React cache) — evita N queries quando vários
+ *  componentes chamam getPlan()/getCurrentUser() na mesma página. */
+export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   const store = await cookies();
   const id = store.get(USER_COOKIE)?.value;
   if (!id) return null;
@@ -104,7 +107,7 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   const [user] = await db.select().from(users).where(eq(users.id, row.userId)).limit(1);
   if (!user || user.bannedAt) return null;
   return user;
-}
+});
 
 /* ================================================================== */
 /*  Conta MASTER (única, por env)                                      */
@@ -151,11 +154,11 @@ export async function endMasterSession(): Promise<void> {
   store.delete(MASTER_COOKIE);
 }
 
-export async function isMasterSession(): Promise<boolean> {
+export const isMasterSession = cache(async (): Promise<boolean> => {
   const store = await cookies();
   const value = store.get(MASTER_COOKIE)?.value;
   if (!value) return false;
   const a = Buffer.from(value);
   const b = Buffer.from(masterToken());
   return a.length === b.length && timingSafeEqual(a, b);
-}
+});

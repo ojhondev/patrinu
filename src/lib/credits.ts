@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { and, eq, gte, sql } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -13,13 +14,13 @@ function startOfMonth(): Date {
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1));
 }
 
-export async function creditsUsedThisMonth(userId: string): Promise<number> {
+export const creditsUsedThisMonth = cache(async (userId: string): Promise<number> => {
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(creditLedger)
     .where(and(eq(creditLedger.userId, userId), gte(creditLedger.createdAt, startOfMonth())));
   return row?.n ?? 0;
-}
+});
 
 export type CreditStatus = {
   pro: boolean;

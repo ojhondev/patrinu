@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -109,30 +110,31 @@ export async function interestsByUser(userId: string): Promise<MyApplicationRow[
     .orderBy(desc(projectInterests.createdAt)) as Promise<MyApplicationRow[]>;
 }
 
-export async function interestsForOwner(ownerId: string): Promise<InterestRow[]> {
-  return db
-    .select({
-      projectId: projectInterests.projectId,
-      projectSlug: projects.slug,
-      projectTitle: projects.title,
-      userId: projectInterests.userId,
-      userName: users.name,
-      userEmail: users.email,
-      message: projectInterests.message,
-      applicantName: projectInterests.applicantName,
-      applicantEmail: projectInterests.applicantEmail,
-      applicantCity: projectInterests.applicantCity,
-      nationwide: projectInterests.nationwide,
-      cvUrl: projectInterests.cvUrl,
-      availability: projectInterests.availability,
-      createdAt: projectInterests.createdAt,
-    })
-    .from(projectInterests)
-    .innerJoin(projects, eq(projects.id, projectInterests.projectId))
-    .innerJoin(users, eq(users.id, projectInterests.userId))
-    .where(eq(projects.ownerId, ownerId))
-    .orderBy(desc(projectInterests.createdAt));
-}
+export const interestsForOwner = cache(
+  async (ownerId: string): Promise<InterestRow[]> =>
+    db
+      .select({
+        projectId: projectInterests.projectId,
+        projectSlug: projects.slug,
+        projectTitle: projects.title,
+        userId: projectInterests.userId,
+        userName: users.name,
+        userEmail: users.email,
+        message: projectInterests.message,
+        applicantName: projectInterests.applicantName,
+        applicantEmail: projectInterests.applicantEmail,
+        applicantCity: projectInterests.applicantCity,
+        nationwide: projectInterests.nationwide,
+        cvUrl: projectInterests.cvUrl,
+        availability: projectInterests.availability,
+        createdAt: projectInterests.createdAt,
+      })
+      .from(projectInterests)
+      .innerJoin(projects, eq(projects.id, projectInterests.projectId))
+      .innerJoin(users, eq(users.id, projectInterests.userId))
+      .where(eq(projects.ownerId, ownerId))
+      .orderBy(desc(projectInterests.createdAt)),
+);
 
 /* ------------------------------------------------------------------ */
 /* "Enviar proposta" — proposals                                       */

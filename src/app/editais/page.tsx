@@ -15,7 +15,7 @@ import type { KindKey, OrganScopeKey, SpecialtyKey } from "@/lib/taxonomy";
 export const metadata: Metadata = {
   title: "Editais e licitações",
   description:
-    "Licitações, editais e chamamentos de restauro e conservação de patrimônio, estruturados e filtráveis.",
+    "Licitações, editais e chamamentos de restauro e conservação de patrimônio, de fontes públicas, com checklist de habilitação.",
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -83,10 +83,10 @@ export default async function RadarPage({
           )
         }
       >
-        Estruturados por IA, com checklist de habilitação e histórico de desfecho. Dados de
-        demonstração —{" "}
+        Coletados de fontes públicas, revisados pelo time e organizados com checklist de
+        habilitação —{" "}
         <Link href="/fontes" className="font-semibold text-accent underline">
-          ver as 30 fontes
+          ver as fontes monitoradas
         </Link>
         .
       </PageHero>
