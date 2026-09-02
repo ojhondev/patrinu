@@ -125,11 +125,11 @@ export default async function HomePage() {
             especialidade.
           </p>
           <div className="mt-8">
-            <CategoryRail base="/profissionais" limit={8} />
+            <CategoryRail base="/profissionais" />
           </div>
           <Link
             href="/profissionais"
-            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-green-ink hover:text-ink"
+            className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-green-ink hover:text-ink"
           >
             Ver todos os {CATEGORY_GROUPS.length} grupos
             <ArrowRight size={15} />
