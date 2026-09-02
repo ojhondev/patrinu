@@ -16,6 +16,7 @@ import { approveProject, rejectProject } from "@/lib/projects";
 import { reviewOpportunity } from "@/lib/opportunities";
 import { reviewArticle } from "@/lib/directory";
 import { runIngest } from "@/lib/ingest/run";
+import { isBlobUrl } from "@/lib/blob";
 import { setSetting } from "@/lib/settings";
 import { SITE_URL } from "@/lib/site";
 import { projectApprovedEmail, sendEmail } from "@/lib/email";
@@ -27,11 +28,7 @@ function validBannerImage(raw: string): string | null {
   const v = raw.trim();
   if (!v) return null;
   if (v.startsWith("/")) return v; // /ad-restaura.jpg etc.
-  try {
-    const u = new URL(v);
-    if (u.protocol === "https:" && u.hostname.endsWith(".public.blob.vercel-storage.com")) return v;
-  } catch {}
-  return null;
+  return isBlobUrl(v) ? v : null;
 }
 
 export async function saveBanner(formData: FormData) {

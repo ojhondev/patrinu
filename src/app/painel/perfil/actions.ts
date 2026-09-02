@@ -3,8 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { eq } from "drizzle-orm";
+
 import { getCurrentUser } from "@/lib/auth";
+import { db } from "@/db";
+import { users } from "@/db/schema";
 import { upsertProfile } from "@/lib/profile";
+import { isBlobUrl } from "@/lib/blob";
 import { SPECIALTIES, UFS } from "@/lib/taxonomy";
 
 type State = { error?: string; ok?: string } | null;
@@ -47,8 +52,8 @@ export async function saveProfile(_prev: State, form: FormData): Promise<State> 
   const website = String(form.get("website") ?? "").trim().slice(0, 200);
   const instagram = socialUrl(String(form.get("instagram") ?? ""), "https://instagram.com/");
   const linkedin = socialUrl(String(form.get("linkedin") ?? ""), "https://linkedin.com/in/");
-  const avatarRaw = String(form.get("avatarUrl") ?? "").trim().slice(0, 400);
-  const avatarUrl = /^https?:\/\/.+/i.test(avatarRaw) ? avatarRaw : "";
+  const avatarRaw = String(form.get("avatarUrl") ?? "").trim();
+  const avatarUrl = isBlobUrl(avatarRaw) ? avatarRaw : "";
 
   if (displayName.length < 3) return { error: "Informe seu nome ou o nome do ateliê." };
   if (headline.length < 8) return { error: "Escreva um resumo curto do que você faz." };
@@ -74,7 +79,13 @@ export async function saveProfile(_prev: State, form: FormData): Promise<State> 
     avatarUrl,
   });
 
-  revalidatePath("/painel/perfil");
+  // a mesma foto vale para o avatar da conta (cabeçalho / painel)
+  if (avatarUrl) {
+    await db.update(users).set({ avatarUrl }).where(eq(users.id, user.id));
+  }
+
+  revalidatePath("/painel", "layout");
   revalidatePath("/profissionais");
+  revalidatePath("/", "layout");
   return { ok: "Perfil salvo. Ele já aparece no diretório de profissionais." };
 }

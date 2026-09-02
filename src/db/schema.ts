@@ -96,7 +96,7 @@ export const users = pgTable("users", {
   role: userRole("role").notNull().default("user"),
   /** trilha Pro escolhida no cadastro: contratar | oferecer | financiamento */
   track: text("track"),
-  /** URL da foto de perfil (upload real fica para depois) */
+  /** URL da foto de perfil (upload via Vercel Blob) */
   avatarUrl: text("avatar_url"),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   /** moderação: conta banida pelo Master não loga e some do diretório */

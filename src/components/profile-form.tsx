@@ -7,6 +7,7 @@ import { saveProfile } from "@/app/painel/perfil/actions";
 import { CATEGORY_GROUPS } from "@/lib/categories";
 import { UFS } from "@/lib/taxonomy";
 import { fieldClass, textareaClass, labelClass } from "@/components/ui/field";
+import { ImageUploadField } from "@/components/image-upload-field";
 
 type State = { error?: string; ok?: string } | null;
 
@@ -108,15 +109,13 @@ export function ProfileForm({ defaults }: { defaults: ProfileDefaults }) {
         </label>
       </div>
 
-      <label className="block space-y-1.5">
-        <span className={labelClass}>Foto — URL (opcional)</span>
-        <input
-          name="avatarUrl"
-          defaultValue={defaults.avatarUrl}
-          className={fieldClass}
-          placeholder="https://…"
-        />
-      </label>
+      <ImageUploadField
+        name="avatarUrl"
+        label="Foto de perfil (opcional)"
+        defaultValue={defaults.avatarUrl}
+        shape="square"
+        hint="JPG ou PNG, até 8 MB. Aparece no seu card do diretório e na sua página."
+      />
 
       <fieldset className="space-y-3 rounded-card border border-border p-4">
         <legend className="px-1 text-sm font-semibold text-ink-soft">

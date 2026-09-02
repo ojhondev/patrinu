@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { submitProject, updateProjectOwned } from "@/lib/projects";
 import { spendCredit, setCreditRef, NO_CREDITS_MSG } from "@/lib/credits";
+import { isBlobUrl } from "@/lib/blob";
 import { sendEmail } from "@/lib/email";
 import {
   addInterest,
@@ -34,15 +35,6 @@ const num = (v: FormDataEntryValue | null) => {
   return Number.isFinite(n) && n > 0 ? n : null;
 };
 
-/** aceita só URLs https servidas pelo próprio Vercel Blob (evita link externo forjado). */
-function isBlobUrl(raw: string): boolean {
-  try {
-    const u = new URL(raw);
-    return u.protocol === "https:" && u.hostname.endsWith(".public.blob.vercel-storage.com");
-  } catch {
-    return false;
-  }
-}
 
 type ParsedProject = {
   ownerName: string;
