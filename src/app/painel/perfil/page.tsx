@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import { getMyProfile } from "@/lib/profile";
@@ -32,16 +31,8 @@ export default async function PerfilPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[720px] px-4 py-8 sm:px-6">
-      <Link
-        href="/painel"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-soft hover:text-ink"
-      >
-        <ArrowLeft size={15} />
-        Painel
-      </Link>
-
-      <h1 className="display mt-4 text-3xl text-ink sm:text-4xl">Meu perfil profissional</h1>
+    <div className="mx-auto max-w-[720px]">
+      <h1 className="display text-3xl text-ink sm:text-4xl">Meu perfil profissional</h1>
       <p className="mt-2 text-sm text-ink-soft">
         {p
           ? "Mantenha seus dados atualizados — é assim que contratantes te encontram no diretório."

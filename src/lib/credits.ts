@@ -43,12 +43,20 @@ export async function spendCredit(
   isPro: boolean,
   action: CreditAction,
   refId?: string,
-): Promise<{ ok: true } | { ok: false; used: number }> {
+): Promise<{ ok: true; ledgerId?: string } | { ok: false; used: number }> {
   if (isPro) return { ok: true };
   const used = await creditsUsedThisMonth(userId);
   if (used >= FREE_MONTHLY) return { ok: false, used };
-  await db.insert(creditLedger).values({ userId, action, refId: refId ?? null });
-  return { ok: true };
+  const [row] = await db
+    .insert(creditLedger)
+    .values({ userId, action, refId: refId ?? null })
+    .returning({ id: creditLedger.id });
+  return { ok: true, ledgerId: row?.id };
+}
+
+/** Vincula um lançamento do ledger ao id do recurso criado (p/ estorno depois). */
+export async function setCreditRef(ledgerId: string, refId: string): Promise<void> {
+  await db.update(creditLedger).set({ refId }).where(eq(creditLedger.id, ledgerId));
 }
 
 /** Devolve o crédito gasto numa ação (ex.: o usuário excluiu a publicação). */

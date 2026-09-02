@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { submitProject } from "@/lib/projects";
-import { spendCredit, NO_CREDITS_MSG } from "@/lib/credits";
+import { spendCredit, setCreditRef, NO_CREDITS_MSG } from "@/lib/credits";
 import { sendEmail } from "@/lib/email";
 import {
   addInterest,
@@ -117,7 +117,7 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   const videoRaw = String(form.get("mediaVideo") ?? "");
   const videoUrl = !isVaga && videoRaw.includes(BLOB_HOST) ? videoRaw : null;
 
-  await submitProject({
+  const created = await submitProject({
     ownerId: user.id,
     ownerName: user.name,
     title: isVaga ? vagaRole : title,
@@ -141,6 +141,9 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     contactEmail,
     locationNote,
   });
+
+  // vincula o crédito gasto à publicação (p/ estorno se o usuário excluir)
+  if (credit.ok && credit.ledgerId) await setCreditRef(credit.ledgerId, created.id);
 
   // sem e-mail de "em análise" — o status aparece no painel do usuário.
   revalidatePath("/", "layout"); // atualiza o contador de créditos no rodapé
