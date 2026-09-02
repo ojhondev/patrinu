@@ -340,6 +340,8 @@ export const professionals = pgTable("professionals", {
   score: real("score"),
   whatsapp: text("whatsapp"),
   website: text("website"),
+  instagram: text("instagram"),
+  linkedin: text("linkedin"),
   avatarUrl: text("avatar_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });

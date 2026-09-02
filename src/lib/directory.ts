@@ -31,7 +31,10 @@ const VERIF_TO_TYPE: Record<string, Professional["verificationLevel"]> = {
   nao_verificado: "email",
 };
 
-function rowToProfessional(r: ProRow): Professional {
+type Owner = { id: string; plan: string; email: string };
+
+function rowToProfessional(r: ProRow, owner?: Owner): Professional {
+  const pro = owner?.plan === "pro";
   return {
     slug: r.slug,
     displayName: r.displayName,
@@ -43,14 +46,25 @@ function rowToProfessional(r: ProRow): Professional {
     techniques: r.techniques ?? [],
     verified: r.verified,
     verificationLevel: VERIF_TO_TYPE[r.verificationLevel] ?? "email",
-    plan: (r.plan === "pro" ? "pro" : "free") as Professional["plan"],
+    plan: pro ? "pro" : "free",
+    pro,
     memberSince: r.createdAt.toISOString(),
     registros: (r.registros ?? []) as string[],
     projectSlugs: [],
     responseHours: r.responseHours ?? undefined,
     score: r.score ?? undefined,
+    ownerId: owner?.id,
+    avatarUrl: r.avatarUrl ?? undefined,
+    whatsapp: r.whatsapp ?? undefined,
+    website: r.website ?? undefined,
+    instagram: r.instagram ?? undefined,
+    linkedin: r.linkedin ?? undefined,
+    email: owner?.email,
   };
 }
+
+/** Membros Pro primeiro, depois verificados, depois score. */
+const proFirst = sql`(${users.plan} = 'pro') desc, ${professionals.verified} desc, ${professionals.score} desc nulls last`;
 
 export async function listProfessionals(
   opts: { q?: string; specialty?: string; grupo?: string; uf?: string; verifiedOnly?: boolean } = {},
@@ -71,8 +85,14 @@ export async function listProfessionals(
           : undefined,
       ),
     )
-    .orderBy(desc(professionals.score));
-  return rows.map((r) => rowToProfessional(r.professionals));
+    .orderBy(proFirst);
+  return rows.map((r) =>
+    rowToProfessional(r.professionals, {
+      id: r.users.id,
+      plan: r.users.plan,
+      email: r.users.email,
+    }),
+  );
 }
 
 export async function getProfessional(slug: string): Promise<Professional | null> {
@@ -82,7 +102,13 @@ export async function getProfessional(slug: string): Promise<Professional | null
     .innerJoin(users, eq(users.id, professionals.userId))
     .where(and(eq(professionals.slug, slug), sql`${users.bannedAt} is null`))
     .limit(1);
-  return row ? rowToProfessional(row.professionals) : null;
+  return row
+    ? rowToProfessional(row.professionals, {
+        id: row.users.id,
+        plan: row.users.plan,
+        email: row.users.email,
+      })
+    : null;
 }
 
 export async function featuredProfessionals(limit = 4): Promise<Professional[]> {
@@ -90,10 +116,21 @@ export async function featuredProfessionals(limit = 4): Promise<Professional[]> 
     .select()
     .from(professionals)
     .innerJoin(users, eq(users.id, professionals.userId))
-    .where(and(eq(professionals.verified, true), sql`${users.bannedAt} is null`))
-    .orderBy(desc(professionals.score))
+    .where(
+      and(
+        sql`${users.bannedAt} is null`,
+        sql`(${users.plan} = 'pro' or ${professionals.verified} = true)`,
+      ),
+    )
+    .orderBy(proFirst)
     .limit(limit);
-  return rows.map((r) => rowToProfessional(r.professionals));
+  return rows.map((r) =>
+    rowToProfessional(r.professionals, {
+      id: r.users.id,
+      plan: r.users.plan,
+      email: r.users.email,
+    }),
+  );
 }
 
 /* ---------------- Notícias (banco) ---------------- */

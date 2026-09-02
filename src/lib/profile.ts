@@ -49,6 +49,8 @@ export type ProfileInput = {
   registros: string[];
   whatsapp?: string;
   website?: string;
+  instagram?: string;
+  linkedin?: string;
   avatarUrl?: string;
 };
 
@@ -70,6 +72,8 @@ export async function upsertProfile(
     registros: input.registros,
     whatsapp: input.whatsapp || null,
     website: input.website || null,
+    instagram: input.instagram || null,
+    linkedin: input.linkedin || null,
     avatarUrl: input.avatarUrl || null,
   };
 

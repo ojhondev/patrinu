@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
+import { getPlan } from "@/lib/membership";
 import { getMyProfile } from "@/lib/profile";
 import { ProfileForm, type ProfileDefaults } from "@/components/profile-form";
 
@@ -13,7 +14,7 @@ export default async function PerfilPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/painel/perfil");
 
-  const p = await getMyProfile(user.id);
+  const [p, plan] = await Promise.all([getMyProfile(user.id), getPlan()]);
 
   const defaults: ProfileDefaults = {
     displayName: p?.displayName ?? user.name,
@@ -26,8 +27,11 @@ export default async function PerfilPage() {
     registros: (p?.registros ?? []) as string[],
     whatsapp: p?.whatsapp ?? "",
     website: p?.website ?? "",
+    instagram: p?.instagram ?? "",
+    linkedin: p?.linkedin ?? "",
     avatarUrl: p?.avatarUrl ?? "",
     slug: p?.slug ?? null,
+    isPro: plan === "pro",
   };
 
   return (

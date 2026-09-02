@@ -138,11 +138,21 @@ export type Professional = {
   verified: boolean;
   verificationLevel: "email" | "registro" | "projeto_documentado" | "completo";
   plan: "free" | "pro";
+  /** dono é assinante Pro (users.plan === "pro") — regra de prioridade no diretório */
+  pro?: boolean;
   memberSince: string;
   registros: string[];
   projectSlugs: string[];
   responseHours?: number;
   score?: number;
+  /** contato / links (o público só vê no perfil de Membro Pro) */
+  ownerId?: string;
+  avatarUrl?: string;
+  whatsapp?: string;
+  website?: string;
+  instagram?: string;
+  linkedin?: string;
+  email?: string;
 };
 
 /* ------------------------------------------------------------------ */

@@ -17,6 +17,17 @@ const list = (raw: string, max = 25) =>
     .filter(Boolean)
     .slice(0, max);
 
+/** aceita "@handle", "handle", "site.com/x" ou URL completa → normaliza. */
+function socialUrl(raw: string, base: string): string {
+  const v = raw.trim().slice(0, 200);
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  // já parece um domínio com caminho (ex.: "linkedin.com/in/você")
+  if (/^(www\.)?[a-z0-9-]+\.[a-z]{2,}\//i.test(v)) return `https://${v.replace(/^www\./i, "")}`;
+  const handle = v.replace(/^@/, "").replace(/\s+/g, "");
+  return handle ? `${base}${handle}` : "";
+}
+
 export async function saveProfile(_prev: State, form: FormData): Promise<State> {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/painel/perfil");
@@ -34,6 +45,8 @@ export async function saveProfile(_prev: State, form: FormData): Promise<State> 
   const registros = list(String(form.get("registros") ?? ""), 10);
   const whatsapp = String(form.get("whatsapp") ?? "").replace(/[^\d+]/g, "").slice(0, 20);
   const website = String(form.get("website") ?? "").trim().slice(0, 200);
+  const instagram = socialUrl(String(form.get("instagram") ?? ""), "https://instagram.com/");
+  const linkedin = socialUrl(String(form.get("linkedin") ?? ""), "https://linkedin.com/in/");
   const avatarRaw = String(form.get("avatarUrl") ?? "").trim().slice(0, 400);
   const avatarUrl = /^https?:\/\/.+/i.test(avatarRaw) ? avatarRaw : "";
 
@@ -56,6 +69,8 @@ export async function saveProfile(_prev: State, form: FormData): Promise<State> 
     registros,
     whatsapp,
     website,
+    instagram,
+    linkedin,
     avatarUrl,
   });
 

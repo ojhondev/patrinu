@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, BadgeCheck, Clock } from "lucide-react";
+import { MapPin, BadgeCheck, Clock, Sparkles } from "lucide-react";
 
 import type { Professional } from "@/lib/types";
 import { specialtyLabel } from "@/lib/taxonomy";
@@ -12,8 +12,15 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
       className="card card-hover group flex flex-col p-5"
     >
       <div className="flex items-start gap-3">
-        <span className="grid h-12 w-12 shrink-0 place-items-center rounded-pill bg-green-weak text-green-ink">
-          <SpecialtyIcon specialty={pro.specialties[0] ?? "arquitetura"} size={22} />
+        <span className="h-12 w-12 shrink-0 overflow-hidden rounded-pill">
+          {pro.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={pro.avatarUrl} alt={pro.displayName} className="h-full w-full object-cover" />
+          ) : (
+            <span className="grid h-full w-full place-items-center bg-green-weak text-green-ink">
+              <SpecialtyIcon specialty={pro.specialties[0] ?? "arquitetura"} size={22} />
+            </span>
+          )}
         </span>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
@@ -48,8 +55,11 @@ export function ProfessionalCard({ pro }: { pro: Professional }) {
             responde em ~{pro.responseHours}h
           </span>
         ) : null}
-        {pro.plan === "pro" ? (
-          <span className="ml-auto font-bold text-green-ink">PRO</span>
+        {pro.pro ? (
+          <span className="ml-auto inline-flex items-center gap-1 rounded-pill bg-brand px-2 py-0.5 text-[10px] font-bold text-white">
+            <Sparkles size={10} />
+            PRO
+          </span>
         ) : null}
       </div>
     </Link>

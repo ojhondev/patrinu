@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, BadgeCheck, Clock, Star } from "lucide-react";
+import { MapPin, BadgeCheck, Clock, Star, Sparkles } from "lucide-react";
 
 import type { Professional } from "@/lib/types";
 import { specialtyLabel } from "@/lib/taxonomy";
@@ -14,13 +14,25 @@ const VERIF_LABEL: Record<Professional["verificationLevel"], string> = {
 
 export function ProRow({ pro }: { pro: Professional }) {
   return (
-    <article className="border-b border-border py-6 first:pt-0">
+    <article
+      className={
+        "border-b border-border py-6 first:pt-0 " +
+        (pro.pro ? "relative pl-4 before:absolute before:inset-y-4 before:left-0 before:w-1 before:rounded-pill before:bg-brand" : "")
+      }
+    >
       <div className="flex gap-4 sm:gap-5">
         <Link
           href={`/profissionais/${pro.slug}`}
-          className="grid h-16 w-16 shrink-0 place-items-center rounded-pill bg-green-weak text-green-ink sm:h-20 sm:w-20"
+          className="h-16 w-16 shrink-0 overflow-hidden rounded-pill sm:h-20 sm:w-20"
         >
-          <SpecialtyIcon specialty={pro.specialties[0] ?? "arquitetura"} size={30} />
+          {pro.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={pro.avatarUrl} alt={pro.displayName} className="h-full w-full object-cover" />
+          ) : (
+            <span className="grid h-full w-full place-items-center bg-green-weak text-green-ink">
+              <SpecialtyIcon specialty={pro.specialties[0] ?? "arquitetura"} size={30} />
+            </span>
+          )}
         </Link>
 
         <div className="min-w-0 flex-1">
@@ -31,6 +43,12 @@ export function ProRow({ pro }: { pro: Professional }) {
             >
               {pro.displayName}
             </Link>
+            {pro.pro && (
+              <span className="inline-flex items-center gap-1 rounded-pill bg-brand px-2 py-0.5 text-[11px] font-bold text-white">
+                <Sparkles size={11} />
+                Pro
+              </span>
+            )}
             {pro.verified && (
               <span className="inline-flex items-center gap-1 rounded-pill bg-green-weak px-2 py-0.5 text-[11px] font-bold text-green-ink">
                 <BadgeCheck size={12} />
@@ -72,13 +90,8 @@ export function ProRow({ pro }: { pro: Professional }) {
           </div>
         </div>
 
-        <div className="hidden shrink-0 flex-col items-end justify-between sm:flex">
-          {pro.plan === "pro" && (
-            <span className="rounded-pill bg-band px-2.5 py-0.5 text-[11px] font-bold text-white">
-              Membro
-            </span>
-          )}
-          <Link href={`/profissionais/${pro.slug}`} className="btn btn-secondary btn-sm mt-auto">
+        <div className="hidden shrink-0 items-end sm:flex">
+          <Link href={`/profissionais/${pro.slug}`} className="btn btn-secondary btn-sm">
             Ver perfil
           </Link>
         </div>

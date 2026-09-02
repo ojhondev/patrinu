@@ -21,8 +21,11 @@ export type ProfileDefaults = {
   registros: string[];
   whatsapp: string;
   website: string;
+  instagram: string;
+  linkedin: string;
   avatarUrl: string;
   slug: string | null;
+  isPro: boolean;
 };
 
 export function ProfileForm({ defaults }: { defaults: ProfileDefaults }) {
@@ -105,29 +108,6 @@ export function ProfileForm({ defaults }: { defaults: ProfileDefaults }) {
         </label>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block space-y-1.5">
-          <span className={labelClass}>WhatsApp (opcional)</span>
-          <input
-            name="whatsapp"
-            inputMode="tel"
-            defaultValue={defaults.whatsapp}
-            className={fieldClass}
-            placeholder="31 99999-0000"
-          />
-        </label>
-        <label className="block space-y-1.5">
-          <span className={labelClass}>Site / portfólio (opcional)</span>
-          <input
-            name="website"
-            type="url"
-            defaultValue={defaults.website}
-            className={fieldClass}
-            placeholder="https://…"
-          />
-        </label>
-      </div>
-
       <label className="block space-y-1.5">
         <span className={labelClass}>Foto — URL (opcional)</span>
         <input
@@ -137,6 +117,63 @@ export function ProfileForm({ defaults }: { defaults: ProfileDefaults }) {
           placeholder="https://…"
         />
       </label>
+
+      <fieldset className="space-y-3 rounded-card border border-border p-4">
+        <legend className="px-1 text-sm font-semibold text-ink-soft">
+          Contato e links da sua página
+        </legend>
+        {!defaults.isPro && (
+          <p className="rounded-btn bg-sunk px-3 py-2 text-xs text-ink-soft">
+            No plano gratuito, esses dados ficam guardados mas{" "}
+            <strong className="text-ink">só aparecem na sua página pública quando você é
+            Membro Pro</strong>. Enquanto isso, os contratantes falam com você pelas
+            candidaturas.{" "}
+            <Link href="/pro" className="font-semibold text-green-ink hover:underline">
+              Ver o Patrinu Pro
+            </Link>
+          </p>
+        )}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block space-y-1.5">
+            <span className={labelClass}>WhatsApp</span>
+            <input
+              name="whatsapp"
+              inputMode="tel"
+              defaultValue={defaults.whatsapp}
+              className={fieldClass}
+              placeholder="31 99999-0000"
+            />
+          </label>
+          <label className="block space-y-1.5">
+            <span className={labelClass}>Site / portfólio</span>
+            <input
+              name="website"
+              type="url"
+              defaultValue={defaults.website}
+              className={fieldClass}
+              placeholder="https://…"
+            />
+          </label>
+          <label className="block space-y-1.5">
+            <span className={labelClass}>Instagram</span>
+            <input
+              name="instagram"
+              defaultValue={defaults.instagram}
+              className={fieldClass}
+              placeholder="@seuatelie"
+            />
+          </label>
+          <label className="block space-y-1.5">
+            <span className={labelClass}>LinkedIn</span>
+            <input
+              name="linkedin"
+              defaultValue={defaults.linkedin}
+              className={fieldClass}
+              placeholder="linkedin.com/in/você"
+            />
+          </label>
+        </div>
+      </fieldset>
 
       <fieldset className="space-y-2">
         <legend className={labelClass}>Especialidades</legend>

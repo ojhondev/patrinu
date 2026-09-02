@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, Sparkles, MapPin } from "lucide-react";
 
 import { listProfessionals } from "@/lib/directory";
 import { ProRow } from "@/components/pro-row";
+import { SpecialtyIcon } from "@/components/specialty-visual";
 import { HeaderSearch } from "@/components/header-search";
 import { CATEGORY_GROUPS, groupLabel, specialtyLabel } from "@/lib/categories";
 import { cn } from "@/lib/cn";
@@ -32,7 +33,10 @@ export default async function ProfissionaisPage({
   const proOnly = one(sp.pro) === "1";
 
   let pros = await listProfessionals({ q, grupo, specialty, uf, verifiedOnly });
-  if (proOnly) pros = pros.filter((p) => p.plan === "pro");
+  if (proOnly) pros = pros.filter((p) => p.pro);
+
+  const noFilters = !q && !grupo && !specialty && !uf && !verifiedOnly && !proOnly;
+  const featured = noFilters ? pros.filter((p) => p.pro).slice(0, 3) : [];
 
   const activeGroup = CATEGORY_GROUPS.find((g) => g.key === grupo);
 
@@ -172,6 +176,45 @@ export default async function ProfissionaisPage({
           </aside>
 
           <div>
+            {featured.length > 0 && (
+              <section className="mb-8">
+                <p className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-brand">
+                  <Sparkles size={13} />
+                  Em destaque · Membros Pro
+                </p>
+                <div className="mt-3 grid gap-4 sm:grid-cols-3">
+                  {featured.map((p) => (
+                    <Link
+                      key={p.slug}
+                      href={`/profissionais/${p.slug}`}
+                      className="card card-hover flex flex-col items-center gap-2 p-4 text-center"
+                    >
+                      {p.avatarUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={p.avatarUrl}
+                          alt={p.displayName}
+                          className="h-14 w-14 rounded-full border border-border object-cover"
+                        />
+                      ) : (
+                        <span className="grid h-14 w-14 place-items-center rounded-full bg-green-weak text-green-ink">
+                          <SpecialtyIcon specialty={p.specialties[0] ?? "arquitetura"} size={24} />
+                        </span>
+                      )}
+                      <span className="font-display text-sm font-bold leading-tight text-ink">
+                        {p.displayName}
+                      </span>
+                      <span className="line-clamp-2 text-xs text-ink-soft">{p.headline}</span>
+                      <span className="mt-auto inline-flex items-center gap-1 text-[11px] text-muted">
+                        <MapPin size={11} />
+                        {p.city}/{p.uf}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
             <p className="border-b border-border pb-3 text-sm text-ink-soft">
               <strong className="font-bold text-ink tabular-nums">{pros.length}</strong>{" "}
               {pros.length === 1 ? "profissional" : "profissionais"}
