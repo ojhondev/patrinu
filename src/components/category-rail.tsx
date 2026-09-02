@@ -61,14 +61,14 @@ export function CategoryRail({
             href={`${base}?grupo=${g.key}`}
             className="group w-[228px] shrink-0 snap-start sm:w-[250px]"
           >
-            <div className="flex aspect-[3/4] flex-col overflow-hidden rounded-[20px] bg-gradient-to-b from-[#e5391e] to-[#c1260f] p-5 shadow-[var(--shadow-card)] transition-shadow group-hover:shadow-[var(--shadow-pop)]">
+            <div className="flex aspect-[3/4] flex-col overflow-hidden rounded-[20px] bg-gradient-to-b from-[#DE2F17] to-[#FF9C8F] p-5 shadow-[var(--shadow-card)] transition-shadow group-hover:shadow-[var(--shadow-pop)]">
               <span className="font-display text-[20px] font-extrabold leading-[1.12] text-white">
                 {g.label}
               </span>
-              <span className="mt-1.5 text-[13px] text-white/70">
+              <span className="mt-1.5 text-[13px] text-white/75">
                 {g.specialties.length} especialidade{g.specialties.length === 1 ? "" : "s"}
               </span>
-              <div className="mt-auto overflow-hidden rounded-[14px]">
+              <div className="my-auto overflow-hidden rounded-[14px] shadow-[0_8px_24px_-8px_rgba(0,0,0,0.35)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={GROUP_IMAGE[g.key]}
