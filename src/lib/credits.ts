@@ -51,6 +51,13 @@ export async function spendCredit(
   return { ok: true };
 }
 
+/** Devolve o crédito gasto numa ação (ex.: o usuário excluiu a publicação). */
+export async function refundCredit(userId: string, refId: string): Promise<void> {
+  await db
+    .delete(creditLedger)
+    .where(and(eq(creditLedger.userId, userId), eq(creditLedger.refId, refId)));
+}
+
 export const NO_CREDITS_MSG =
   `Você usou os ${FREE_MONTHLY} créditos grátis do mês. ` +
   `Assine o Patrinu Pro para publicar e se candidatar sem limite.`;

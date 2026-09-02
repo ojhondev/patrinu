@@ -18,6 +18,7 @@ import { formatDate, specialtyLabel } from "@/lib/taxonomy";
 import { Badge } from "@/components/badge";
 import { Avatar } from "@/components/avatar";
 import { ProposalThread } from "@/components/proposal-thread";
+import { DeleteProjectButton } from "@/components/delete-project-button";
 import { updateAvatar } from "@/app/conta/actions";
 import { cn } from "@/lib/cn";
 
@@ -209,7 +210,13 @@ export default async function PainelPage({
               .
             </p>
           ) : (
-            myProjects.map((p) => <MyProjectRow key={p.id} p={p} />)
+            myProjects.map((p) => (
+              <MyProjectRow
+                key={p.id}
+                p={p}
+                applicants={receivedInterests.filter((i) => i.projectId === p.id).length}
+              />
+            ))
           )}
         </div>
       </section>
@@ -393,19 +400,21 @@ export default async function PainelPage({
   );
 }
 
-function MyProjectRow({ p }: { p: Project }) {
+function MyProjectRow({ p, applicants }: { p: Project; applicants: number }) {
   const s = STATUS_BADGE[p.status];
   const published = ["vitrine", "aberto", "em_captacao", "em_execucao", "concluido"].includes(
     p.status,
   );
   return (
-    <div className="flex flex-col gap-2 card p-4 sm:flex-row sm:items-center">
+    <div className="flex flex-col gap-3 card p-4 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge tone={s.tone}>{s.label}</Badge>
           <span className="text-xs text-muted">
             {p.entryKind === "vaga" ? "Vaga" : "Projeto"} · {p.city}/{p.uf}
             {p.year ? ` · ${p.year}` : ""}
+            {applicants > 0 &&
+              ` · ${applicants} ${applicants === 1 ? "candidatura" : "candidaturas"}`}
           </span>
         </div>
         <p className="mt-1 font-semibold text-ink">{p.title}</p>
@@ -421,11 +430,18 @@ function MyProjectRow({ p }: { p: Project }) {
           </p>
         )}
       </div>
-      {published && (
-        <Link href={`/projetos/${p.slug}`} className="btn btn-secondary btn-sm shrink-0">
-          Ver publicado
-        </Link>
-      )}
+      <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
+        {published && (
+          <Link href={`/projetos/${p.slug}`} className="btn btn-secondary btn-sm">
+            Ver publicado
+          </Link>
+        )}
+        <DeleteProjectButton
+          projectId={p.id}
+          kind={p.entryKind === "vaga" ? "vaga" : "projeto"}
+          hasApplicants={applicants > 0}
+        />
+      </div>
     </div>
   );
 }

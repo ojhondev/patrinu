@@ -310,6 +310,18 @@ export async function rejectProject(id: string, reason: string): Promise<void> {
     .where(eq(projects.id, id));
 }
 
+/**
+ * Exclui uma publicação do próprio dono. Candidaturas/propostas somem junto
+ * (FK `on delete cascade`). Devolve `true` se algo foi apagado.
+ */
+export async function deleteProjectOwned(id: string, ownerId: string): Promise<boolean> {
+  const rows = await db
+    .delete(projects)
+    .where(and(eq(projects.id, id), eq(projects.ownerId, ownerId)))
+    .returning({ id: projects.id });
+  return rows.length > 0;
+}
+
 export async function projectInterestsCount(projectId: string): Promise<number> {
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })

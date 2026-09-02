@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/lib/auth";
+import { deleteProjectOwned } from "@/lib/projects";
+import { refundCredit } from "@/lib/credits";
 import {
   addMessage,
   getProposal,
@@ -12,6 +14,25 @@ import {
 } from "@/lib/interactions";
 
 const DECISIONS: ProposalStatusValue[] = ["aceita", "recusada", "em_conversa"];
+
+export async function removeProject(formData: FormData) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/painel");
+
+  const id = String(formData.get("projectId") ?? "");
+  if (!id) return;
+
+  const ok = await deleteProjectOwned(id, user.id); // valida posse no WHERE
+  if (ok && user.plan !== "pro") {
+    // conta grátis: devolve o crédito gasto ao publicar
+    await refundCredit(user.id, id);
+  }
+
+  revalidatePath("/painel");
+  revalidatePath("/vagas");
+  revalidatePath("/projetos");
+  revalidatePath("/", "layout");
+}
 
 export async function decideProposal(formData: FormData) {
   const user = await getCurrentUser();
