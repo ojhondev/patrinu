@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 
 import type { Project, ProjectStatus } from "@/lib/types";
 import { specialtyLabel } from "@/lib/taxonomy";
@@ -52,12 +53,16 @@ export function PublicationRow({ p, applicants }: { p: Project; applicants: numb
           </p>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end">
+      <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-end">
         {published && (
           <Link href={`/projetos/${p.slug}`} className="btn btn-secondary btn-sm">
             Ver publicado
           </Link>
         )}
+        <Link href={`/painel/publicacoes/${p.slug}/editar`} className="btn btn-secondary btn-sm">
+          <Pencil size={13} />
+          Editar
+        </Link>
         <DeleteProjectButton
           projectId={p.id}
           kind={p.entryKind === "vaga" ? "vaga" : "projeto"}

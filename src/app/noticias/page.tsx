@@ -10,9 +10,9 @@ import { PageHero } from "@/components/page-hero";
 import { cn } from "@/lib/cn";
 
 export const metadata: Metadata = {
-  title: "Notícias",
+  title: "Newsletter do Patrimônio",
   description:
-    "Obras, técnicas, políticas de preservação, editais e mercado do restauro brasileiro.",
+    "Notícias do setor de patrimônio e restauro no Brasil — obras, técnicas, políticas de preservação, editais e mercado. Uma edição por semana no e-mail.",
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
@@ -33,7 +33,11 @@ export default async function NoticiasPage({
 
   return (
     <div className="[overflow-wrap:anywhere]">
-      <PageHero tone="paper" eyebrow="Jornalismo do setor" title={<>Notícias</>}>
+      <PageHero
+        tone="paper"
+        eyebrow="Notícias do setor"
+        title={<>Newsletter do Patrimônio</>}
+      >
         Uma edição por semana no seu e-mail — obras, editais e a matéria da semana.
         <span className="mt-4 block">
           <NewsletterSignup />
@@ -95,6 +99,33 @@ export default async function NoticiasPage({
             </div>
           </>
         )}
+
+        {/* Anuncie conosco */}
+        <section className="mt-14 overflow-hidden rounded-card border border-border bg-surface">
+          <div className="grid items-center gap-0 md:grid-cols-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://i.ibb.co/0pMsGtHX/BANNER-DE-ANUNCIO.png"
+              alt="Anuncie no Patrinu"
+              className="h-full w-full object-cover"
+            />
+            <div className="p-6 sm:p-8">
+              <p className="kicker text-green-ink">Mídia</p>
+              <h2 className="display mt-2 text-2xl text-ink sm:text-3xl">Anuncie conosco</h2>
+              <p className="mt-3 text-ink-soft">
+                Fale direto com escritórios de restauro, ateliês, museus, órgãos de patrimônio
+                e profissionais do setor. A newsletter e as páginas de notícias do Patrinu são
+                lidas por quem contrata e por quem executa.
+              </p>
+              <a
+                href="mailto:contato@patrinu.com?subject=Quero%20anunciar%20no%20Patrinu"
+                className="btn btn-primary mt-5"
+              >
+                Falar com a equipe
+              </a>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );

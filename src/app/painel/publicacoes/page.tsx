@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Plus } from "lucide-react";
 
+import { Clock } from "lucide-react";
+
 import { getCurrentUser, isMasterSession } from "@/lib/auth";
 import { projectsByOwner } from "@/lib/projects";
 import { interestsForOwner } from "@/lib/interactions";
@@ -10,10 +12,16 @@ import { PublicationRow } from "@/components/painel/publication-row";
 
 export const metadata: Metadata = { title: "Minhas publicações · Painel" };
 
-export default async function PublicacoesPage() {
+export default async function PublicacoesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   if (await isMasterSession()) redirect("/master");
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/painel/publicacoes");
+
+  const editado = (await searchParams).editado === "1";
 
   const [projects, received] = await Promise.all([
     projectsByOwner(user.id),
@@ -40,6 +48,17 @@ export default async function PublicacoesPage() {
           Publicar
         </Link>
       </header>
+
+      {editado && (
+        <div className="flex items-start gap-3 rounded-card border border-green-ink/25 bg-green-weak p-4">
+          <Clock size={18} className="mt-0.5 shrink-0 text-green-ink" />
+          <p className="text-sm text-ink-soft">
+            <strong className="text-ink">Alterações salvas.</strong> A publicação voltou para a
+            fila de revisão e fica no ar de novo assim que for aprovada — normalmente em até 1
+            dia útil.
+          </p>
+        </div>
+      )}
 
       {projects.length === 0 ? (
         <p className="rounded-card border border-dashed border-border bg-surface p-8 text-center text-sm text-muted">

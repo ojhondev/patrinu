@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
-import { submitProject } from "@/lib/projects";
+import { submitProject, updateProjectOwned } from "@/lib/projects";
 import { spendCredit, setCreditRef, NO_CREDITS_MSG } from "@/lib/credits";
 import { sendEmail } from "@/lib/email";
 import {
@@ -44,10 +44,35 @@ function isBlobUrl(raw: string): boolean {
   }
 }
 
-export async function createProject(_prev: State, form: FormData): Promise<State> {
-  const user = await getCurrentUser();
-  if (!user) redirect("/entrar?next=/projetos/novo");
+type ParsedProject = {
+  ownerName: string;
+  mode: "vaga" | "vitrine";
+  title: string;
+  summary: string;
+  assetName: string;
+  uf: string;
+  city: string;
+  year?: number;
+  specialties: string[];
+  vagaRole?: string;
+  contractType?: string;
+  seniority?: string;
+  workMode?: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  salaryConfidential: boolean;
+  contactWhatsapp?: string;
+  contactEmail?: string;
+  locationNote?: string;
+  images: string[];
+  videoUrl: string | null;
+};
 
+/** Lê e valida o formulário de vaga/projeto (usado por criar e editar). */
+function parseProjectForm(
+  form: FormData,
+  ownerName: string,
+): { error: string } | { data: ParsedProject } {
   const mode = String(form.get("mode") ?? "vaga") === "vitrine" ? "vitrine" : "vaga";
   const isVaga = mode === "vaga";
 
@@ -62,7 +87,6 @@ export async function createProject(_prev: State, form: FormData): Promise<State
     .map((s) => String(s))
     .filter((s) => VALID_SPECIALTIES.includes(s));
 
-  // campos de vaga
   const vagaRole = String(form.get("vagaRole") ?? "").trim();
   const contractType = String(form.get("contractType") ?? "");
   const seniority = String(form.get("seniority") ?? "");
@@ -94,28 +118,6 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   if (year !== undefined && (Number.isNaN(year) || year < 1500 || year > 2100))
     return { error: "Ano inválido." };
 
-  const isPro = user.plan === "pro";
-
-  // conta grátis: publicar consome 1 dos 3 créditos/mês
-  const credit = await spendCredit(
-    user.id,
-    isPro,
-    isVaga ? "publicar_vaga" : "publicar_projeto",
-  );
-  if (!credit.ok) return { error: NO_CREDITS_MSG };
-
-  // contato do contratante (só vaga) — visível só a membros Pro
-  const contactWhatsapp = isVaga
-    ? String(form.get("contactWhatsapp") ?? "").replace(/[^\d+]/g, "").slice(0, 20) || undefined
-    : undefined;
-  const contactEmail = isVaga
-    ? String(form.get("contactEmail") ?? "").trim().toLowerCase() || undefined
-    : undefined;
-  const locationNote = isVaga
-    ? String(form.get("locationNote") ?? "").trim().slice(0, 140) || undefined
-    : undefined;
-
-  // URLs geradas pelo upload client-side (Vercel Blob) — só para vitrine
   const images = isVaga
     ? []
     : form
@@ -124,32 +126,58 @@ export async function createProject(_prev: State, form: FormData): Promise<State
         .filter(isBlobUrl)
         .slice(0, 8);
   const videoRaw = String(form.get("mediaVideo") ?? "");
-  const videoUrl = !isVaga && isBlobUrl(videoRaw) ? videoRaw : null;
 
-  const created = await submitProject({
-    ownerId: user.id,
-    ownerName: user.name,
-    title: isVaga ? vagaRole : title,
-    summary,
-    assetName: assetName || (isVaga ? "—" : ""),
-    uf,
-    city,
-    mode,
-    year,
-    specialties,
-    images,
-    videoUrl,
-    vagaRole: isVaga ? vagaRole : undefined,
-    contractType: isVaga ? contractType : undefined,
-    seniority: isVaga && seniority ? seniority : undefined,
-    workMode: isVaga && workMode ? workMode : undefined,
-    salaryMin,
-    salaryMax,
-    salaryConfidential,
-    contactWhatsapp,
-    contactEmail,
-    locationNote,
-  });
+  return {
+    data: {
+      ownerName,
+      mode,
+      title: isVaga ? vagaRole : title,
+      summary,
+      assetName: assetName || (isVaga ? "—" : ""),
+      uf,
+      city,
+      year,
+      specialties,
+      vagaRole: isVaga ? vagaRole : undefined,
+      contractType: isVaga ? contractType : undefined,
+      seniority: isVaga && seniority ? seniority : undefined,
+      workMode: isVaga && workMode ? workMode : undefined,
+      salaryMin,
+      salaryMax,
+      salaryConfidential,
+      contactWhatsapp: isVaga
+        ? String(form.get("contactWhatsapp") ?? "").replace(/[^\d+]/g, "").slice(0, 20) || undefined
+        : undefined,
+      contactEmail: isVaga
+        ? String(form.get("contactEmail") ?? "").trim().toLowerCase() || undefined
+        : undefined,
+      locationNote: isVaga
+        ? String(form.get("locationNote") ?? "").trim().slice(0, 140) || undefined
+        : undefined,
+      images,
+      videoUrl: !isVaga && isBlobUrl(videoRaw) ? videoRaw : null,
+    },
+  };
+}
+
+export async function createProject(_prev: State, form: FormData): Promise<State> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/projetos/novo");
+
+  const parsed = parseProjectForm(form, user.name);
+  if ("error" in parsed) return parsed;
+  const d = parsed.data;
+
+  const isPro = user.plan === "pro";
+  // conta grátis: publicar consome 1 dos 3 créditos/mês
+  const credit = await spendCredit(
+    user.id,
+    isPro,
+    d.mode === "vaga" ? "publicar_vaga" : "publicar_projeto",
+  );
+  if (!credit.ok) return { error: NO_CREDITS_MSG };
+
+  const created = await submitProject({ ownerId: user.id, ...d });
 
   // vincula o crédito gasto à publicação (p/ estorno se o usuário excluir)
   if (credit.ok && credit.ledgerId) await setCreditRef(credit.ledgerId, created.id);
@@ -157,6 +185,29 @@ export async function createProject(_prev: State, form: FormData): Promise<State
   // sem e-mail de "em análise" — o status aparece no painel do usuário.
   revalidatePath("/", "layout"); // atualiza o contador de créditos no rodapé
   redirect("/painel?enviado=1");
+}
+
+/** O dono edita uma publicação já postada — ela volta para a fila de moderação. */
+export async function editProject(_prev: State, form: FormData): Promise<State> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/painel/publicacoes");
+
+  const projectId = String(form.get("projectId") ?? "");
+  if (!projectId) return { error: "Publicação não encontrada." };
+
+  const parsed = parseProjectForm(form, user.name);
+  if ("error" in parsed) return parsed;
+
+  // editar não custa crédito — o usuário já pagou ao publicar
+  const res = await updateProjectOwned(projectId, user.id, { ownerId: user.id, ...parsed.data });
+  if (!res) return { error: "Você não tem permissão para editar esta publicação." };
+
+  revalidatePath("/painel");
+  revalidatePath("/painel/publicacoes");
+  revalidatePath(`/projetos/${res.slug}`);
+  revalidatePath("/vagas");
+  revalidatePath("/projetos");
+  redirect("/painel/publicacoes?editado=1");
 }
 
 /* ------------------------------------------------------------------ */

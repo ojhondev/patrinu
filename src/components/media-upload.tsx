@@ -26,9 +26,15 @@ async function shrinkImage(file: File): Promise<Blob> {
   );
 }
 
-export function MediaUpload() {
-  const [images, setImages] = useState<string[]>([]);
-  const [video, setVideo] = useState<string | null>(null);
+export function MediaUpload({
+  defaultImages = [],
+  defaultVideo = null,
+}: {
+  defaultImages?: string[];
+  defaultVideo?: string | null;
+} = {}) {
+  const [images, setImages] = useState<string[]>(defaultImages);
+  const [video, setVideo] = useState<string | null>(defaultVideo);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const imgInput = useRef<HTMLInputElement>(null);

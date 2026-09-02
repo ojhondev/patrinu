@@ -322,6 +322,71 @@ export async function deleteProjectOwned(id: string, ownerId: string): Promise<b
   return rows.length > 0;
 }
 
+/** Projeto do dono, para pré-preencher o formulário de edição. */
+export async function projectForEditOwned(
+  slug: string,
+  ownerId: string,
+): Promise<Project | null> {
+  const [row] = await db
+    .select()
+    .from(projects)
+    .where(and(eq(projects.slug, slug), eq(projects.ownerId, ownerId)))
+    .limit(1);
+  return row ? rowToProject(row) : null;
+}
+
+/**
+ * O dono edita a publicação e ela **volta para a fila de moderação**
+ * (`em_analise`). O slug e os créditos são preservados. Devolve o slug ou null
+ * se o projeto não for do `ownerId`.
+ */
+export async function updateProjectOwned(
+  id: string,
+  ownerId: string,
+  input: NewProjectInput,
+): Promise<{ slug: string } | null> {
+  const [row] = await db
+    .select({ slug: projects.slug })
+    .from(projects)
+    .where(and(eq(projects.id, id), eq(projects.ownerId, ownerId)))
+    .limit(1);
+  if (!row) return null;
+
+  const isVaga = input.mode === "vaga";
+  await db
+    .update(projects)
+    .set({
+      title: input.title,
+      summary: input.summary,
+      entryKind: isVaga ? "vaga" : "projeto",
+      assetName: input.assetName,
+      uf: input.uf,
+      city: input.city,
+      year: input.year ?? null,
+      specialties: input.specialties,
+      images: isVaga ? [] : input.images ?? [],
+      videoUrl: isVaga ? null : input.videoUrl ?? null,
+      vagaRole: isVaga ? input.vagaRole ?? null : null,
+      contractType: isVaga ? input.contractType ?? null : null,
+      seniority: isVaga ? input.seniority ?? null : null,
+      workMode: isVaga ? input.workMode ?? null : null,
+      salaryMin: isVaga && input.salaryMin != null ? String(input.salaryMin) : null,
+      salaryMax: isVaga && input.salaryMax != null ? String(input.salaryMax) : null,
+      salaryConfidential: isVaga ? Boolean(input.salaryConfidential) : false,
+      contactWhatsapp: isVaga ? input.contactWhatsapp ?? null : null,
+      contactEmail: isVaga ? input.contactEmail ?? null : null,
+      locationNote: isVaga ? input.locationNote ?? null : null,
+      status: "em_analise",
+      requirements: [`__mode:${isVaga ? "aberto" : "vitrine"}`],
+      submittedAt: new Date(),
+      moderatedAt: null,
+      rejectionReason: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(projects.id, id));
+  return { slug: row.slug };
+}
+
 export async function projectInterestsCount(projectId: string): Promise<number> {
   const [row] = await db
     .select({ n: sql<number>`count(*)::int` })
