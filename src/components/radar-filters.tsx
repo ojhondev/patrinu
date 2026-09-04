@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { ChevronDown, SlidersHorizontal, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
@@ -81,6 +81,7 @@ export function RadarFilters({ total }: { total: number }) {
   const pathname = usePathname();
   const params = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const [openMobile, setOpenMobile] = useState(false);
 
   const setParam = useCallback(
     (key: string, value: string) => {
@@ -98,49 +99,34 @@ export function RadarFilters({ total }: { total: number }) {
   const sort = params.get("sort") ?? "prazo";
 
   return (
-    <div
-      className="flex flex-wrap items-center gap-2 py-1"
-      data-pending={pending ? "" : undefined}
-    >
-      <span className="mr-1 inline-flex items-center gap-1.5 text-sm font-bold text-ink">
-        <SlidersHorizontal size={15} />
-        Filtros
-      </span>
-
-      {SELECTS.map((s) => (
-        <FilterSelect
-          key={s.key}
-          label={s.label}
-          value={params.get(s.key) ?? ""}
-          options={s.options}
-          onChange={(v) => setParam(s.key, v)}
-        />
-      ))}
-
-      {activeCount > 0 && (
+    <div data-pending={pending ? "" : undefined}>
+      {/* linha de topo: no mobile é um botão que abre os filtros */}
+      <div className="flex items-center justify-between gap-2 py-1">
         <button
           type="button"
-          onClick={() =>
-            startTransition(() => router.replace(pathname, { scroll: false }))
-          }
-          className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold text-ink-soft hover:text-ink"
+          onClick={() => setOpenMobile((v) => !v)}
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-ink sm:cursor-default"
         >
-          <X size={14} />
-          Limpar ({activeCount})
+          <SlidersHorizontal size={15} />
+          Filtros
+          {activeCount > 0 && (
+            <span className="rounded-pill bg-green-weak px-2 py-0.5 text-[11px] font-bold text-green-ink">
+              {activeCount}
+            </span>
+          )}
+          <ChevronDown
+            size={14}
+            className={cn("text-muted transition-transform sm:hidden", openMobile && "rotate-180")}
+          />
         </button>
-      )}
 
-      <div className="ml-auto flex items-center gap-3">
-        <span className="hidden text-sm text-ink-soft sm:inline">
-          <strong className="font-bold text-ink tabular-nums">{total}</strong>{" "}
-          {total === 1 ? "resultado" : "resultados"}
-        </span>
-        <label className="inline-flex items-center gap-1.5 text-sm">
-          <span className="text-ink-soft">Ordenar:</span>
+        <label className="inline-flex shrink-0 items-center gap-1.5 text-sm">
+          <span className="hidden text-ink-soft sm:inline">Ordenar:</span>
           <select
+            aria-label="Ordenar"
             value={sort}
             onChange={(e) => setParam("sort", e.target.value === "prazo" ? "" : e.target.value)}
-            className="rounded-md border border-border bg-surface px-2 py-1 font-semibold text-ink outline-none focus:border-green-ink"
+            className="rounded-md border border-border bg-surface px-2 py-1 text-[13px] font-semibold text-ink outline-none focus:border-green-ink"
           >
             <option value="prazo">Prazo mais próximo</option>
             <option value="valor">Maior valor</option>
@@ -148,6 +134,39 @@ export function RadarFilters({ total }: { total: number }) {
             <option value="recentes">Mais recentes</option>
           </select>
         </label>
+      </div>
+
+      <div
+        className={cn(
+          "flex-wrap items-center gap-2 pb-1 sm:flex",
+          openMobile ? "flex pt-2" : "hidden",
+        )}
+      >
+        {SELECTS.map((s) => (
+          <FilterSelect
+            key={s.key}
+            label={s.label}
+            value={params.get(s.key) ?? ""}
+            options={s.options}
+            onChange={(v) => setParam(s.key, v)}
+          />
+        ))}
+
+        {activeCount > 0 && (
+          <button
+            type="button"
+            onClick={() => startTransition(() => router.replace(pathname, { scroll: false }))}
+            className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold text-ink-soft hover:text-ink"
+          >
+            <X size={14} />
+            Limpar ({activeCount})
+          </button>
+        )}
+
+        <span className="ml-auto hidden text-sm text-ink-soft sm:inline">
+          <strong className="font-bold text-ink tabular-nums">{total}</strong>{" "}
+          {total === 1 ? "resultado" : "resultados"}
+        </span>
       </div>
     </div>
   );

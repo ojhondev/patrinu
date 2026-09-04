@@ -73,12 +73,13 @@ export default async function VagasPage({
             Escritórios, ateliês, museus e órgãos publicam vagas com a função, as áreas de atuação
             e, quando quiserem, a faixa salarial.
           </p>
-          <ButtonLink href={isPro ? "/projetos/novo?tipo=vaga" : "/pro/contratar"} className="mt-5">
+          <ButtonLink href="/projetos/novo?tipo=vaga" className="mt-5">
             Publicar uma vaga
           </ButtonLink>
           {!isPro && (
             <p className="mt-2 text-xs text-muted">
-              Candidatar-se e publicar vagas são recursos do Patrinu Pro.
+              Contas gratuitas têm 3 créditos por mês — publicar e candidatar-se custam 1 cada.
+              Com o Patrinu Pro é ilimitado e o contato do contratante fica visível.
             </p>
           )}
         </div>

@@ -27,9 +27,7 @@ const COOKIES = [
 const LOCAL_STORAGE = [
   { name: "patrinu_signup_dismissed", purpose: "Não repetir o convite de cadastro." },
   { name: "patrinu_promo_anual60_dismissed", purpose: "Não repetir uma faixa de promoção já fechada." },
-  { name: "patrinu_cookie_consent", purpose: "Lembra que você já leu este aviso de cookies." },
-  { name: "patrinu_sharebar_closed", purpose: "Lembra que você fechou a faixa de compartilhamento." },
-  { name: "patrinu_credits_widget_closed", purpose: "Lembra que você fechou o indicador de créditos." },
+  { name: "patrinu_credits_widget_closed", purpose: "Lembra que você fechou o indicador de créditos nesta sessão." },
 ];
 
 export default function CookiesPage() {

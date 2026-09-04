@@ -47,7 +47,7 @@ export function FilterBar({
     (segments && activeSeg !== (segmentDefault ?? segments[0]?.key));
 
   const selectCls =
-    "h-9 rounded-pill border border-border-strong bg-surface pl-3.5 pr-8 text-[13px] text-ink-soft outline-none transition-colors focus:border-brand";
+    "h-9 min-w-[calc(50%-6px)] grow rounded-pill border border-border-strong bg-surface pl-3.5 pr-8 text-[13px] text-ink-soft outline-none transition-colors focus:border-brand sm:min-w-0 sm:grow-0";
 
   return (
     <div className="border-b border-border pb-4">
@@ -108,7 +108,7 @@ export function FilterBar({
           </button>
         )}
 
-        <p className="ml-auto text-sm text-ink-soft">
+        <p className="w-full text-sm text-ink-soft sm:ml-auto sm:w-auto">
           <strong className="font-bold text-ink tabular-nums">{total}</strong>{" "}
           {total === 1 ? unit[0] : unit[1]}
         </p>

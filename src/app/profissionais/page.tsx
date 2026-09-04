@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { BadgeCheck, Sparkles, MapPin } from "lucide-react";
+import { BadgeCheck, Sparkles, MapPin, SlidersHorizontal } from "lucide-react";
 
 import { listProfessionals } from "@/lib/directory";
 import { ProRow } from "@/components/pro-row";
@@ -37,6 +37,8 @@ export default async function ProfissionaisPage({
 
   const noFilters = !q && !grupo && !specialty && !uf && !verifiedOnly && !proOnly;
   const featured = noFilters ? pros.filter((p) => p.pro).slice(0, 3) : [];
+  const activeCount =
+    [grupo, specialty, uf].filter(Boolean).length + (verifiedOnly ? 1 : 0) + (proOnly ? 1 : 0);
 
   const activeGroup = CATEGORY_GROUPS.find((g) => g.key === grupo);
 
@@ -91,89 +93,123 @@ export default async function ProfissionaisPage({
           </Suspense>
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-[17rem_minmax(0,1fr)]">
-          <aside className="lg:sticky lg:top-24 lg:h-max lg:self-start">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Selo</p>
-            <div className="mt-2 space-y-1.5">
-              <Link
-                href={qs({ verified: verifiedOnly ? undefined : "1" })}
-                className={cn(
-                  "flex items-center gap-2 text-sm font-semibold",
-                  verifiedOnly ? "text-green-ink" : "text-ink-soft hover:text-ink",
-                )}
-              >
-                <BadgeCheck size={15} />
-                Só verificados
-              </Link>
-              <Link
-                href={qs({ pro: proOnly ? undefined : "1" })}
-                className={cn(
-                  "block text-sm font-semibold",
-                  proOnly ? "text-green-ink" : "text-ink-soft hover:text-ink",
-                )}
-              >
-                Só assinantes Pro
-              </Link>
-            </div>
+        {(() => {
+          const filterBody = (
+            <>
+              <p className="text-[11px] font-bold uppercase tracking-wide text-muted">Selo</p>
+              <div className="mt-2 flex flex-wrap gap-2 lg:block lg:space-y-1.5">
+                <Link
+                  href={qs({ verified: verifiedOnly ? undefined : "1" })}
+                  className={cn(
+                    "inline-flex items-center gap-2 rounded-pill border px-3 py-1 text-sm font-semibold lg:border-0 lg:px-0 lg:py-0",
+                    verifiedOnly
+                      ? "border-green-ink bg-green-weak text-green-ink lg:bg-transparent"
+                      : "border-border-strong text-ink-soft hover:text-ink lg:border-0",
+                  )}
+                >
+                  <BadgeCheck size={15} />
+                  Só verificados
+                </Link>
+                <Link
+                  href={qs({ pro: proOnly ? undefined : "1" })}
+                  className={cn(
+                    "inline-flex items-center rounded-pill border px-3 py-1 text-sm font-semibold lg:block lg:border-0 lg:px-0 lg:py-0",
+                    proOnly
+                      ? "border-green-ink bg-green-weak text-green-ink lg:bg-transparent"
+                      : "border-border-strong text-ink-soft hover:text-ink lg:border-0",
+                  )}
+                >
+                  Só Membros Pro
+                </Link>
+              </div>
 
-            <p className="mt-6 text-[11px] font-bold uppercase tracking-wide text-muted">Categoria</p>
-            <div className="mt-2 max-h-[70vh] space-y-0.5 overflow-y-auto pr-1">
-              <Link
-                href={qs({ grupo: undefined, specialty: undefined })}
-                className={cn(
-                  "block rounded-btn px-2 py-1.5 text-sm",
-                  !grupo ? "bg-sunk font-bold text-ink" : "text-ink-soft hover:bg-sunk hover:text-ink",
-                )}
-              >
-                Todas as categorias
-              </Link>
-              {CATEGORY_GROUPS.map((g) => {
-                const on = grupo === g.key;
-                return (
-                  <div key={g.key}>
-                    <Link
-                      href={qs({ grupo: on ? undefined : g.key, specialty: undefined })}
-                      className={cn(
-                        "block rounded-btn px-2 py-1.5 text-sm",
-                        on
-                          ? "bg-green-weak font-bold text-green-ink"
-                          : "text-ink-soft hover:bg-sunk hover:text-ink",
+              <p className="mt-5 text-[11px] font-bold uppercase tracking-wide text-muted lg:mt-6">
+                Categoria
+              </p>
+              <div className="mt-2 max-h-[42vh] space-y-0.5 overflow-y-auto pr-1 lg:max-h-[70vh]">
+                <Link
+                  href={qs({ grupo: undefined, specialty: undefined })}
+                  className={cn(
+                    "block rounded-btn px-2 py-1.5 text-sm",
+                    !grupo
+                      ? "bg-sunk font-bold text-ink"
+                      : "text-ink-soft hover:bg-sunk hover:text-ink",
+                  )}
+                >
+                  Todas as categorias
+                </Link>
+                {CATEGORY_GROUPS.map((g) => {
+                  const on = grupo === g.key;
+                  return (
+                    <div key={g.key}>
+                      <Link
+                        href={qs({ grupo: on ? undefined : g.key, specialty: undefined })}
+                        className={cn(
+                          "block rounded-btn px-2 py-1.5 text-sm",
+                          on
+                            ? "bg-green-weak font-bold text-green-ink"
+                            : "text-ink-soft hover:bg-sunk hover:text-ink",
+                        )}
+                      >
+                        {g.label}
+                      </Link>
+                      {on && (
+                        <div className="ml-2 border-l border-border pl-2">
+                          {g.specialties.map((s) => (
+                            <Link
+                              key={s.key}
+                              href={qs({ specialty: specialty === s.key ? undefined : s.key })}
+                              className={cn(
+                                "block rounded-btn px-2 py-1 text-[13px]",
+                                specialty === s.key
+                                  ? "font-bold text-green-ink"
+                                  : "text-ink-soft hover:text-ink",
+                              )}
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
                       )}
-                    >
-                      {g.label}
-                    </Link>
-                    {on && (
-                      <div className="ml-2 border-l border-border pl-2">
-                        {g.specialties.map((s) => (
-                          <Link
-                            key={s.key}
-                            href={qs({ specialty: specialty === s.key ? undefined : s.key })}
-                            className={cn(
-                              "block rounded-btn px-2 py-1 text-[13px]",
-                              specialty === s.key
-                                ? "font-bold text-green-ink"
-                                : "text-ink-soft hover:text-ink",
-                            )}
-                          >
-                            {s.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-            {(grupo || specialty || uf || verifiedOnly || proOnly || q) && (
-              <Link
-                href="/profissionais"
-                className="mt-6 inline-block text-sm font-semibold text-crit hover:underline"
-              >
-                Limpar filtros
-              </Link>
-            )}
-          </aside>
+              {activeCount + (q ? 1 : 0) > 0 && (
+                <Link
+                  href="/profissionais"
+                  className="mt-5 inline-block text-sm font-semibold text-crit hover:underline lg:mt-6"
+                >
+                  Limpar filtros
+                </Link>
+              )}
+            </>
+          );
+
+          return (
+            <div className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10">
+              {/* mobile: recolhido atrás de um "Filtros" */}
+              <details className="rounded-card border border-border bg-surface lg:hidden">
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-bold text-ink">
+                  <span className="inline-flex items-center gap-2">
+                    <SlidersHorizontal size={15} className="text-green-ink" />
+                    Filtros
+                    {activeCount > 0 && (
+                      <span className="rounded-pill bg-green-weak px-2 py-0.5 text-[11px] font-bold text-green-ink">
+                        {activeCount}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-xs font-semibold text-muted">abrir / fechar</span>
+                </summary>
+                <div className="border-t border-border p-4">{filterBody}</div>
+              </details>
+
+              {/* desktop: sidebar fixa */}
+              <aside className="hidden lg:sticky lg:top-24 lg:block lg:h-max lg:self-start">
+                {filterBody}
+              </aside>
 
           <div>
             {featured.length > 0 && (
@@ -233,7 +269,9 @@ export default async function ProfissionaisPage({
               </div>
             )}
           </div>
-        </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

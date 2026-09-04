@@ -1,35 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Cookie } from "lucide-react";
 
-const KEY = "patrinu_cookie_consent";
-
 export function CookieConsent() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  // sempre aparece a cada visita — o "Entendi" só fecha nesta navegação.
+  const [open, setOpen] = useState(true);
 
-  const hideOn = pathname.startsWith("/master");
-
-  useEffect(() => {
-    if (hideOn) return;
-    let accepted = false;
-    try {
-      accepted = Boolean(localStorage.getItem(KEY));
-    } catch {}
-    if (!accepted) setOpen(true);
-  }, [hideOn]);
-
-  if (!open || hideOn) return null;
-
-  const accept = () => {
-    try {
-      localStorage.setItem(KEY, new Date().toISOString());
-    } catch {}
-    setOpen(false);
-  };
+  if (!open || pathname.startsWith("/master")) return null;
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-[90] border-t border-border bg-surface/98 px-4 py-4 shadow-[var(--shadow-pop)] backdrop-blur sm:px-6">
@@ -49,7 +30,11 @@ export function CookieConsent() {
             .
           </span>
         </p>
-        <button type="button" onClick={accept} className="btn btn-primary btn-sm w-full shrink-0 sm:w-auto">
+        <button
+          type="button"
+          onClick={() => setOpen(false)}
+          className="btn btn-primary btn-sm w-full shrink-0 sm:w-auto"
+        >
           Entendi
         </button>
       </div>
