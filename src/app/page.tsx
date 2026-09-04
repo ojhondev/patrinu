@@ -159,12 +159,14 @@ export default async function HomePage() {
           className="mt-10 block overflow-hidden rounded-card border border-border transition-shadow hover:shadow-[var(--shadow-hover)]"
           aria-label="Patrinu Pro para profissionais — arranje trabalho e publique seus projetos"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/home/pro-profissionais.png"
-            alt="Torne-se profissional Pro no Patrinu: página pública, prioridade no diretório e candidaturas ilimitadas."
-            className="block aspect-[1668/626] w-full object-cover"
-          />
+          <picture>
+            <source media="(min-width: 640px)" srcSet="/home/pro-profissionais.png" />
+            <img
+              src="/home/pro-profissionais-mobile.png"
+              alt="Torne-se profissional Pro no Patrinu: página pública, prioridade no diretório e candidaturas ilimitadas."
+              className="block aspect-[646/1098] w-full object-cover sm:aspect-[1668/626]"
+            />
+          </picture>
         </Link>
       </section>
 
@@ -190,12 +192,14 @@ export default async function HomePage() {
             className="mt-10 block overflow-hidden rounded-card border border-border transition-shadow hover:shadow-[var(--shadow-hover)]"
             aria-label="Patrinu Pro para empresas — publique projetos, contrate mão de obra e acompanhe editais"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/home/pro-empresas.png"
-              alt="Patrinu Pro para empresas: projetos na vitrine, vagas sem limite, contato completo dos candidatos e Radar de Editais."
-              className="block aspect-[1668/626] w-full object-cover"
-            />
+            <picture>
+              <source media="(min-width: 640px)" srcSet="/home/pro-empresas.png" />
+              <img
+                src="/home/pro-empresas-mobile.png"
+                alt="Patrinu Pro para empresas: projetos na vitrine, vagas sem limite, contato completo dos candidatos e Radar de Editais."
+                className="block aspect-[646/1036] w-full object-cover sm:aspect-[1668/626]"
+              />
+            </picture>
           </Link>
         </div>
       </section>
