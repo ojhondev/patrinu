@@ -19,9 +19,9 @@ const ICONS: Record<ProTrack, typeof Building2> = {
 
 const HELP: Record<ProTrack, string> = {
   contratar:
-    "Publique o projeto, receba propostas comparáveis e veja no painel os profissionais que dão match com o que você precisa.",
+    "Mostre os projetos da sua empresa na vitrine, publique vagas sem limite, receba candidatos com o contato completo e acompanhe editais e licitações de todo o Brasil em tempo real.",
   oferecer:
-    "Monte perfil e portfólio, e receba no painel as oportunidades — editais e projetos — que casam com a sua especialidade, antes dos concorrentes.",
+    "Sua página pública com portfólio e contato, prioridade no diretório e o selo Membro Pro, mais candidaturas ilimitadas às vagas do setor e o Radar de Editais completo.",
   financiamento:
     "Cadastre o bem e o projeto, gere o dossiê e veja no painel quais bancos, institutos e leis de incentivo sinalizam elegibilidade.",
 };
@@ -103,9 +103,11 @@ export default function ProPage() {
         <div className="mt-12 rounded-card border border-border bg-sunk p-6">
           <p className="kicker text-green-ink">Por que assinar</p>
           <p className="mt-2 max-w-2xl text-ink-soft">
-            Sem anúncios que atrapalham, sem comissão sobre o seu trabalho e sem depender de
-            um único patrocinador. Quem é membro sustenta um acervo que fica para o setor —
-            e ganha o Radar de Editais completo, propostas ilimitadas e os painéis com match.
+            Sem comissão sobre o seu trabalho e sem intermediário entre você e quem contrata.
+            Profissionais ganham página pública, prioridade no diretório e candidaturas
+            ilimitadas. Empresas ganham vagas e projetos sem limite e o contato completo de
+            cada candidato. Os dois lados recebem o Radar de Editais completo — valores,
+            prazos e checklist de habilitação de todo o Brasil.
           </p>
         </div>
 

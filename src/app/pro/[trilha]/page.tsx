@@ -32,58 +32,60 @@ type Content = {
 
 const CONTENT: Record<ProTrack, Content> = {
   contratar: {
-    headline: "Encontre quem executa.",
-    accent: "Publique seu projeto.",
-    sub: "Para instituições, empresas, órgãos e dioceses com patrimônio para restaurar. Sem comissão — assinatura.",
+    headline: "Mostre os projetos da sua empresa e",
+    accent: "contrate mão de obra especializada.",
+    sub: "Para empresas, instituições, órgãos e dioceses com patrimônio para restaurar. Publique vagas e projetos sem limite, receba candidatos com o contato completo e acompanhe editais e licitações do Brasil inteiro em tempo real.",
     steps: [
       {
-        title: "Descreva o que precisa restaurar",
-        body: "O bem, o tipo de intervenção e o que você já tem de projeto ou recurso. Fotos ajudam o match.",
+        title: "Publique os projetos da sua empresa",
+        body: "Suas obras e serviços entram na vitrine do Patrinu — com fotos, antes e depois — para todo o setor ver quem você é e o que já entregou.",
       },
       {
-        title: "Publique ou só prospecte",
-        body: "Abra o projeto para receber propostas, ou navegue os prospectos e convide profissionais direto.",
+        title: "Abra vagas e receba candidatos",
+        body: "Publique quantas vagas e projetos quiser. Cada candidatura chega no painel com nome, e-mail, cidade, disponibilidade e currículo — sem intermediário.",
       },
       {
-        title: "Compare e contrate",
-        body: "Propostas lado a lado, com portfólio, registros e aderência à vista. A contratação acontece entre vocês.",
+        title: "Acompanhe editais e licitações",
+        body: "O Radar de Editais completo fica liberado: valores, prazos e checklist de habilitação de oportunidades públicas de restauro em todo o Brasil, atualizadas continuamente.",
       },
     ],
     painel: {
-      title: "No seu painel",
+      title: "O que a assinatura libera",
       items: [
-        "Prospectos: profissionais que deram match ou se candidataram ao seu projeto",
-        "Propostas recebidas, comparáveis lado a lado",
-        "Status dos projetos publicados e das vagas abertas",
-        "Sugestões de quem convidar",
+        "Vagas e projetos ilimitados (conta grátis tem 3 créditos por mês)",
+        "Contato completo de cada candidato: nome, e-mail, cidade, disponibilidade e currículo",
+        "Radar de Editais completo — valores, prazos e checklist de habilitação",
+        "Seus projetos na vitrine pública, vistos por todo o setor",
+        "Status de tudo que você publicou, num só painel",
       ],
     },
   },
   oferecer: {
-    headline: "Seu portfólio, sua reputação",
-    accent: "e o trabalho do setor num lugar.",
-    sub: "Para restauradores, conservadores, ateliês e escritórios. Receba as oportunidades certas antes dos concorrentes.",
+    headline: "Arranje trabalho e publique seus projetos",
+    accent: "pra todo mundo ver.",
+    sub: "Para restauradores, conservadores, ateliês e escritórios. Sua página pública com portfólio e contato, prioridade no diretório e candidaturas ilimitadas às vagas do setor.",
     steps: [
       {
-        title: "Monte o perfil",
-        body: "Especialidades, técnicas, registros (CAU/CREA, ART/RRT, ABRACOR) e um portfólio com antes/depois.",
+        title: "Monte sua página pública",
+        body: "Uma página no estilo Linktree, só sua: foto, especialidades, botões de WhatsApp, e-mail, site e redes, mais a vitrine dos seus projetos e vagas abertas. Compartilhe o link onde quiser.",
       },
       {
-        title: "Receba oportunidades compatíveis",
-        body: "Editais e projetos abertos que casam com o seu perfil chegam no painel, ordenados por aderência e prazo.",
+        title: "Apareça primeiro no diretório",
+        body: "Perfis Pro sobem no topo das buscas por especialidade e entram na faixa “Em destaque · Membros Pro”. Quem procura profissional vê você antes.",
       },
       {
-        title: "Dispute — sozinho ou em equipe",
-        body: "Checklist de habilitação do edital cruzado com o seu cofre de documentos. Junte-se a uma equipe para projetos maiores.",
+        title: "Candidate-se sem limite",
+        body: "Candidaturas ilimitadas às vagas (conta grátis gasta 1 crédito por vez) e o contato do contratante sempre visível. O Radar de Editais completo também fica liberado.",
       },
     ],
     painel: {
-      title: "No seu painel",
+      title: "O que a assinatura libera",
       items: [
-        "Oportunidades compatíveis: editais e briefs por aderência ao seu perfil",
-        "Minhas candidaturas: rascunho, manifestada, enviada, resultado",
-        "Convites de contratantes e equipes em formação",
-        "Desempenho do perfil: visitas, contatos, posição no diretório",
+        "Página pública com portfólio, contato e vitrine — grátis não mostra nada disso",
+        "Prioridade no diretório e selo “Membro Pro”",
+        "Candidaturas ilimitadas às vagas (conta grátis tem 3 créditos por mês)",
+        "Contato do contratante visível em toda vaga",
+        "Radar de Editais completo — valores, prazos e checklist de habilitação",
       ],
     },
   },

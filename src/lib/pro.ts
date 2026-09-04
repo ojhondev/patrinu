@@ -20,9 +20,9 @@ export const TRACKS: Record<
 > = {
   contratar: {
     slug: "contratar",
-    label: "Quero contratar",
-    who: "Instituições, empresas, órgãos e dioceses com patrimônio para restaurar",
-    promise: "Encontre quem executa. Publique seu projeto.",
+    label: "Sou empresa / contratante",
+    who: "Empresas, instituições, órgãos e dioceses com patrimônio para restaurar",
+    promise: "Mostre os projetos da sua empresa, contrate mão de obra especializada e acompanhe editais e licitações do Brasil.",
     perfil: "contratante",
     priceCents: 3990,
     priceLabel: "R$ 39,90/mês",
@@ -30,9 +30,9 @@ export const TRACKS: Record<
   },
   oferecer: {
     slug: "oferecer",
-    label: "Quero oferecer serviços",
+    label: "Sou profissional",
     who: "Restauradores, conservadores, ateliês e escritórios",
-    promise: "Seu portfólio, sua reputação e o trabalho do setor num lugar.",
+    promise: "Arranje trabalho e publique seus projetos pra todo mundo ver.",
     perfil: "profissional",
     priceCents: 2990,
     priceLabel: "R$ 29,90/mês",
