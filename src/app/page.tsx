@@ -153,6 +153,19 @@ export default async function HomePage() {
             <VagaCard key={v.id} vaga={v} />
           ))}
         </div>
+
+        <Link
+          href="/pro/oferecer"
+          className="mt-10 block overflow-hidden rounded-card border border-border transition-shadow hover:shadow-[var(--shadow-hover)]"
+          aria-label="Patrinu Pro para profissionais — arranje trabalho e publique seus projetos"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/home/pro-profissionais.png"
+            alt="Torne-se profissional Pro no Patrinu: página pública, prioridade no diretório e candidaturas ilimitadas."
+            className="block aspect-[1668/626] w-full object-cover"
+          />
+        </Link>
       </section>
 
       {/* ---------------- projetos (vitrine) ---------------- */}
@@ -171,6 +184,19 @@ export default async function HomePage() {
               <ProjectTile key={p.id} project={p} />
             ))}
           </div>
+
+          <Link
+            href="/pro/contratar"
+            className="mt-10 block overflow-hidden rounded-card border border-border transition-shadow hover:shadow-[var(--shadow-hover)]"
+            aria-label="Patrinu Pro para empresas — publique projetos, contrate mão de obra e acompanhe editais"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/home/pro-empresas.png"
+              alt="Patrinu Pro para empresas: projetos na vitrine, vagas sem limite, contato completo dos candidatos e Radar de Editais."
+              className="block aspect-[1668/626] w-full object-cover"
+            />
+          </Link>
         </div>
       </section>
 
