@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 
 /** muda a key quando trocar a promoção — evita esconder um anúncio novo por
  *  causa de um "fechar" antigo salvo no navegador do visitante. */
-const KEY = "patrinu_promo_anual60_dismissed";
+const KEY = "patrinu_promo_empresa3990_dismissed";
 
 export function AnnouncementBar() {
   const pathname = usePathname();
@@ -34,16 +34,20 @@ export function AnnouncementBar() {
   };
 
   return (
-    <div className="band relative flex items-center justify-center gap-2 px-10 py-2.5 text-center text-[13px] font-semibold text-white sm:text-sm">
-      <Link href="/pro" className="hover:underline">
-        Assine anual e aproveite <span className="accent font-medium text-accent">até 60% OFF</span>{" "}
-        no primeiro ano — planos Empresa e Profissional.
+    <div className="relative flex items-center justify-center gap-2 bg-brand px-10 py-2.5 text-center text-[13px] font-semibold text-white sm:text-sm">
+      <Link href="/pro/contratar" className="inline-flex items-center gap-1.5 hover:underline">
+        <span>
+          Sua empresa no <span className="font-bold">Patrinu Pro</span> por apenas{" "}
+          <span className="font-bold">R$ 39,90/mês</span> — vagas ilimitadas, contato dos
+          candidatos e o Radar de Editais.
+        </span>
+        <ArrowRight size={15} className="hidden shrink-0 sm:inline" />
       </Link>
       <button
         type="button"
         onClick={close}
         aria-label="Fechar aviso"
-        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-pill p-1 text-white/70 hover:bg-white/10 hover:text-white"
+        className="absolute right-3 top-1/2 -translate-y-1/2 rounded-pill p-1 text-white/75 hover:bg-white/15 hover:text-white"
       >
         <X size={15} />
       </button>

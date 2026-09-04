@@ -53,6 +53,19 @@ function SectionHead({
   );
 }
 
+/** CTA de fim de seção — só aparece no mobile (no desktop o link fica no topo). */
+function SectionCta({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="mt-8 flex w-full items-center justify-center gap-2 rounded-pill border border-border-strong px-5 py-3 text-sm font-bold text-ink transition-colors hover:border-green-ink hover:text-green-ink sm:hidden"
+    >
+      {label}
+      <ArrowRight size={15} />
+    </Link>
+  );
+}
+
 export default async function HomePage() {
   const [vagasRaw, showcase, pros, editais, articles, courses, isPro] = await Promise.all([
     featuredVagas(4),
@@ -153,6 +166,7 @@ export default async function HomePage() {
             <VagaCard key={v.id} vaga={v} />
           ))}
         </div>
+        <SectionCta href="/vagas" label="Explorar mais vagas" />
 
         <Link
           href="/pro/oferecer"
@@ -186,6 +200,7 @@ export default async function HomePage() {
               <ProjectTile key={p.id} project={p} />
             ))}
           </div>
+          <SectionCta href="/projetos" label="Veja mais projetos" />
 
           <Link
             href="/pro/contratar"
@@ -219,6 +234,7 @@ export default async function HomePage() {
             <ProfessionalCard key={pro.slug} pro={pro} />
           ))}
         </div>
+        <SectionCta href="/profissionais" label="Ver todo o diretório" />
       </section>
 
       {/* ---------------- editais ---------------- */}
@@ -233,11 +249,14 @@ export default async function HomePage() {
             Licitações e chamamentos de patrimônio, com checklist de habilitação.
           </SectionHead>
           {isPro ? (
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {editais.map((op) => (
-                <OpportunityCard key={op.id} op={op} />
-              ))}
-            </div>
+            <>
+              <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {editais.map((op) => (
+                  <OpportunityCard key={op.id} op={op} />
+                ))}
+              </div>
+              <SectionCta href="/editais" label="Abrir o Radar de editais" />
+            </>
           ) : (
             <div className="mt-8">
               <LockedPanel
@@ -279,6 +298,7 @@ export default async function HomePage() {
                   <ArticleCard key={a.slug} article={a} compact />
                 ))}
               </div>
+              <SectionCta href="/noticias" label="Todas as notícias" />
             </div>
           )}
           <div>
@@ -288,6 +308,7 @@ export default async function HomePage() {
                 <CourseCard key={c.slug} course={c} />
               ))}
             </div>
+            <SectionCta href="/cursos" label="Ver todos os cursos" />
           </div>
         </div>
       </section>
