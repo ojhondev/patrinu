@@ -17,6 +17,7 @@ import { SpecialtyThumb } from "@/components/specialty-visual";
 import { ProjectCard } from "@/components/project-card";
 import { VagaCard } from "@/components/vaga-card";
 import { ProjectActions } from "@/components/project-actions";
+import { ProjectGallery } from "@/components/project-gallery";
 import { getCurrentUser } from "@/lib/auth";
 import { getPlan } from "@/lib/membership";
 import { hasInterest } from "@/lib/interactions";
@@ -132,27 +133,7 @@ export default async function ProjectPage({
           {/* mídia (só vitrine) */}
           {!isVaga &&
             (images.length > 0 ? (
-              <div className="mt-6 space-y-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={images[0]}
-                  alt={p.title}
-                  className="aspect-[16/10] w-full rounded-card border border-border object-cover"
-                />
-                {images.length > 1 && (
-                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-                    {images.slice(1).map((src) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        key={src}
-                        src={src}
-                        alt=""
-                        className="aspect-square w-full rounded-btn border border-border object-cover"
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+              <ProjectGallery images={images} title={p.title} />
             ) : (
               <SpecialtyThumb
                 specialty={p.specialties[0] ?? "arquitetura"}
